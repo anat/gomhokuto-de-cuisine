@@ -43,8 +43,7 @@ public :
     Player getPlayer();
     void   setPlayer(Player player);
     std::vector<char> const & getValues(Player player) const;
-    void   modifValue(Player player, int num_case, bool increment);
-
+    void   modifValue(Player player, int num_case, bool increment); 
 private:
     void   increment(Player player, int num_case);
     void   decrement(Player player, int num_case);
