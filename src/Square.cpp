@@ -20,9 +20,9 @@ void Square::setPlayer(Player player)
 void   Square::modifValue(Player player, int num_case, bool increment)
 {
     if (increment)
-        increment(player, num_case);
+        this->increment(player, num_case);
     else
-        decrement(player, num_case);
+        this->decrement(player, num_case);
 }
 
 void   Square::increment(Player player, int num_case)
@@ -35,7 +35,7 @@ void   Square::decrement(Player player, int num_case)
     _value[(int) player][num_case]--;    
 }
 
-char * Square::getValues(Player player) const
+std::vector<char> const & Square::getValues(Player player) const
 {
-    return (_value[(int)player]);
+    return (_value.at((int)player));
 }

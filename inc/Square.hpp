@@ -42,7 +42,7 @@ public :
     Square();
     Player getPlayer();
     void   setPlayer(Player player);
-    char * getValues(Player player) const;
+    std::vector<char> const & getValues(Player player) const;
     void   modifValue(Player player, int num_case, bool increment);
 
 private:
