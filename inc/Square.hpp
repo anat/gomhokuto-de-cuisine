@@ -8,6 +8,11 @@
 #ifndef SQUARE_HPP
 #define	SQUARE_HPP
 
+#define VEC_SIZE 3
+#define BYTE_SIZE 9
+
+#include <vector>
+
 class Square {
 
 public:
@@ -16,26 +21,33 @@ public:
         PLAYER1,
         PLAYER2
     };
-    
-    enum LINK_TYPE {
-        TWO,
-        THREE,
-        FOUR,
-        FIVE,
-        END
+
+    enum Value {
+        LINK1,
+        LINK2,
+        LINK3,
+        LINK4,
+        LINK5,
+        END_LINK2,
+        END_LINK3,
+        END_LINK4,
+        END_LINK5
     };
-    
+
 private:
-    Player _player;
-    char   _status_link[4][4];
+    Player                              _player;
+    std::vector< std::vector<char> >    _value;
 
 public :
     Square();
-    Player getPalyer();
-    bool   isEndLink();
+    Player getPlayer();
     void   setPlayer(Player player);
-    void   setStatusLink(int type, char value);
-    char * getLinkType(int type);
+    std::vector<char> const & getValues(Player player) const;
+    void   modifValue(Player player, int num_case, bool increment);
+
+private:
+    void   increment(Player player, int num_case);
+    void   decrement(Player player, int num_case);
 };
 
 #endif	/* SQUARE_HPP */
