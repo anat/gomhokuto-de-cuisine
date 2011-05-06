@@ -29,7 +29,7 @@ bool Referee::tryPlaceRock(unsigned int x, unsigned int y, Square& square) {
 bool Referee::testPosition(unsigned int x, unsigned int y, Square& ) {
     bool value = false;
 
-    if (_board(x, y)._status == Square::NOP) { //rajouter les tests de pattern ici
+    if (_board(x, y).getPalyer() == Square::NOPLAYER) { //rajouter les tests de pattern ici
         value = true;
     }
     return value;

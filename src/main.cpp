@@ -12,7 +12,7 @@
 int main(void) {
     std::cout << "hello world" << std::endl;
     Board plateau;
-    if (plateau(1, 2)._status == Square::NOP)
+    if (plateau(1, 2).getPalyer() == Square::NOPLAYER)
         std::cout << "caca" << std::endl;
 
     return 0;

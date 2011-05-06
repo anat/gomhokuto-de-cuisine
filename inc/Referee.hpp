@@ -22,7 +22,6 @@ public:
 
     bool tryPlaceRock(unsigned int x, unsigned int y, Square& square); //Test et si ok place
     bool testPosition(unsigned int x, unsigned int y, Square& square); //Test tout cours
-    
 private:
     Board& _board;
 };
