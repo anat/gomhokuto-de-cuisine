@@ -1,19 +1,15 @@
 
 #include "Square.hpp"
 
-Square::Square() : _player(NOPLAYER) {
-    
+Square::Square() : _player(NOPLAYER), _value() {
+    _value.resize(VEC_SIZE);
+    for (int i = 0; i < VEC_SIZE; ++i)
+        _value[i].resize(BYTE_SIZE);
 }
 
-
-Square::Player Square::getPalyer()
+Square::Player Square::getPlayer()
 {
     return (_player);
-}
-
-bool Square::isEndLink()
-{
-
 }
 
 void Square::setPlayer(Player player)
@@ -21,17 +17,25 @@ void Square::setPlayer(Player player)
     _player = player;
 }
 
-void Square::setStatusLink(int type, char value)
+void   Square::modifValue(Player player, int num_case, bool increment)
 {
-    if (type & END)
-        _status_link[_player + 2][type&~END] += value;
+    if (increment)
+        increment(player, num_case);
     else
-        _status_link[_player][type] += value;
+        decrement(player, num_case);
 }
 
-char * Square::getLinkType(int type)
+void   Square::increment(Player player, int num_case)
 {
-    if (type & END)
-        return (_status_link[_player + 2]);
-    return (_status_link[_player]);
+    _value[(int) player][num_case]++;
+}
+
+void   Square::decrement(Player player, int num_case)
+{
+    _value[(int) player][num_case]--;    
+}
+
+char * Square::getValues(Player player) const
+{
+    return (_value[(int)player]);
 }
