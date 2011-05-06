@@ -20,8 +20,13 @@ public:
     Referee(const Referee& orig);
     virtual ~Referee();
 
-    bool tryPlaceRock(unsigned int x, unsigned int y, Square& square); //Test et si ok place
-    bool testPosition(unsigned int x, unsigned int y, Square& square); //Test tout cours
+	int tryPlaceRock(unsigned int x, unsigned int y, Square::Player& square); //Test et si ok place
+    bool testPosition(unsigned int x, unsigned int y); //Test tout cours
+	void checkAlignement(unsigned int x, unsigned int y);
+	bool checkPosition(unsigned int x, unsigned int y);
+	void propagation(unsigned int x, unsigned int y, const Square::Player& player);
+	void propagation_inverse(unsigned int x, unsigned int y);
+	void checkPrise(unsigned int x, unsigned int y, const Square::Player& player);
 private:
     Board& _board;
 };

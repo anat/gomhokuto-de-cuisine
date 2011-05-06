@@ -9,10 +9,7 @@
 #include "Board.hpp"
 
 Board::Board(std::size_t size) : _tab(), _size(size) {
-    _tab.resize(size);
-    for (unsigned int i = 0; i < size; i++) {
-        _tab[i].resize(size);
-    }
+	_tab.resize(size, std::vector<Square>(size));
 }
 
 Board::Board(const Board& orig) : _tab(orig._tab), _size(orig._size) {

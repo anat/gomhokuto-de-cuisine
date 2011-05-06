@@ -16,21 +16,47 @@ Referee::Referee(const Referee& orig)  : _board(orig._board) {
 Referee::~Referee() {
 }
 
-bool Referee::tryPlaceRock(unsigned int x, unsigned int y, Square& square) {
+int Referee::tryPlaceRock(unsigned int x, unsigned int y, Square::Player& player) {
+    int value = -1;
+
+    if (testPosition(x, y)) {
+		_board(x, y).setPlayer(player);
+		checkPrise(x, y, player);
+		propagation(x, y, player);
+        value = 0;
+    }
+    return value;
+}
+
+bool Referee::testPosition(unsigned int x, unsigned int y) {
     bool value = false;
 
-    if (testPosition(x, y, square)) {
-        _board.setCase(x, y, square);
+	if (checkPosition(x, y) && _board(x, y).getPlayer() == Square::NOPLAYER) { //rajouter les tests de pattern ici
         value = true;
     }
     return value;
 }
 
-bool Referee::testPosition(unsigned int x, unsigned int y, Square& ) {
-    bool value = false;
+void Referee::checkAlignement(unsigned int x, unsigned int y)
+{
+	
+}
 
-    if (_board(x, y).getPlayer() == Square::NOPLAYER) { //rajouter les tests de pattern ici
-        value = true;
-    }
-    return value;
+void Referee::checkPrise(unsigned int x, unsigned int y, const Square::Player& player)
+{
+
+}
+
+bool Referee::checkPosition(unsigned int x, unsigned int y)
+{
+	return (x < _board.getSize() && y < _board.getSize());
+}
+
+void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& player)
+{
+}
+
+void Referee::propagation_inverse(unsigned int x, unsigned int y)
+{
+
 }
