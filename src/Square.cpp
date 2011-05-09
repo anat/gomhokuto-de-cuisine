@@ -1,7 +1,7 @@
 
 #include "Square.hpp"
 
-Square::Square() : _player(NOPLAYER), _value() {
+Square::Square() : _player(NOPLAYER), _value(), _horz(0), _vert(0), _diagl(0), _diagr(0) {
     _value.resize(VEC_SIZE);
     for (int i = 0; i < VEC_SIZE; ++i)
         _value[i].resize(BYTE_SIZE);
