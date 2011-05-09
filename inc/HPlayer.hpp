@@ -8,7 +8,7 @@
 #ifndef HPLAYER_H
 #define	HPLAYER_H
 
-#include "APlayer.h"
+#include "APlayer.hpp"
 
 class HPlayer : public APlayer {
 public:
