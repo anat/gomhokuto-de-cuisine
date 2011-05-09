@@ -32,7 +32,8 @@ public:
 	void propagation(unsigned int x, unsigned int y, const Square::Player& player);
         void propagation(unsigned int x, unsigned int y, const Square::Player& player,
                          unsigned int dir, unsigned int usize);
-	void propagation_inverse(unsigned int x, unsigned int y);
+	void propagation_inverse(unsigned int x, unsigned int y, const Square::Player& player);
+        int lineSize(unsigned int x, unsigned int y, const Square::Player& player, int dir);
 	void checkPrise(unsigned int x, unsigned int y, const Square::Player& player);
 private:
     Board& _board;

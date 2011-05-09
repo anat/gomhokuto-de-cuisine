@@ -45,7 +45,11 @@ void Referee::checkAlignement(unsigned int x, unsigned int y)
 
 void Referee::checkPrise(unsigned int x, unsigned int y, const Square::Player& player)
 {
-
+  if (0)
+    {
+      //propagation_inverse(?, ?, (player == Square::PLAYER1) ? Square::PLAYER2 : Square::PLAYER1);
+      //propagation_inverse(?, ?, (player == Square::PLAYER1) ? Square::PLAYER2 : Square::PLAYER1);
+    }
 }
 
 bool Referee::checkPosition(unsigned int x, unsigned int y)
@@ -112,7 +116,55 @@ void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& 
     }
 }
 
-void Referee::propagation_inverse(unsigned int x, unsigned int y)
+void Referee::propagation_inverse(unsigned int x, unsigned int y, const Square::Player& player)
 {
-  
+  int usize1;
+  int usize2;
+
+  std::cout << " ORG " << x << " " << y << "    <- INVERSE" << std::endl;
+  usize1 = lineSize(x, y, player, DIR_UP);
+  usize2 = _board(x, y)._vert - usize1 - 1;
+  propagation(x, y, player, DIR_UP               , usize1);
+  propagation(x, y, player, DIR_DOWN             , usize2);
+
+  usize1 = lineSize(x, y, player, DIR_LEFT);
+  usize2 = _board(x, y)._horz - usize1 - 1;
+  propagation(x, y, player, DIR_LEFT             , usize1);
+  propagation(x, y, player, DIR_RIGHT            , usize2);
+
+  usize1 = lineSize(x, y, player, DIR_UP | DIR_LEFT);
+  usize2 = _board(x, y)._diagl - usize1 - 1;
+  propagation(x, y, player, DIR_UP   | DIR_LEFT  , usize1);
+  propagation(x, y, player, DIR_DOWN | DIR_RIGHT , usize2);
+
+  usize1 = lineSize(x, y, player, DIR_UP | DIR_RIGHT);
+  usize2 = _board(x, y)._diagr - usize1 - 1;
+  propagation(x, y, player, DIR_UP   | DIR_RIGHT , usize1);
+  propagation(x, y, player, DIR_DOWN | DIR_LEFT  , usize2);  
+
+  _board(x, y)._horz  = 0;
+  _board(x, y)._vert  = 0;
+  _board(x, y)._diagl = 0;
+  _board(x, y)._diagr = 0;
+  _board(x, y).setPlayer(Square::NOPLAYER);
+}
+
+int Referee::lineSize(unsigned int x, unsigned int y, const Square::Player& player, int dir)
+{
+  int i = 0x8;
+
+  do
+    switch(dir & i)
+      {
+      case DIR_UP:    y--; break;
+      case DIR_DOWN:  y++; break;
+      case DIR_LEFT:  x--; break;
+      case DIR_RIGHT: x++; break;
+      default:             break;
+      }
+  while ((i >>= 1));
+
+  if (_board(x, y).getPlayer() == player)
+    return lineSize(x, y, player, dir) + 1;
+  return 0;
 }

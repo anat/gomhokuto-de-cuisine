@@ -58,7 +58,9 @@ int main(void) {
     arbitre.tryPlaceRock(3, 3, toto);
     arbitre.tryPlaceRock(2, 5, toto);
     arbitre.tryPlaceRock(3, 5, toto);
+
     arbitre.tryPlaceRock(3, 4, toto);
+    arbitre.propagation_inverse(3, 4, Square::PLAYER1);
 
     dbgDumpBoard(plateau, 10);
     /* !Propagation test */
