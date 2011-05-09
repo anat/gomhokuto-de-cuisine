@@ -11,7 +11,7 @@
 #include <vector>
 #include "Referee.hpp"
 #include "Board.hpp"
-#include "APlayer.h"
+#include "APlayer.hpp"
 
 #define NB_MAX_PLAYER 2
 

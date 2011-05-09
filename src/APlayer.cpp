@@ -5,7 +5,7 @@
  * Created on May 8, 2011, 11:32 AM
  */
 
-#include "APlayer.h"
+#include "APlayer.hpp"
 
 APlayer::APlayer(Square::Player player) : _nbPawnTaken(0), _player(player)
 {

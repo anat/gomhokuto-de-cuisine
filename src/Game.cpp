@@ -5,8 +5,8 @@
  * Created on May 7, 2011, 10:44 AM
  */
 
-#include "Game.h"
-#include "HPlayer.h"
+#include "Game.hpp"
+#include "HPlayer.hpp"
 
 Game::Game(bool vs_computer) : 
 _gameboard(), _referee(_gameboard), _players(NB_MAX_PLAYER) {

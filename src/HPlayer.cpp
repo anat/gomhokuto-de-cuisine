@@ -5,7 +5,7 @@
  * Created on May 8, 2011, 2:13 PM
  */
 
-#include "HPlayer.h"
+#include "HPlayer.hpp"
 
 HPlayer::HPlayer(Square::Player player) : APlayer(player) {
 }
