@@ -9,16 +9,19 @@
 #define	APLAYER_H
 
 #include "Referee.hpp"
+#include "Square.hpp"
+
 
 class APlayer
 {
     int _nbPawnTaken;
-
+    Square::Player _player;
 public :
-    APlayer();
+    APlayer(Square::Player player);
     virtual ~APlayer();
     
     int const getNBPawnTaken() const;
+    Square::Player & getPlayerNum();
     void incrementPawnTaken();
     virtual void doAction(Board & gameboard, Referee & referee) = 0;
 };

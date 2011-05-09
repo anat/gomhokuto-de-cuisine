@@ -8,6 +8,7 @@
 #ifndef GAME_H
 #define	GAME_H
 
+#include <vector>
 #include "Referee.hpp"
 #include "Board.hpp"
 #include "APlayer.h"
@@ -27,11 +28,12 @@ public:
     
     PlayerTurn getPlayerTurn();
     APlayer *  getCurrentPlayer();
+    void       doGame();
 
 private:
     Board       _gameboard;
     Referee     _referee;
-    APlayer *   _players[NB_MAX_PLAYER];
+    std::vector<APlayer*>   _players;
     PlayerTurn  _playerTurn;    
 };
 
