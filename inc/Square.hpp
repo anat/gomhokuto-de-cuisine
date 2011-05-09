@@ -37,6 +37,8 @@ public:
 private:
     Player                              _player;
     std::vector< std::vector<char> >    _value;
+public: //la flemme de faire des get/setter
+  int _horz, _vert, _diagl, _diagr; // pas opti pour l'instant
 
 public :
     Square();

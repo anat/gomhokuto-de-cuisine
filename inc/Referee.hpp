@@ -10,6 +10,11 @@
 
 #include "Board.hpp"
 
+#define DIR_UP    0x1
+#define DIR_DOWN  0x2
+#define DIR_LEFT  0x4
+#define DIR_RIGHT 0x8
+
 /*
  * L'arbitre 
  */
@@ -25,6 +30,8 @@ public:
 	void checkAlignement(unsigned int x, unsigned int y);
 	bool checkPosition(unsigned int x, unsigned int y);
 	void propagation(unsigned int x, unsigned int y, const Square::Player& player);
+        void propagation(unsigned int x, unsigned int y, const Square::Player& player,
+                         unsigned int dir, unsigned int usize);
 	void propagation_inverse(unsigned int x, unsigned int y);
 	void checkPrise(unsigned int x, unsigned int y, const Square::Player& player);
 private:
