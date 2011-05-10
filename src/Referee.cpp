@@ -19,6 +19,9 @@ Referee::Referee(const Referee& orig)
 Referee::~Referee() {
 }
 
+/**
+* Tente de placer une pierre
+*/
 int Referee::tryPlaceRock(unsigned int x, unsigned int y, Square::Player& player) {
 	int value = -1;
 
@@ -31,6 +34,9 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, Square::Player& player
 	return value;
 }
 
+/**
+* Determine si la position est valide pour une nouvelle pierre
+*/
 bool Referee::testPosition(unsigned int x, unsigned int y, Square::Player& player) {
 	bool value = false;
 
@@ -43,6 +49,9 @@ bool Referee::testPosition(unsigned int x, unsigned int y, Square::Player& playe
 	return value;
 }
 
+/**
+* cherche dans toute les directions si il a des pierre a prendre
+*/
 unsigned int Referee::checkPrize(unsigned int x, unsigned int y, const Square::Player& player)
 {
 	unsigned int result = 0;
@@ -60,6 +69,9 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, const Square::P
 	return result;
 }
 
+/**
+* Determine si le coup est gagnant
+*/
 void Referee::checkWin(unsigned int x, unsigned int y, Square::Player& player)
 {
 	if (_board(x, y).getValues(player)[Square::END_LINK5] > 0) {
@@ -72,6 +84,10 @@ void Referee::checkWin(unsigned int x, unsigned int y, Square::Player& player)
 	}
 }
 
+
+/**
+* Get/Set pour les regles speciales
+*/
 bool Referee::doubleThree() const {
 	return _doubleThree;
 }
@@ -90,11 +106,18 @@ bool Referee::fivePrize(bool value) {
 	return _fivePrize;
 }
 
+/**
+* Fonction de test de la regle speciale des 5 pions lors d'une tentative de victoire
+*/
 bool Referee::checkFivePrize(unsigned int x, unsigned int y, Square::Player& player)
 {
+
 	return true;
 }
 
+/*
+* Fonction de test de la regle speciale des double 3 pions aligné
+*/
 bool Referee::checkDoubleThree(unsigned int x, unsigned int y, Square::Player& player) {
 	for (int xvec = -1; xvec < 1; xvec++) {
 		for (int yvec = -1; yvec < 1; yvec++) {
@@ -117,14 +140,23 @@ bool Referee::checkDoubleThree(unsigned int x, unsigned int y, Square::Player& p
 	return true;
 }
 
+/**
+* Test si une case a des alignement de 3 ou plus proche
+*/
 bool Referee::Link3OrMore(unsigned int x, unsigned int y, const Square::Player& player) {
 	return (_board(x, y).getValues(player)[Square::LINK3] || _board(x, y).getValues(player)[Square::LINK4] || _board(x, y).getValues(player)[Square::LINK5]);
 }
 
+/**
+* Test si la case est une fin d'alignement de 2 pions ou plus
+*/
 bool Referee::EndLink2OrMore(unsigned int x, unsigned int y, const Square::Player& player) {
 	return (_board(x, y).getValues(player)[Square::END_LINK2] || _board(x, y).getValues(player)[Square::END_LINK3] || _board(x, y).getValues(player)[Square::END_LINK4] || _board(x, y).getValues(player)[Square::END_LINK5]);
 }
 
+/**
+* Test si une pierre appartenant au joueurs 'player', est autour des coordonnée x et y et est a coté des coordonnée xorig, yorig
+*/
 bool Referee::checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player) {
 	for (int xvec = -1; xvec < 1; xvec++) {
 		for (int yvec = -1; yvec < 1; yvec++) {
@@ -135,6 +167,9 @@ bool Referee::checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned in
 	return true;
 }
 
+/**
+* cherche si il y a une prise dans une direction
+*/
 bool Referee::checkPrize(unsigned int x, unsigned int y, int xvec, int yvec, const Square::Player& play) {
 	unsigned int count = 0;
 
@@ -153,6 +188,9 @@ bool Referee::checkPrize(unsigned int x, unsigned int y, int xvec, int yvec, con
 	return false;
 }
 
+/**
+* clean les pierre trouver comme prise
+*/
 void Referee::cleanRock(unsigned int x, unsigned int y, int xvec, int yvec, const Square::Player& play) {
 	for (unsigned int i = 0; i < 2; i++)
 	{
@@ -162,8 +200,18 @@ void Referee::cleanRock(unsigned int x, unsigned int y, int xvec, int yvec, cons
 	}
 }
 
+/**
+* get de l'atribut qui contient le gagnant
+*/
 const Square::Player& Referee::checkWin() const {
 	return _winner;
+}
+
+/**
+* reset le gagnant
+*/
+void Referee::reset() {
+	_winner = Square::NOPLAYER;
 }
 
 /* Try to propagate in EVERY directions */
