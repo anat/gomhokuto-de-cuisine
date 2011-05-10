@@ -33,6 +33,7 @@ bool Referee::testPosition(unsigned int x, unsigned int y) {
     bool value = false;
 
     if (checkPosition(x, y) && _board(x, y).getPlayer() == Square::NOPLAYER) { //rajouter les tests de pattern ici
+      
         value = true;
     }
     return value;
@@ -62,7 +63,7 @@ void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& 
 {
   int usize; /* Updated size of (horizontal/vertical/diagonal) line */
 
-  std::cout << " ORG " << x << " " << y << std::endl;
+  //std::cout << " ORG " << x << " " << y << std::endl;
   usize = _board(x, y)._vert = _board(x, y-1)._vert + _board(x, y+1)._vert + 1;
   propagation(x, y, player, DIR_UP               , usize);
   propagation(x, y, player, DIR_DOWN             , usize);
@@ -99,7 +100,7 @@ void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& 
 
   if (_board(x, y).getPlayer() == player)
     {
-      std::cout << "  IN " << x << " " << y << "  usize(" << usize << ")" << std::endl;
+      //std::cout << "  IN " << x << " " << y << "  usize(" << usize << ")" << std::endl;
       switch(dir)
 	{
 	case DIR_UP:               _board(x, y)._vert  = usize; break;
@@ -121,7 +122,7 @@ void Referee::propagation_inverse(unsigned int x, unsigned int y, const Square::
   int usize1;
   int usize2;
 
-  std::cout << " ORG " << x << " " << y << "    <- INVERSE" << std::endl;
+  //std::cout << " ORG " << x << " " << y << "    <- INVERSE" << std::endl;
   usize1 = lineSize(x, y, player, DIR_UP);
   usize2 = _board(x, y)._vert - usize1 - 1;
   propagation(x, y, player, DIR_UP               , usize1);
