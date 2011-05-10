@@ -22,7 +22,7 @@ public :
     
     int const getNBPawnTaken() const;
     Square::Player & getPlayerNum();
-    void incrementPawnTaken();
+    void addPawnTaken(int nb);
     virtual void doAction(Board & gameboard, Referee & referee) = 0;
 };
 

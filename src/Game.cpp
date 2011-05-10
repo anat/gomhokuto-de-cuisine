@@ -35,13 +35,17 @@ void Game::doGame()
 {
     std::cout << "Test" << std::endl;
     bool stillRunning = true;
+    Square::Player winner = Square::NOPLAYER;
     while (stillRunning)
     {
-        //if (_referee.)
+        
         getCurrentPlayer()->doAction(*_gameboard, *_referee);
         _playerTurn = (_playerTurn == Game::TURNPLAYER1) ? (Game::TURNPLAYER2) :
             (TURNPLAYER1);
+        if ((winner = _referee->checkWin()) != Square::NOPLAYER)
+            stillRunning = false;
     }
+    std::cout << "Player : " << winner << " win the game !!!" << std::endl;
 }
 
 void Game::newGame(bool vs_computer)
