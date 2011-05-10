@@ -32,6 +32,8 @@ void HPlayer::doAction(Board& gameboard, Referee& referee)
             std::cout << "you can't play here x : " << x;
             std::cout << " y : " << y << std::endl;
         }
+        else
+            addPawnTaken(res);
     }
     while (res == -1);
 }

@@ -22,9 +22,9 @@ int const APlayer::getNBPawnTaken() const
     return (_nbPawnTaken);
 }
 
-void APlayer::incrementPawnTaken()
+void APlayer::addPawnTaken(int nb)
 {
-    _nbPawnTaken++;
+    _nbPawnTaken += nb;
 }
 
 Square::Player & APlayer::getPlayerNum()
