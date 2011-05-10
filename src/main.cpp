@@ -9,6 +9,7 @@
 
 #include "Board.hpp"
 #include "Referee.hpp"
+#include "Game.hpp"
 
 /* Proto test/debug */
 void cleanBoard(Board &plateau);
@@ -17,13 +18,14 @@ void testCheck(Board &plateau, Referee &arbitre);
 void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump);
 
 int main(void) {
-    Board plateau;
-    Referee arbitre(plateau);
+    //Board plateau;
+    //Referee arbitre(plateau);
 
     //if (plateau(1, 2).getPlayer() == Square::NOPLAYER)
     //std::cout << "caca" << std::endl;
-
-    testCheck(plateau, arbitre);
+    Game game;
+    game.doGame();
+    //testCheck(plateau, arbitre);
     return 0;
 }
 
