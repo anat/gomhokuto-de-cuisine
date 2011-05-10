@@ -8,11 +8,11 @@
 #ifndef HPLAYER_H
 #define	HPLAYER_H
 
-#include "APlayer.h"
+#include "APlayer.hpp"
 
-class HPlayer : APlayer {
+class HPlayer : public APlayer {
 public:
-    HPlayer();
+    HPlayer(Square::Player player);
     virtual ~HPlayer();
 private:
     void doAction(Board & gameboard, Referee & referee);
