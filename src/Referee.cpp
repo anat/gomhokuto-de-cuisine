@@ -74,7 +74,7 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, const Square::P
 */
 void Referee::checkWin(unsigned int x, unsigned int y, Square::Player& player)
 {
-	if (_board(x, y).getValues(player)[Square::END_LINK5] > 0) {
+	if (_board(x, y).getValues(player)[Square::END_LINK4] > 0) {
 		if (_fivePrize) {
 			if (checkFivePrize(x, y, player))
 				_winner = player;
