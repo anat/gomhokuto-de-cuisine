@@ -71,12 +71,66 @@ void Referee::checkWin(unsigned int x, unsigned int y, Square::Player& player)
 	}
 }
 
+bool Referee::doubleThree() const {
+	return _doubleThree;
+}
+
+bool Referee::doubleThree(bool value) {
+	_doubleThree = value;
+	return _doubleThree;
+}
+
+bool Referee::fivePrize() const {
+	return _fivePrize;
+}
+
+bool Referee::fivePrize(bool value) {
+	_fivePrize = value;
+	return _fivePrize;
+}
+
 bool Referee::checkFivePrize(unsigned int x, unsigned int y, Square::Player& player)
 {
 	return true;
 }
 
 bool Referee::checkDoubleThree(unsigned int x, unsigned int y, Square::Player& player) {
+	for (int xvec = -1; xvec < 1; xvec++) {
+		for (int yvec = -1; yvec < 1; yvec++) {
+			if (_board(x + xvec, y + yvec).getPlayer() == opponant(player))
+				return true;
+		}
+	}
+
+	if (Link3OrMore(x, y, player) && EndLink2OrMore(x, y, player))
+		return false;
+
+	for (int xvec = -1; xvec < 1; xvec++) {
+		for (int yvec = -1; yvec < 1; yvec++) {
+			if (EndLink2OrMore(x + xvec, y + yvec, player) && !checkNearBlock(x, y, x + xvec, y + yvec, player)) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool Referee::Link3OrMore(unsigned int x, unsigned int y, const Square::Player& player) {
+	return (_board(x, y).getValues(player)[Square::LINK3] || _board(x, y).getValues(player)[Square::LINK4] || _board(x, y).getValues(player)[Square::LINK5]);
+}
+
+bool Referee::EndLink2OrMore(unsigned int x, unsigned int y, const Square::Player& player) {
+	return (_board(x, y).getValues(player)[Square::END_LINK2] || _board(x, y).getValues(player)[Square::END_LINK3] || _board(x, y).getValues(player)[Square::END_LINK4] || _board(x, y).getValues(player)[Square::END_LINK5]);
+}
+
+bool Referee::checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player) {
+	for (int xvec = -1; xvec < 1; xvec++) {
+		for (int yvec = -1; yvec < 1; yvec++) {
+			if ((_board(x + xvec, y + yvec).getPlayer() == player) && (abs((x + xvec) - xorig) > 1 || abs((y + yvec) - yorig) > 1))
+				return false;				
+		}
+	}
 	return true;
 }
 
