@@ -33,6 +33,7 @@ public:
 	bool fivePrize() const;
 	bool doubleThree(bool value);
 	bool fivePrize(bool value);
+	void reset();
 
 private:
 	bool _fivePrize;
