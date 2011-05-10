@@ -35,6 +35,7 @@ bool Referee::testPosition(unsigned int x, unsigned int y, Square::Player& playe
 	bool value = false;
 
 	if (checkPosition(x, y) && _board(x, y).getPlayer() == Square::NOPLAYER) { //rajouter les tests de pattern ici
+      
 		value = true;
 		if (_doubleThree)
 			value = checkDoubleThree(x, y, player);
