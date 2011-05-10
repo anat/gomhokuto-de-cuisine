@@ -29,6 +29,10 @@ public:
 	bool testPosition(unsigned int x, unsigned int y, Square::Player& player); //Test tout cours
 	const Square::Player& checkWin() const;
 	void propagation_inverse(unsigned int x, unsigned int y, const Square::Player& player);
+	bool doubleThree() const;
+	bool fivePrize() const;
+	bool doubleThree(bool value);
+	bool fivePrize(bool value);
 
 private:
 	bool _fivePrize;
@@ -49,8 +53,17 @@ private:
 		return (x < _board.getSize() && y < _board.getSize());
 	}
 
+	inline unsigned int abs(int value) {
+		if (value < 0)
+			return value * -1;
+		return value;
+	}
+
 	bool checkDoubleThree(unsigned int x, unsigned int y, Square::Player& player);
 	bool checkFivePrize(unsigned int x, unsigned int y, Square::Player& player);
+	bool Link3OrMore(unsigned int x, unsigned int y, const Square::Player& player);
+	bool EndLink2OrMore(unsigned int x, unsigned int y, const Square::Player& player);
+	bool checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player);
 	void checkWin(unsigned int x, unsigned int y, Square::Player& player);
 	unsigned int checkPrize(unsigned int x, unsigned int y, const Square::Player& player);
 	bool checkPrize(unsigned int x, unsigned int y, int xvec, int yvec, const Square::Player& play);
