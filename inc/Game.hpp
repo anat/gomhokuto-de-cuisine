@@ -29,11 +29,12 @@ public:
     PlayerTurn getPlayerTurn();
     APlayer *  getCurrentPlayer();
     void       doGame();
+    void       newGame(bool vs_computer = false);
 
 private:
-    Board       _gameboard;
-    Referee     _referee;
     std::vector<APlayer*>   _players;
+    Board     *  _gameboard;
+    Referee   *  _referee;
     PlayerTurn  _playerTurn;    
 };
 

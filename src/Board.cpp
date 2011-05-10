@@ -5,7 +5,7 @@
  * Created on May 5, 2011, 10:22 AM
  */
 
-
+#include <iostream>
 #include "Board.hpp"
 
 Board::Board(std::size_t size) : _tab(), _size(size) {
@@ -55,3 +55,30 @@ bool Board::checkSize(unsigned int x, unsigned int y) const {
     return ((x < _size) && (y < _size));
 }
 
+void Board::DumpBoard()
+{
+  int i, j;
+  char c;
+
+  std::cout << "   0  1  2  3  4  5  6  7  8  9"
+	    << "  10 11 12 13 14 15 16 17 18" << std::endl;
+  for (i = 0; i < _size; i++) /* Y */
+    {
+      std::cout.width(2);
+      std::cout << i;
+      for (j = 0; j < _size; j++) /* X */
+	{
+	  switch (_tab[i][j].getPlayer())
+	    {
+	    case Square::NOPLAYER: c = '.'; break;
+	    case Square::PLAYER1:  c = 'X'; break;
+	    case Square::PLAYER2:  c = 'O'; break;
+	    default:               c = '?'; break;
+	    }
+	  std::cout << " ";
+	  std::cout << c;
+	  std::cout << " ";
+	}
+      std::cout << std::endl;
+    }
+}
