@@ -38,7 +38,7 @@ void Game::doGame()
         getCurrentPlayer()->doAction(_gameboard, _referee);
         _playerTurn = (_playerTurn == Game::TURNPLAYER1) ? (Game::TURNPLAYER2) :
             (TURNPLAYER1);
-        if ((winner = _referee->checkWin()) != Square::NOPLAYER)
+        if ((winner = _referee.checkWin()) != Square::NOPLAYER)
             stillRunning = false;
     }
     std::cout << "Player : " << winner << " win the game !!!" << std::endl;
