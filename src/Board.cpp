@@ -82,3 +82,11 @@ void Board::DumpBoard()
       std::cout << std::endl;
     }
 }
+  
+void Board::reset()
+{
+    for (int i = 0; i < _size; ++i)
+        _tab[i].clear();
+    _tab.clear();
+    _tab.resize(_size, std::vector<Square>(_size));
+}
