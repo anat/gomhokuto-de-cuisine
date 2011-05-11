@@ -33,8 +33,8 @@ public:
 
 private:
     std::vector<APlayer*>   _players;
-    Board     *  _gameboard;
-    Referee   *  _referee;
+    Board       _gameboard;
+    Referee     _referee;
     PlayerTurn  _playerTurn;    
 };
 

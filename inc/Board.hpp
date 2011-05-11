@@ -33,6 +33,7 @@ public:
     void setCase(unsigned int x, unsigned int y, const Square& value);
     std::size_t getSize() const;
     void DumpBoard();
+    void reset();
 
 private:
     SquareTab _tab;
