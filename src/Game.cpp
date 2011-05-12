@@ -9,7 +9,10 @@
 #include "Game.hpp"
 #include "HPlayer.hpp"
 
-Game::Game(bool vs_computer) : _players(2), _gameboard(), _referee(_gameboard){
+Game::Game(bool vs_computer) 
+        : _players(2), _gameboard(), _referee(_gameboard), 
+          _playerTurn(TURNPLAYER1)
+{
     _players[TURNPLAYER1] = new HPlayer(Square::PLAYER1);
     _players[TURNPLAYER2] = new HPlayer(Square::PLAYER2);
 }
@@ -34,7 +37,6 @@ void Game::doGame()
     Square::Player winner = Square::NOPLAYER;
     while (stillRunning)
     {
-        
         getCurrentPlayer()->doAction(_gameboard, _referee);
         _playerTurn = (_playerTurn == Game::TURNPLAYER1) ? (Game::TURNPLAYER2) :
             (TURNPLAYER1);
