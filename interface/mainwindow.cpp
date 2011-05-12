@@ -34,11 +34,12 @@ void FigureEditor::drawcadre(QGraphicsScene& c)
 
 void FigureEditor::mousePressEvent(QMouseEvent *event)
 {
-     std::cout << "Click " << event->pos().x() <<
-                  " " << event->pos().y() << std::endl;
-     QColor color(0,0,0);
+    int casx =  event->pos().x() - 25;
+    int casy =  event->pos().y() - 18;
 
-       ((MainWindow*)parent())->addCircle(event->pos().x(),event->pos().y(), color);
+
+    QColor color(0,0,0);
+    ((MainWindow*)parent())->addCircle(casx - 15 ,casy - 18 - 15, color);
 
 }
 
@@ -79,7 +80,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::addCircle(int x, int y, QColor &color)
 {
-    QAbstractGraphicsShapeItem* i = canvas.addEllipse(QRectF(0,0,30,25));
+    QAbstractGraphicsShapeItem* i = canvas.addEllipse(QRectF(0,0,30,30));
     //i->setFlag(QGraphicsItem::ItemIsMovable);
     i->setPen(Qt::NoPen);
     i->setBrush( color );
