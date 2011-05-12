@@ -9,7 +9,7 @@
 #include "Game.hpp"
 #include "HPlayer.hpp"
 
-Game::Game(bool vs_computer) 
+Game::Game(bool ) 
         : _players(2), _gameboard(), _referee(_gameboard), 
           _playerTurn(TURNPLAYER1)
 {
@@ -46,7 +46,7 @@ void Game::doGame()
     std::cout << "Player : " << getCurrentPlayer()->getPlayerNum() << " win the game !!!" << std::endl;
 }
 
-void Game::newGame(bool vs_computer)
+void Game::newGame(bool )
 {
     delete _players[0];
     delete _players[1];

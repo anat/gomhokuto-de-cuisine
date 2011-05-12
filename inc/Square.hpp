@@ -14,8 +14,8 @@
 #include <vector>
 
 class Square {
-
 public:
+
     enum Player {
         NOPLAYER,
         PLAYER1,
@@ -35,20 +35,21 @@ public:
     };
 
 private:
-    Player                              _player;
-    std::vector< std::vector<char> >    _value;
-public: //la flemme de faire des get/setter
-  int _horz, _vert, _diagl, _diagr; // pas opti pour l'instant
+    std::vector< std::vector<char> > _value;
+    Player _player;
 
-public :
+public: //la flemme de faire des get/setter
+    int _horz, _vert, _diagl, _diagr; // pas opti pour l'instant
+
+public:
     Square();
     Player getPlayer();
-    void   setPlayer(Player player);
+    void setPlayer(Player player);
     std::vector<char> const & getValues(Player player) const;
-    void   modifValue(Player player, int num_case, bool increment); 
+    void modifValue(Player player, int num_case, bool increment);
 private:
-    void   increment(Player player, int num_case);
-    void   decrement(Player player, int num_case);
+    void increment(Player player, int num_case);
+    void decrement(Player player, int num_case);
 };
 
 #endif	/* SQUARE_HPP */
