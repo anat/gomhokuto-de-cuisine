@@ -282,23 +282,74 @@ void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& 
 {
 	int usize; /* Updated size of (horizontal/vertical/diagonal) line */
 
-	std::cout << " ORG " << x << " " << y << std::endl;
-	usize = _board(x, y)._vert = _board(x, y-1)._vert + _board(x, y+1)._vert + 1;
+	//std::cout << " ORG " << x << " " << y << std::endl;
+	if (checkPosition(x, y+1))
+	  _board(x, y)._vert  = _board(x, y+1)._vert;
+	if (checkPosition(x, y-1))
+	  _board(x, y)._vert += _board(x, y-1)._vert;
+	usize = _board(x, y)._vert + 1;
+
 	propagation(x, y, player, DIR_UP               , usize);
 	propagation(x, y, player, DIR_DOWN             , usize);
 
-	usize = _board(x, y)._horz = _board(x-1, y)._horz + _board(x+1, y)._horz + 1;
+	if (checkPosition(x-1, y))
+	  _board(x, y)._vert  = _board(x-1, y)._vert;
+	if (checkPosition(x+1, y))
+	  _board(x, y)._vert += _board(x+1, y)._vert;
+	usize = _board(x, y)._horz + 1;
+
 	propagation(x, y, player, DIR_LEFT             , usize);
 	propagation(x, y, player, DIR_RIGHT            , usize);
 
-	usize = _board(x, y)._diagl = _board(x-1, y-1)._diagl + _board(x+1, y+1)._diagl + 1;
+	if (checkPosition(x-1, y-1))
+	  _board(x, y)._vert  = _board(x-1, y-1)._vert;
+	if (checkPosition(x+1, y+1))
+	  _board(x, y)._vert += _board(x+1, y+1)._vert;
+	usize = _board(x, y)._diagl + 1;
+
 	propagation(x, y, player, DIR_UP   | DIR_LEFT  , usize);
 	propagation(x, y, player, DIR_DOWN | DIR_RIGHT , usize);
 
-	usize = _board(x, y)._diagr = _board(x+1, y-1)._diagr + _board(x-1, y+1)._diagr + 1;
+	if (checkPosition(x+1, y-1))
+	  _board(x, y)._vert  = _board(x+1, y-1)._vert;
+	if (checkPosition(x-1, y+1))
+	  _board(x, y)._vert += _board(x-1, y+1)._vert;
+	usize = _board(x, y)._diagr + 1;
+
 	propagation(x, y, player, DIR_UP   | DIR_RIGHT , usize);
 	propagation(x, y, player, DIR_DOWN | DIR_LEFT  , usize);
+
+	/*
+	int link[5] = {0};
+
+	if (_board(x, y)._horz == 1  || _board(x, y)._vert == 1 ||
+	    _board(x, y)._diagl == 1 || _board(x, y)._diagr == 1)
+	  link[0]++;
+	link[_board(x, y)._horz  - 1]++;
+	link[_board(x, y)._vert  - 1]++;
+	link[_board(x, y)._diagl - 1]++;
+	link[_board(x, y)._diagr - 1]++;
+
+	updateTruc(x-1, y-1, player, link);
+	updateTruc(x-1, y,   player, link);
+	updateTruc(x-1, y+1, player, link);
+	updateTruc(x,   y-1, player, link);
+	updateTruc(x,   y+1, player, link);
+	updateTruc(x+1, y-1, player, link);
+	updateTruc(x+1, y,   player, link);
+	updateTruc(x+1, y+1, player, link);*/
 }
+/*
+void Referee::updateTruc(unsigned int x, unsigned int y, const Square::Player& player, int l[5])
+			 //int l1, int l2, int l3, int l4, int l5)
+{
+  std::cout << "Update : " << l[0]  << l[1]  << l[2]  << l[3]  << l[4] << std::endl;
+  _board(x, y).getValues(player)[Square::LINK1] += l[0];
+  _board(x, y).getValues(player)[Square::LINK2] += l[1];
+  _board(x, y).getValues(player)[Square::LINK3] += l[2];
+  _board(x, y).getValues(player)[Square::LINK4] += l[3];
+  _board(x, y).getValues(player)[Square::LINK5] += l[4];
+  }*/
 
 /* Try to propagate in ONE direction */
 void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& player,
@@ -317,7 +368,9 @@ void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& 
 	}
 	while ((i >>= 1));
 
-	if (_board(x, y).getPlayer() == player)
+	
+
+	if (checkPosition(x, y) && _board(x, y).getPlayer() == player)
 	{
 		std::cout << "  IN " << x << " " << y << "  usize(" << usize << ")" << std::endl;
 		switch(dir)
