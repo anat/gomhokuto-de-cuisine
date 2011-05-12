@@ -30,6 +30,7 @@ public:
     APlayer *  getCurrentPlayer();
     void       doGame();
     void       newGame(bool vs_computer = false);
+    bool       checkWin();
 
 private:
     std::vector<APlayer*>   _players;

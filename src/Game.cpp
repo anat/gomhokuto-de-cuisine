@@ -34,16 +34,16 @@ APlayer * Game::getCurrentPlayer()
 void Game::doGame()
 {
     bool stillRunning = true;
-    Square::Player winner = Square::NOPLAYER;
     while (stillRunning)
     {
         getCurrentPlayer()->doAction(_gameboard, _referee);
+        stillRunning = !checkWin();
+        if (!stillRunning)
+            break;
         _playerTurn = (_playerTurn == Game::TURNPLAYER1) ? (Game::TURNPLAYER2) :
             (TURNPLAYER1);
-        if ((winner = _referee.checkWin()) != Square::NOPLAYER)
-            stillRunning = false;
     }
-    std::cout << "Player : " << winner << " win the game !!!" << std::endl;
+    std::cout << "Player : " << getCurrentPlayer()->getPlayerNum() << " win the game !!!" << std::endl;
 }
 
 void Game::newGame(bool vs_computer)
@@ -54,4 +54,13 @@ void Game::newGame(bool vs_computer)
     _gameboard.reset();
     _players[TURNPLAYER1] = new HPlayer(Square::PLAYER1);
     _players[TURNPLAYER2] = new HPlayer(Square::PLAYER2);
+}
+
+bool Game::checkWin()
+{
+    if (_referee.checkWin() != Square::NOPLAYER)
+        return true;
+    if (getCurrentPlayer()->getNBPawnTaken() >= 5)
+        return true;
+    return false;
 }
