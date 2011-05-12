@@ -28,8 +28,8 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, Square::Player& player
 	if (testPosition(x, y, player)) {
 		_board(x, y).setPlayer(player);
 		value = checkPrize(x, y, player);
-		checkWin(x, y, player);
 		propagation(x, y, player);
+		checkWin(x, y, player);
 	}
 	return value;
 }
@@ -41,7 +41,7 @@ bool Referee::testPosition(unsigned int x, unsigned int y, Square::Player& playe
 	bool value = false;
 
 	if (checkPosition(x, y) && _board(x, y).getPlayer() == Square::NOPLAYER) { //rajouter les tests de pattern ici
-      
+
 		value = true;
 		if (_doubleThree)
 			value = checkDoubleThree(x, y, player);
@@ -58,7 +58,8 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, const Square::P
 	int xvec = -1;
 	int yvec = -1;
 
-	for (int xvec = -1; xvec < 2; xvec++){
+	//if (_board(x, y).getValues(opponant(player))[Square::END_LINK2] > 1) {
+	for (int xvec = -1; xvec < 2; xvec++) {
 		for (int yvec = -1; yvec < 2; yvec++) {
 			if ((xvec || yvec) && checkPrize(x, y, xvec, yvec, player)) {
 				cleanRock(x, y, xvec, yvec, player);
@@ -66,6 +67,7 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, const Square::P
 			}
 		}
 	}
+	//	}
 	return result;
 }
 
@@ -74,7 +76,7 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, const Square::P
 */
 void Referee::checkWin(unsigned int x, unsigned int y, Square::Player& player)
 {
-	if (_board(x, y).getValues(player)[Square::END_LINK4] > 0) {
+	if (checkfiveWin(x, y, player)) {
 		if (_fivePrize) {
 			if (checkFivePrize(x, y, player))
 				_winner = player;
@@ -83,6 +85,12 @@ void Referee::checkWin(unsigned int x, unsigned int y, Square::Player& player)
 		}
 	}
 }
+
+bool Referee::checkfiveWin(unsigned int x, unsigned int y, Square::Player& player)
+{
+	return ((_board(x, y)._diagl > 4) || (_board(x, y)._horz > 4) || (_board(x, y)._vert > 4) || (_board(x ,y)._diagr > 4));
+}
+
 
 
 /**
@@ -109,10 +117,66 @@ bool Referee::fivePrize(bool value) {
 /**
 * Fonction de test de la regle speciale des 5 pions lors d'une tentative de victoire
 */
-bool Referee::checkFivePrize(unsigned int x, unsigned int y, Square::Player& player)
-{
+bool Referee::checkFivePrize(unsigned int x, unsigned int y, Square::Player& player) {
+	if (_board(x, y)._horz > 4) {
+		unsigned int size = checkFivePrize(x, y, 1, 0, player);
+		size += checkFivePrize(x, y, -1, 0, player);
+		if (size > 4)
+			return true;
+	}
+	if (_board(x, y)._vert > 4) {
+		unsigned int size = checkFivePrize(x, y, 0, 1, player);
+		size += checkFivePrize(x, y, 0, -1, player);
+		if (size > 4)
+			return true;
+	}
+	if (_board(x, y)._diagl > 4) {
+		unsigned int size = checkFivePrize(x, y, -1, -1, player);
+		size += checkFivePrize(x, y, 1, 1, player);
+		if (size > 4)
+			return true;
+	}
+	if (_board(x, y)._diagr > 4) {
+		unsigned int size = checkFivePrize(x, y, -1, 1, player);
+		size += checkFivePrize(x, y, 1, -1, player);
+		if (size > 4)
+			return true;
+	}
+	return false;
+}
 
-	return true;
+int Referee::checkFivePrize(unsigned int x, unsigned int y, unsigned int xvec, unsigned int yvec, Square::Player& player) {
+	int cleanRock = 0;
+
+	x += xvec;
+	y += yvec;
+	while (checkPosition(x, y) && _board(x, y).getPlayer() == player && !checkNear2Block(x, y, opponant(player))) {
+		x += xvec;
+		y += yvec;
+		cleanRock++;
+	}
+	return cleanRock;
+}
+
+/**
+* Test si une pierre appartient au joueurs player et est a <= 2 case de x et y
+*/
+bool Referee::checkNear2Block(unsigned int x, unsigned int y, const Square::Player& player) {\
+	for (int xvec = -1; xvec < 1; xvec++) {
+		for (int yvec = -1; yvec < 1; yvec++) {
+			if (checkPosition(x + xvec, y + yvec) && 
+				(_board(x, y).getValues(player)[Square::LINK1] 
+				|| _board(x, y).getValues(player)[Square::LINK2] 
+				|| _board(x, y).getValues(player)[Square::LINK3] 
+				|| _board(x, y).getValues(player)[Square::LINK4] 
+				|| _board(x, y).getValues(player)[Square::LINK5])
+				) 
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 /*
@@ -157,7 +221,7 @@ bool Referee::EndLink2OrMore(unsigned int x, unsigned int y, const Square::Playe
 /**
 * Test si une pierre appartenant au joueurs 'player', est autour des coordonnée x et y et est a coté des coordonnée xorig, yorig
 */
-bool Referee::checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player) {
+bool Referee::checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player) {\
 	for (int xvec = -1; xvec < 1; xvec++) {
 		for (int yvec = -1; yvec < 1; yvec++) {
 			if ((_board(x + xvec, y + yvec).getPlayer() == player) && (abs((x + xvec) - xorig) > 1 || abs((y + yvec) - yorig) > 1))
@@ -166,6 +230,9 @@ bool Referee::checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned in
 	}
 	return true;
 }
+
+
+
 
 /**
 * cherche si il y a une prise dans une direction
@@ -180,9 +247,7 @@ bool Referee::checkPrize(unsigned int x, unsigned int y, int xvec, int yvec, con
 	} while ((count <= 2) && checkPosition(x, y) && (_board(x, y).getPlayer() == opponant(play)));
 
 	if (count > 2)
-	{
 		return (checkPosition(x, y) && (_board(x, y).getPlayer() == play));
-	}
 	return false;
 }
 

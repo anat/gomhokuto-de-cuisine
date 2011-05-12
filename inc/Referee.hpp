@@ -62,9 +62,12 @@ private:
 
 	bool checkDoubleThree(unsigned int x, unsigned int y, Square::Player& player);
 	bool checkFivePrize(unsigned int x, unsigned int y, Square::Player& player);
+	int checkFivePrize(unsigned int x, unsigned int y, unsigned int xvec, unsigned int yvec, Square::Player& player);
 	bool Link3OrMore(unsigned int x, unsigned int y, const Square::Player& player);
 	bool EndLink2OrMore(unsigned int x, unsigned int y, const Square::Player& player);
+	bool checkfiveWin(unsigned int x, unsigned int y, Square::Player& player);
 	bool checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player);
+	bool checkNear2Block(unsigned int x, unsigned int y, const Square::Player& player);
 	void checkWin(unsigned int x, unsigned int y, Square::Player& player);
 	unsigned int checkPrize(unsigned int x, unsigned int y, const Square::Player& player);
 	bool checkPrize(unsigned int x, unsigned int y, int xvec, int yvec, const Square::Player& play);
