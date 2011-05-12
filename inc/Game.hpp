@@ -31,6 +31,7 @@ public:
     void       doGame();
     void       newGame(bool vs_computer = false);
     bool       checkWin();
+    Board &    getGameBoard();
 
 private:
     std::vector<APlayer*>   _players;

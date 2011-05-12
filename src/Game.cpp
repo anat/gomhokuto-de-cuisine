@@ -64,3 +64,8 @@ bool Game::checkWin()
         return true;
     return false;
 }
+
+Board &    Game::getGameBoard()
+{
+    return (_gameboard);
+}
