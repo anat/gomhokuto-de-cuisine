@@ -177,12 +177,10 @@ bool Referee::checkPrize(unsigned int x, unsigned int y, int xvec, int yvec, con
 		x += xvec;
 		y += yvec;
 		count++;
-	} while (checkPosition(x, y) && (_board(x, y).getPlayer() == opponant(play)) && (count >= 2));
+	} while ((count <= 2) && checkPosition(x, y) && (_board(x, y).getPlayer() == opponant(play)));
 
-	if (count >= 2)
+	if (count > 2)
 	{
-		x += xvec;
-		y += yvec;
 		return (checkPosition(x, y) && (_board(x, y).getPlayer() == play));
 	}
 	return false;
