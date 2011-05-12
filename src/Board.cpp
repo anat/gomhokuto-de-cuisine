@@ -57,7 +57,7 @@ bool Board::checkSize(unsigned int x, unsigned int y) const {
 
 void Board::DumpBoard()
 {
-  int i, j;
+  unsigned int i, j;
   char c;
 
   std::cout << "   0  1  2  3  4  5  6  7  8  9"
@@ -85,7 +85,7 @@ void Board::DumpBoard()
   
 void Board::reset()
 {
-    for (int i = 0; i < _size; ++i)
+    for (unsigned int i = 0; i < _size; ++i)
         _tab[i].clear();
     _tab.clear();
     _tab.resize(_size, std::vector<Square>(_size));
