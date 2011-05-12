@@ -55,8 +55,6 @@ bool Referee::testPosition(unsigned int x, unsigned int y, Square::Player& playe
 unsigned int Referee::checkPrize(unsigned int x, unsigned int y, const Square::Player& player)
 {
 	unsigned int result = 0;
-	int xvec = -1;
-	int yvec = -1;
 
 	//if (_board(x, y).getValues(opponant(player))[Square::END_LINK2] > 1) {
 	for (int xvec = -1; xvec < 2; xvec++) {

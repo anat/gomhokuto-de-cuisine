@@ -17,7 +17,7 @@ APlayer::~APlayer()
     
 }
 
-int const APlayer::getNBPawnTaken() const
+int APlayer::getNBPawnTaken() const
 {
     return (_nbPawnTaken);
 }

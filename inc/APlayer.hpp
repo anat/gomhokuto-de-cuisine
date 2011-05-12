@@ -14,16 +14,18 @@
 
 class APlayer
 {
-    int _nbPawnTaken;
-    Square::Player _player;
 public :
     APlayer(Square::Player player);
     virtual ~APlayer();
     
-    int const getNBPawnTaken() const;
+    int getNBPawnTaken() const;
     Square::Player & getPlayerNum();
     void addPawnTaken(int nb);
     virtual void doAction(Board & gameboard, Referee & referee) = 0;
+
+private:
+    int _nbPawnTaken;
+    Square::Player _player;
 };
 
 #endif	/* APLAYER_H */
