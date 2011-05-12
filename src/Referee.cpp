@@ -180,7 +180,7 @@ bool Referee::checkNear2Block(unsigned int x, unsigned int y, const Square::Play
 }
 
 /*
-* Fonction de test de la regle speciale des double 3 pions aligné
+* Fonction de test de la regle speciale des double 3 pions alignï¿½
 */
 bool Referee::checkDoubleThree(unsigned int x, unsigned int y, Square::Player& player) {
 	for (int xvec = -1; xvec < 1; xvec++) {
@@ -219,7 +219,7 @@ bool Referee::EndLink2OrMore(unsigned int x, unsigned int y, const Square::Playe
 }
 
 /**
-* Test si une pierre appartenant au joueurs 'player', est autour des coordonnée x et y et est a coté des coordonnée xorig, yorig
+* Test si une pierre appartenant au joueurs 'player', est autour des coordonnï¿½e x et y et est a cotï¿½ des coordonnï¿½e xorig, yorig
 */
 bool Referee::checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player) {\
 	for (int xvec = -1; xvec < 1; xvec++) {
