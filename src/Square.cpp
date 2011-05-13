@@ -35,6 +35,7 @@ void Square::setData(Square::Data & data)
 void Square::dumpData()
 {
     Square::Data & data = this->getData();
+    std::cout << "Bit field dump" << std::endl;
     std::cout << "player : " << data.player << std::endl;
     std::cout << "is takable : " << data.is_takable << std::endl;
     std::cout << "diagl : " << data.diagl << std::endl;
@@ -42,6 +43,19 @@ void Square::dumpData()
     std::cout << "horz : " << data.horz << std::endl;
     std::cout << "vert : " << data.vert << std::endl;
     std::cout << "value : " << this->getRawData()<< std::endl;
-    std::cout << "value hex : " << std::hex << std::showbase;
+    std::cout << "value hex : 0x" << std::hex;
     std::cout << this->getRawData() << std::endl;
+    std::cout << "[.....]" << std::endl;
+    std::cout << "Raw Data Bit Mask dump" << std::endl;
+    std::cout << "player : " << GET_PLAYER(_data) << std::endl;
+    std::cout << "is takable : " <<  GET_TAKABLE(_data) << std::endl;
+    std::cout << "diagl : " << GET_DIAGL(_data) << std::endl;
+    std::cout << "diagr : " << GET_DIAGR(_data) << std::endl;
+    std::cout << "horz : " << GET_HORZ(_data) << std::endl;
+    std::cout << "vert : " << GET_VERT(_data) << std::endl;
+    std::cout << "value : " << this->getRawData()<< std::endl;
+    std::cout << "value hex : 0x" << std::hex;
+    std::cout << this->getRawData() << std::endl;
+    
+    
 }
