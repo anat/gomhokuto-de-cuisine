@@ -1,41 +1,47 @@
 
+#include <iostream>
 #include "Square.hpp"
 
-Square::Square() :  _value(), _player(NOPLAYER), _horz(0), _vert(0), _diagl(0), _diagr(0) {
-    _value.resize(VEC_SIZE);
-    for (int i = 0; i < VEC_SIZE; ++i)
-        _value[i].resize(BYTE_SIZE);
+Square::Square() : _data(0) {
+    
 }
 
-Square::Player Square::getPlayer()
+Square::~Square()
 {
-    return (_player);
+    
 }
 
-void Square::setPlayer(Player player)
+int32_t Square::getRawData() const
 {
-    _player = player;
+    
+    return (_data);
 }
 
-void   Square::modifValue(Player player, int num_case, bool increment)
+void Square::setRawData(int32_t mask)
 {
-    if (increment)
-        this->increment(player, num_case);
-    else
-        this->decrement(player, num_case);
+    _data = mask;
 }
 
-void   Square::increment(Player player, int num_case)
+Square::Data & Square::getData()
 {
-    _value[(int) player][num_case]++;
+  return (*reinterpret_cast<Square::Data*>(&_data));  
 }
 
-void   Square::decrement(Player player, int num_case)
+void Square::setData(Square::Data & data)
 {
-    _value[(int) player][num_case]--;    
+    _data = (int32_t)(*reinterpret_cast<int32_t*>(&data));
 }
 
-std::vector<char> const & Square::getValues(Player player) const
+void Square::dumpData()
 {
-    return (_value.at((int)player));
+    Square::Data & data = this->getData();
+    std::cout << "player : " << data.player << std::endl;
+    std::cout << "is takable : " << data.is_takable << std::endl;
+    std::cout << "diagl : " << data.diagl << std::endl;
+    std::cout << "diagr : " << data.diagr << std::endl;
+    std::cout << "horz : " << data.horz << std::endl;
+    std::cout << "vert : " << data.vert << std::endl;
+    std::cout << "value : " << this->getRawData()<< std::endl;
+    std::cout << "value hex : " << std::hex << std::showbase;
+    std::cout << this->getRawData() << std::endl;
 }

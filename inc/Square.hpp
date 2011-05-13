@@ -8,48 +8,33 @@
 #ifndef SQUARE_HPP
 #define	SQUARE_HPP
 
-#define VEC_SIZE 3
-#define BYTE_SIZE 9
-
-#include <vector>
+#include "Types.hpp"
 
 class Square {
+
 public:
-
-    enum Player {
-        NOPLAYER,
-        PLAYER1,
-        PLAYER2
+    struct Data{
+        unsigned short player : 2;
+        unsigned short is_takable : 1;
+        unsigned short horz : 4;
+        unsigned short vert : 4;
+        unsigned short diagl : 4;
+        unsigned short diagr : 4;
     };
-
-    enum Value {
-        LINK1,
-        LINK2,
-        LINK3,
-        LINK4,
-        LINK5,
-        END_LINK2,
-        END_LINK3,
-        END_LINK4,
-        END_LINK5
-    };
-
-private:
-    std::vector< std::vector<char> > _value;
-    Player _player;
-
-public: //la flemme de faire des get/setter
-    int _horz, _vert, _diagl, _diagr; // pas opti pour l'instant
-
+    
 public:
     Square();
-    Player getPlayer();
-    void setPlayer(Player player);
-    std::vector<char> const & getValues(Player player) const;
-    void modifValue(Player player, int num_case, bool increment);
+    virtual ~Square();
+
+    int32_t             getRawData() const;
+    void                setRawData(int32_t mask);
+    Square::Data &      getData();
+    void                setData(Square::Data & data);
+    void                dumpData();
+    
 private:
-    void increment(Player player, int num_case);
-    void decrement(Player player, int num_case);
+     int32_t _data;
+
 };
 
 #endif	/* SQUARE_HPP */
