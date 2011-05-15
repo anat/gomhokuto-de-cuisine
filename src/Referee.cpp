@@ -257,22 +257,48 @@ bool Referee::fivePrize(bool value) {
 * Fonction de test de la regle speciale des double 3 pions align
 */
 bool Referee::checkDoubleThree(unsigned int x, unsigned int y, unsigned int player) {
+	unsigned int num = 0;
 	for (unsigned int i = 0; i < _directionIncrement.size(); i++) {
-		
+		if (isPartOfFree3Align(x, y, static_cast<Vector>(i), player))
+			num++;
 	}
+
+	if (num > 2)
+		return false;
 	return true;
 }
 
 bool Referee::isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
-
+	unsigned int xnear = x;
+	unsigned int ynear = y;
+	if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player) &&
+		(classicFree3Align(x, y, dir, player) || unClassicFree3Align(x, y, dir, player)) 
+	{
+		return true;
+	}
+	return false;
 }
 
+bool Referee::classicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	return (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player));
+}
+
+bool Referee::unClassicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	return (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == 0 && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player &&
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player));
+}
 
 /* Try to propagate in EVERY directions */
 void Referee::propagation(unsigned int x, unsigned int y, unsigned int player)
 {
+
 	int usize; /* Updated size of (horizontal/vertical/diagonal) line */
 
+		/*
 	//std::cout << " ORG " << x << " " << y << std::endl;
 	if (checkPosition(x, y+1))
 	  _board(x, y)._vert  = _board(x, y+1)._vert;
@@ -346,6 +372,7 @@ void Referee::updateTruc(unsigned int x, unsigned int y, const Square::Player& p
 void Referee::propagation(unsigned int x, unsigned int y, unsigned int player,
 	unsigned int dir, unsigned int usize)
 {
+	/*
 	int i = 0x8;
 
 	do
@@ -378,10 +405,12 @@ void Referee::propagation(unsigned int x, unsigned int y, unsigned int player,
 		}
 		propagation(x, y, player, dir, usize);
 	}
+	*/
 }
 
 void Referee::propagation_inverse(unsigned int x, unsigned int y, unsigned int player)
 {
+	/*
 	int usize1;
 	int usize2;
 
@@ -411,10 +440,12 @@ void Referee::propagation_inverse(unsigned int x, unsigned int y, unsigned int p
 	_board(x, y)._diagl = 0;
 	_board(x, y)._diagr = 0;
 	_board(x, y).setPlayer(Square::NOPLAYER);
+	*/
 }
 
 int Referee::lineSize(unsigned int x, unsigned int y, unsigned int player, int dir)
 {
+	/*
 	int i = 0x8;
 
 	do
@@ -430,5 +461,7 @@ int Referee::lineSize(unsigned int x, unsigned int y, unsigned int player, int d
 
 	if (_board(x, y).getPlayer() == player)
 		return lineSize(x, y, player, dir) + 1;
-	return 0;
+
+	*/
+		return 0;
 }

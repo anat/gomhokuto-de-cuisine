@@ -57,16 +57,19 @@ bool Board::checkSize(unsigned int x, unsigned int y) const {
 
 void Board::DumpBoard()
 {
+	/*
   unsigned int i, j;
   char c;
 
   std::cout << "   0  1  2  3  4  5  6  7  8  9"
 	    << "  10 11 12 13 14 15 16 17 18" << std::endl;
   for (i = 0; i < _size; i++) /* Y */
+	/*
     {
       std::cout.width(2);
       std::cout << i;
       for (j = 0; j < _size; j++) /* X */
+	/*
 	{
 	  switch (_tab[i][j].getPlayer())
 	    {
@@ -81,6 +84,7 @@ void Board::DumpBoard()
 	}
       std::cout << std::endl;
     }
+	*/
 }
   
 void Board::reset()
