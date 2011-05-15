@@ -25,3 +25,6 @@ SOURCES += ./src/main.cpp\
 HEADERS  += ./inc/mainwindow.hpp
 
 FORMS    += ./forms/mainwindow.ui
+
+RESOURCES += \
+    ressources/texture.qrc
