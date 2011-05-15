@@ -92,7 +92,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
 	int value = -1;
 
 	if (testPosition(x, y, player)) {
-		_board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(1));
+		_board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(player));
 		propagation(x, y, player);
 		value = checkPrize(x, y, player);
 		checkWin(x, y, player);
@@ -272,7 +272,7 @@ bool Referee::isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, uns
 	unsigned int xnear = x;
 	unsigned int ynear = y;
 	if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player) &&
-		(classicFree3Align(x, y, dir, player) || unClassicFree3Align(x, y, dir, player)) 
+		(classicFree3Align(x, y, dir, player) || unClassicFree3Align(x, y, dir, player))) 
 	{
 		return true;
 	}
