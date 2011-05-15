@@ -4,12 +4,14 @@
  *
  * Created on April 30, 2011, 6:27 AM
  */
-
+#include <QtGui/QApplication>
 #include <iostream>
 
 #include "Board.hpp"
 #include "Referee.hpp"
 #include "Game.hpp"
+#include "mainwindow.hpp"
+
 
 /* Proto test/debug */
 //void cleanBoard(Board &plateau);
@@ -19,15 +21,46 @@
 
 #include "Square.hpp"
 
-int main(void) {
+int main(int ac, char **av) {
+    if (ac == 1)
+    {
+        QApplication a(ac, av);
+    MainWindow w;
+    w.show();
+    return a.exec();
+    }
+    else if (ac == 2 && QString(av[1]) == "iaonly")
+    {
+        Square s;
+        int32_t data = s.getRawData();
+        data |= PLAYER(1) | DIAGL(1) | DIAGR(3) | HORZ(2);
+        s.setRawData(data);
+        s.dumpData();
+        Game game;
+        game.doGame();
+    }
+    else
+    {
+
+    }
+    return 1;
     //Board plateau;
     //Referee arbitre(plateau);
     
+//    Square::Data & data = s.getData();
+//    data.player = 1;
+//    data.is_takable = 0;
+//    data.diagl = 1;
+//    data.diagr = 3;
+//    data.horz = 2;
+//    data.vert = 0;
+//    s.setData(data);
+
+    //if (plateau(1, 2).getPlayer() == Square::NOPLAYER)
+    //std::cout << "caca" << std::endl;
     //plateau.DumpBoard();
-    Game game;
-    game.doGame();
+
     //testCheck(plateau, arbitre);
-    return 0;
 }
 
 
