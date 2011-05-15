@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include "Board.hpp"
+#include "Game.hpp"
+
 
 Board::Board(std::size_t size) : _tab(), _size(size) {
 	_tab.resize(size, std::vector<Square>(size));
@@ -63,16 +65,16 @@ void Board::DumpBoard()
   std::cout << "   0  1  2  3  4  5  6  7  8  9"
 	    << "  10 11 12 13 14 15 16 17 18" << std::endl;
   for (i = 0; i < _size; i++) /* Y */
-    {
+  {
       std::cout.width(2);
       std::cout << i;
       for (j = 0; j < _size; j++) /* X */
 	{
-	  switch (_tab[i][j].getPlayer())
+	  switch (GET_PLAYER(_tab[i][j].getRawData()))
 	    {
-	    case Square::NOPLAYER: c = '.'; break;
-	    case Square::PLAYER1:  c = 'X'; break;
-	    case Square::PLAYER2:  c = 'O'; break;
+              case NOPLAYER: c = '.'; break;
+              case PLAYER1:  c = 'X'; break;
+              case PLAYER2:  c = 'O'; break;
 	    default:               c = '?'; break;
 	    }
 	  std::cout << " ";
@@ -80,7 +82,7 @@ void Board::DumpBoard()
 	  std::cout << " ";
 	}
       std::cout << std::endl;
-    }
+  }
 }
   
 void Board::reset()

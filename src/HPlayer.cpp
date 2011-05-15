@@ -8,7 +8,7 @@
 #include <iostream>
 #include "HPlayer.hpp"
 
-HPlayer::HPlayer(Square::Player player) : APlayer(player) {
+HPlayer::HPlayer(unsigned int player) : APlayer(player) {
 }
 
 HPlayer::~HPlayer() {

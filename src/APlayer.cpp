@@ -7,7 +7,7 @@
 
 #include "APlayer.hpp"
 
-APlayer::APlayer(Square::Player player) : _nbPawnTaken(0), _player(player)
+APlayer::APlayer(unsigned int player) : _nbPawnTaken(0), _player(player)
 {
     
 }
@@ -27,7 +27,7 @@ void APlayer::addPawnTaken(int nb)
     _nbPawnTaken += nb;
 }
 
-Square::Player & APlayer::getPlayerNum()
+unsigned int APlayer::getPlayerNum()
 {
     return (_player);
 }

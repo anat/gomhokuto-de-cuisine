@@ -56,6 +56,4 @@ void Square::dumpData()
     std::cout << "value : " << this->getRawData()<< std::endl;
     std::cout << "value hex : 0x" << std::hex;
     std::cout << this->getRawData() << std::endl;
-    
-    
 }
