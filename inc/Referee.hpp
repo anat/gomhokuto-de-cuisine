@@ -47,6 +47,7 @@ public:
  
 private:
 	enum Vector {
+		NONE,
 		RIGHT,
 		UP_RIGHT,
 		UP,
@@ -101,14 +102,17 @@ private:
 	bool goTo(unsigned int& x, unsigned int& y, Vector dir);
 	unsigned int getDirAlign(const Square& value, Vector dir);
 	bool ispartOfAlign(const Square& value, int size);
+	bool ispartOfExactAlign(const Square& value, int size);
 
 	/*
 	* Fonction de check pour les double alignement de trois
 	*/
     bool checkDoubleThree(unsigned int x, unsigned int y, unsigned int player);
-	bool isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
-	bool classicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
-	bool unClassicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+	unsigned int isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+	unsigned int classicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+	unsigned int unClassicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+	unsigned int isPartOfAlign3InOther(unsigned x, unsigned int y, Vector dir, unsigned int player);
+	bool isFreeAlign(unsigned int x, unsigned int y, Vector dirorig, Vector dir, unsigned int player);
 
 	/*
 	* Fonction pour la victoire par alignement de 5
