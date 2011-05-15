@@ -19,13 +19,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void DrawCadre();
-    void Drawrepere(int x, int y);
-
-
+    void DrawCadre(QColor &color);
+    void Drawrepere(QColor &color, int x, int y);
 
 protected:
     void resizeEvent(QResizeEvent *event);
+
+public slots:
+void print_status();
+
 
 };
 
