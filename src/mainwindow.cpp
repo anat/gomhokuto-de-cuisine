@@ -18,7 +18,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::DrawCadre()
 {
-    float size = 19;
+    float size = 20;
     int border = 20;
     float height = ui->gameboard->geometry().height();
     float width = ui->gameboard->geometry().width();
@@ -28,10 +28,10 @@ void MainWindow::DrawCadre()
     float refw = widthb / size;
     for (int i = 1; i < size; i++)
     {
-        QLine h_line(border + i * refw, border,
-                     border + i * refw, height - border);
-        QLine v_line(border, border + i * refh,
-                     width - border, border + i * refh);
+        QLine h_line(border + i * refw, border + (refh / 2),
+                     border + i * refw, height - border - (refh / 2));
+        QLine v_line(border + (refw / 2), border + i * refh,
+                     width - border - (refw / 2), border + i * refh);
         ui->gameboard->scene()->addLine(h_line);
         ui->gameboard->scene()->addLine(v_line);
     }
