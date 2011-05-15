@@ -20,6 +20,8 @@ public:
     ~MainWindow();
 
     void DrawCadre();
+    void Drawrepere(int x, int y);
+
 
 
 protected:
