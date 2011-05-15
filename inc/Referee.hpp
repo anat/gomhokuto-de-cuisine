@@ -87,6 +87,11 @@ private:
 			case DOWN: return UP;
 			case LEFT: return RIGHT;
 			case RIGHT: return LEFT;
+			case UP_LEFT: return DOWN_RIGHT;
+			case DOWN_RIGHT: return UP_LEFT;
+			case UP_RIGHT: return DOWN_LEFT;
+			case DOWN_LEFT: return UP_RIGHT;
+			default: return UP;
 		}
 		return UP;
 	}

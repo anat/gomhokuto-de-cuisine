@@ -272,7 +272,7 @@ bool Referee::isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, uns
 	unsigned int xnear = x;
 	unsigned int ynear = y;
 	if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player) &&
-		(classicFree3Align(x, y, dir, player) || unClassicFree3Align(x, y, dir, player)) 
+		(classicFree3Align(x, y, dir, player) || unClassicFree3Align(x, y, dir, player)))
 	{
 		return true;
 	}
