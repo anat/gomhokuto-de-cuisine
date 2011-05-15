@@ -9,18 +9,18 @@
 #include "Game.hpp"
 #include "HPlayer.hpp"
 
-Game::Game(bool ) 
+Game::Game(bool) 
         : _players(2), _gameboard(), _referee(_gameboard), 
-          _playerTurn(TURNPLAYER1)
+          _playerTurn(PLAYER1)
 {
-    _players[TURNPLAYER1] = new HPlayer(Square::PLAYER1);
-    _players[TURNPLAYER2] = new HPlayer(Square::PLAYER2);
+    _players[PLAYER1 - 1] = new HPlayer(PLAYER1);
+    _players[PLAYER2 - 1] = new HPlayer(PLAYER2);
 }
 
 Game::~Game() {
 }
 
-Game::PlayerTurn Game::getPlayerTurn()
+unsigned int Game::getPlayerTurn()
 {
     return (_playerTurn);
 }
@@ -28,7 +28,7 @@ Game::PlayerTurn Game::getPlayerTurn()
 APlayer * Game::getCurrentPlayer()
 {
     int i = (int)_playerTurn;
-    return (_players[i]);
+    return (_players[i - 1]);
 }
 
 void Game::doGame()
@@ -40,25 +40,25 @@ void Game::doGame()
         stillRunning = !checkWin();
         if (!stillRunning)
             break;
-        _playerTurn = (_playerTurn == Game::TURNPLAYER1) ? (Game::TURNPLAYER2) :
-            (TURNPLAYER1);
+        _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
+            (PLAYER1);
     }
     std::cout << "Player : " << getCurrentPlayer()->getPlayerNum() << " win the game !!!" << std::endl;
 }
 
-void Game::newGame(bool )
+void Game::newGame(bool)
 {
     delete _players[0];
     delete _players[1];
     _referee.reset();
     _gameboard.reset();
-    _players[TURNPLAYER1] = new HPlayer(Square::PLAYER1);
-    _players[TURNPLAYER2] = new HPlayer(Square::PLAYER2);
+    _players[PLAYER1 - 1] = new HPlayer(PLAYER1);
+    _players[PLAYER2 - 1] = new HPlayer(PLAYER2);
 }
 
 bool Game::checkWin()
 {
-    if (_referee.checkWin() != Square::NOPLAYER)
+    if (_referee.checkWin() != NOPLAYER)
         return true;
     if (getCurrentPlayer()->getNBPawnTaken() >= 5)
         return true;

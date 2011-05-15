@@ -12,7 +12,7 @@
 
 class HPlayer : public APlayer {
 public:
-    HPlayer(Square::Player player);
+    HPlayer(unsigned int player);
     virtual ~HPlayer();
 private:
     void doAction(Board & gameboard, Referee & referee);
