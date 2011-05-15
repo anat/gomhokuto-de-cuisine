@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="Background">
+    <file>gazon.jpg</file>
+  </qresource>
+</RCC>
