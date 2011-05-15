@@ -8,6 +8,7 @@
 #ifndef TYPES_HPP_
 #define TYPES_HPP_
 
+#  include <stdint.h>
 # ifdef  UNIX
 #  include <stdint.h>
 # elif   WIN32
