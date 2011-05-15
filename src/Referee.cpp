@@ -61,7 +61,7 @@ unsigned int Referee::getDirAlign(const Square& value, Vector dir){
 }
 
 /*
-* Teste si la case fait partie d'au moins un alignement de 'size'
+* Teste si la case fait partie d'au moins un alignement superieur ou egale	a 'size'
 */
 bool Referee::ispartOfAlign(const Square& value, int size) {
 	return (
@@ -71,6 +71,19 @@ bool Referee::ispartOfAlign(const Square& value, int size) {
 		GET_VERT(value.getRawData()) >= size
 		);
 }
+
+/*
+* Teste si la case fait partie d'au moins un alignement de 'size'
+*/
+bool Referee::ispartOfExactAlign(const Square& value, int size) {
+	return (
+		GET_DIAGL(value.getRawData()) == size ||
+		GET_DIAGR(value.getRawData()) == size || 
+		GET_HORZ(value.getRawData()) == size || 
+		GET_VERT(value.getRawData()) == size
+		);
+}
+
 
 /**
 * get de l'atribut qui contient le gagnant
@@ -259,39 +272,102 @@ bool Referee::fivePrize(bool value) {
 */
 bool Referee::checkDoubleThree(unsigned int x, unsigned int y, unsigned int player) {
 	unsigned int num = 0;
-	for (unsigned int i = 0; i < _directionIncrement.size(); i++) {
-		if (isPartOfFree3Align(x, y, static_cast<Vector>(i), player))
-			num++;
+	for (unsigned int i = 0; i < _directionIncrement.size() && num < 2; i++) {
+		num += isPartOfFree3Align(x, y, static_cast<Vector>(i), player);
 	}
 
-	if (num > 2)
+	if (num >= 2)
 		return false;
 	return true;
 }
 
-bool Referee::isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+unsigned int Referee::isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
 	unsigned int xnear = x;
 	unsigned int ynear = y;
-	if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player) &&
-		(classicFree3Align(x, y, dir, player) || unClassicFree3Align(x, y, dir, player)))
+
+	if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player))
 	{
-		return true;
+		return classicFree3Align(x, y, dir, player) + unClassicFree3Align(x, y, dir, player);
+	}
+	return 0;
+}
+
+unsigned int Referee::classicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	int value = 0;
+	if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+		value += isPartOfAlign3InOther(x, y, dir, player);
+
+		if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+			value += isPartOfAlign3InOther(x, y, dir, player);
+
+			if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player))
+				return value + 1;
+		}
+	}
+	return 0;
+}
+
+unsigned int Referee::unClassicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	unsigned int value = 0;
+
+	if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == 0 && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+			value += isPartOfAlign3InOther(x, y, dir, player);
+
+			if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+				value += isPartOfAlign3InOther(x, y, dir, player);
+
+				if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player))
+					return value + 1;
+			}
+	}
+	return 0;
+}
+
+unsigned int Referee::isPartOfAlign3InOther(unsigned x, unsigned int y, Vector dir, unsigned int player) {
+	if (ispartOfExactAlign(_board(x, y), 3)) {
+		unsigned int value = 0;
+
+		if (isFreeAlign(x, y, dir, UP_RIGHT, player))
+			value++;
+		
+		if (isFreeAlign(x, y, dir, UP_LEFT, player))
+			value++;
+		
+		if (isFreeAlign(x, y, dir, UP, player))
+			value++;
+		
+		if (isFreeAlign(x, y, dir, LEFT, player))
+			value++;
+		return value;
+	}
+	return 0;
+}
+
+bool Referee::isFreeAlign(unsigned int x, unsigned int y, Vector dirorig, Vector dir, unsigned int player) {
+	
+	if (dirorig != dir && dir != invert(dir)) {
+		unsigned int xtmp = x;
+		unsigned int ytmp = y;
+		unsigned int size = 1;
+
+		while (goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player)
+			size++;
+
+		if (GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0) {
+			xtmp = x;
+			ytmp = y;
+
+			while (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player)
+				size++;
+
+			if (size > 2 && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0)
+				return true;
+		}
 	}
 	return false;
 }
 
-bool Referee::classicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
-	return (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
-		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
-		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player));
-}
-
-bool Referee::unClassicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
-	return (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == 0 && 
-		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
-		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player &&
-		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player));
-}
 
 /* Try to propagate in EVERY directions */
 void Referee::propagation(unsigned int x, unsigned int y, unsigned int player)
@@ -299,39 +375,39 @@ void Referee::propagation(unsigned int x, unsigned int y, unsigned int player)
 
 	int usize; /* Updated size of (horizontal/vertical/diagonal) line */
 
-		/*
+	/*
 	//std::cout << " ORG " << x << " " << y << std::endl;
 	if (checkPosition(x, y+1))
-	  _board(x, y)._vert  = _board(x, y+1)._vert;
+	_board(x, y)._vert  = _board(x, y+1)._vert;
 	if (checkPosition(x, y-1))
-	  _board(x, y)._vert += _board(x, y-1)._vert;
+	_board(x, y)._vert += _board(x, y-1)._vert;
 	usize = _board(x, y)._vert + 1;
 
 	propagation(x, y, player, DIR_UP               , usize);
 	propagation(x, y, player, DIR_DOWN             , usize);
 
 	if (checkPosition(x-1, y))
-	  _board(x, y)._vert  = _board(x-1, y)._vert;
+	_board(x, y)._vert  = _board(x-1, y)._vert;
 	if (checkPosition(x+1, y))
-	  _board(x, y)._vert += _board(x+1, y)._vert;
+	_board(x, y)._vert += _board(x+1, y)._vert;
 	usize = _board(x, y)._horz + 1;
 
 	propagation(x, y, player, DIR_LEFT             , usize);
 	propagation(x, y, player, DIR_RIGHT            , usize);
 
 	if (checkPosition(x-1, y-1))
-	  _board(x, y)._vert  = _board(x-1, y-1)._vert;
+	_board(x, y)._vert  = _board(x-1, y-1)._vert;
 	if (checkPosition(x+1, y+1))
-	  _board(x, y)._vert += _board(x+1, y+1)._vert;
+	_board(x, y)._vert += _board(x+1, y+1)._vert;
 	usize = _board(x, y)._diagl + 1;
 
 	propagation(x, y, player, DIR_UP   | DIR_LEFT  , usize);
 	propagation(x, y, player, DIR_DOWN | DIR_RIGHT , usize);
 
 	if (checkPosition(x+1, y-1))
-	  _board(x, y)._vert  = _board(x+1, y-1)._vert;
+	_board(x, y)._vert  = _board(x+1, y-1)._vert;
 	if (checkPosition(x-1, y+1))
-	  _board(x, y)._vert += _board(x-1, y+1)._vert;
+	_board(x, y)._vert += _board(x-1, y+1)._vert;
 	usize = _board(x, y)._diagr + 1;
 
 	propagation(x, y, player, DIR_UP   | DIR_RIGHT , usize);
@@ -341,8 +417,8 @@ void Referee::propagation(unsigned int x, unsigned int y, unsigned int player)
 	int link[5] = {0};
 
 	if (_board(x, y)._horz == 1  || _board(x, y)._vert == 1 ||
-	    _board(x, y)._diagl == 1 || _board(x, y)._diagr == 1)
-	  link[0]++;
+	_board(x, y)._diagl == 1 || _board(x, y)._diagr == 1)
+	link[0]++;
 	link[_board(x, y)._horz  - 1]++;
 	link[_board(x, y)._vert  - 1]++;
 	link[_board(x, y)._diagl - 1]++;
@@ -359,15 +435,15 @@ void Referee::propagation(unsigned int x, unsigned int y, unsigned int player)
 }
 /*
 void Referee::updateTruc(unsigned int x, unsigned int y, const Square::Player& player, int l[5])
-			 //int l1, int l2, int l3, int l4, int l5)
+//int l1, int l2, int l3, int l4, int l5)
 {
-  std::cout << "Update : " << l[0]  << l[1]  << l[2]  << l[3]  << l[4] << std::endl;
-  _board(x, y).getValues(player)[Square::LINK1] += l[0];
-  _board(x, y).getValues(player)[Square::LINK2] += l[1];
-  _board(x, y).getValues(player)[Square::LINK3] += l[2];
-  _board(x, y).getValues(player)[Square::LINK4] += l[3];
-  _board(x, y).getValues(player)[Square::LINK5] += l[4];
-  }*/
+std::cout << "Update : " << l[0]  << l[1]  << l[2]  << l[3]  << l[4] << std::endl;
+_board(x, y).getValues(player)[Square::LINK1] += l[0];
+_board(x, y).getValues(player)[Square::LINK2] += l[1];
+_board(x, y).getValues(player)[Square::LINK3] += l[2];
+_board(x, y).getValues(player)[Square::LINK4] += l[3];
+_board(x, y).getValues(player)[Square::LINK5] += l[4];
+}*/
 
 /* Try to propagate in ONE direction */
 void Referee::propagation(unsigned int x, unsigned int y, unsigned int player,
@@ -387,24 +463,24 @@ void Referee::propagation(unsigned int x, unsigned int y, unsigned int player,
 	}
 	while ((i >>= 1));
 
-	
+
 
 	if (checkPosition(x, y) && _board(x, y).getPlayer() == player)
 	{
-		std::cout << "  IN " << x << " " << y << "  usize(" << usize << ")" << std::endl;
-		switch(dir)
-		{
-		case DIR_UP:               _board(x, y)._vert  = usize; break;
-		case DIR_DOWN:             _board(x, y)._vert  = usize; break;
-		case DIR_LEFT:             _board(x, y)._horz  = usize; break;
-		case DIR_RIGHT:            _board(x, y)._horz  = usize; break;
-		case DIR_UP   | DIR_LEFT:  _board(x, y)._diagl = usize; break;
-		case DIR_DOWN | DIR_RIGHT: _board(x, y)._diagl = usize; break;
-		case DIR_UP   | DIR_RIGHT: _board(x, y)._diagr = usize; break;
-		case DIR_DOWN | DIR_LEFT:  _board(x, y)._diagr = usize; break;
-		default:                    break;
-		}
-		propagation(x, y, player, dir, usize);
+	std::cout << "  IN " << x << " " << y << "  usize(" << usize << ")" << std::endl;
+	switch(dir)
+	{
+	case DIR_UP:               _board(x, y)._vert  = usize; break;
+	case DIR_DOWN:             _board(x, y)._vert  = usize; break;
+	case DIR_LEFT:             _board(x, y)._horz  = usize; break;
+	case DIR_RIGHT:            _board(x, y)._horz  = usize; break;
+	case DIR_UP   | DIR_LEFT:  _board(x, y)._diagl = usize; break;
+	case DIR_DOWN | DIR_RIGHT: _board(x, y)._diagl = usize; break;
+	case DIR_UP   | DIR_RIGHT: _board(x, y)._diagr = usize; break;
+	case DIR_DOWN | DIR_LEFT:  _board(x, y)._diagr = usize; break;
+	default:                    break;
+	}
+	propagation(x, y, player, dir, usize);
 	}
 	*/
 }
@@ -461,8 +537,8 @@ int Referee::lineSize(unsigned int x, unsigned int y, unsigned int player, int d
 	while ((i >>= 1));
 
 	if (_board(x, y).getPlayer() == player)
-		return lineSize(x, y, player, dir) + 1;
+	return lineSize(x, y, player, dir) + 1;
 
 	*/
-		return 0;
+	return 0;
 }
