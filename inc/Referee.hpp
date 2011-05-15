@@ -46,6 +46,7 @@ public:
 
 private:
 	enum Vector {
+		NONE,
 		RIGHT,
 		UP_RIGHT,
 		UP,

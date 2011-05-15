@@ -21,6 +21,7 @@ Referee::~Referee() {
 }
 
 void Referee::InitDirection() {
+	_directionIncrement.push_back(Coord(0, 0));
 	_directionIncrement.push_back(Coord(1, 0));
 	_directionIncrement.push_back(Coord(1, -1));
 	_directionIncrement.push_back(Coord(0, -1));
