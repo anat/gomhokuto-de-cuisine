@@ -12,13 +12,20 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
     void DrawCadre();
+
 private:
     Ui::MainWindow *ui;
+
+protected:
+    void resizeEvent(QResizeEvent *event);
+
 };
 
 #endif // MAINWINDOW_H
