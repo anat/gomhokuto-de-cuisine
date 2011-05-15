@@ -13,20 +13,17 @@
 #include "Board.hpp"
 #include "APlayer.hpp"
 
+#define NOPLAYER 0
+#define PLAYER1 1
+#define PLAYER2 2
 #define NB_MAX_PLAYER 2
 
 class Game {
-public:
-    enum PlayerTurn
-    {
-        TURNPLAYER1,
-        TURNPLAYER2
-    };
-    
+public:    
     Game(bool vs_computer = false);
     virtual ~Game();
     
-    PlayerTurn getPlayerTurn();
+    unsigned int     getPlayerTurn();
     APlayer *  getCurrentPlayer();
     void       doGame();
     void       newGame(bool vs_computer = false);
@@ -35,9 +32,9 @@ public:
 
 private:
     std::vector<APlayer*>   _players;
-    Board       _gameboard;
-    Referee     _referee;
-    PlayerTurn  _playerTurn;    
+    Board                   _gameboard;
+    Referee                 _referee;
+    unsigned int            _playerTurn;    
 };
 
 #endif	/* GAME_H */

@@ -23,7 +23,8 @@ struct Coord {
 	Coord& operator+(const Coord& value) {
 		x += value.x;
 		y += value.y;
-	}
+          return (*this);
+        }
 	int x;
 	int y;
 };
@@ -42,8 +43,8 @@ public:
     bool fivePrize() const;
     bool doubleThree(bool value);
     bool fivePrize(bool value);
-    void reset();
-
+    void reset(); 
+ 
 private:
 	enum Vector {
 		RIGHT,
