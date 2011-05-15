@@ -18,6 +18,15 @@
 /*
  * L'arbitre
  */
+struct Coord {
+	Coord(int x_, int y_) : x(x_), y(y_) {}
+	Coord& operator+(const Coord& value) {
+		x += value.x;
+		y += value.y;
+	}
+	int x;
+	int y;
+};
 
 class Referee {
 public:
@@ -25,10 +34,10 @@ public:
     Referee(const Referee& orig);
     virtual ~Referee();
 
-    int tryPlaceRock(unsigned int x, unsigned int y, Square::Player& square); //Test et si ok place
-    bool testPosition(unsigned int x, unsigned int y, Square::Player& player); //Test tout cours
-    const Square::Player& checkWin() const;
-    void propagation_inverse(unsigned int x, unsigned int y, const Square::Player& player);
+    int tryPlaceRock(unsigned int x, unsigned int y, unsigned int square); //Test et si ok place
+    bool testPosition(unsigned int x, unsigned int y, unsigned int player); //Test tout cours
+    unsigned int checkWin() const;
+    void propagation_inverse(unsigned int x, unsigned int y, const unsigned int player);
     bool doubleThree() const;
     bool fivePrize() const;
     bool doubleThree(bool value);
@@ -36,17 +45,29 @@ public:
     void reset();
 
 private:
+	enum Vector {
+		RIGHT,
+		UP_RIGHT,
+		UP,
+		UP_LEFT,
+		LEFT,
+		DOWN_LEFT,
+		DOWN,
+		DOWN_RIGHT
+	};
+
     Board& _board;
-    Square::Player _winner;
+    unsigned int _winner;
     bool _fivePrize;
     bool _doubleThree;
+	std::vector<Coord> _directionIncrement;
 
-    inline Square::Player opponant(const Square::Player& pla) {
-        Square::Player result = Square::NOPLAYER;
-        if (pla == Square::PLAYER1)
-            result = Square::PLAYER2;
-        else if (pla == Square::PLAYER2)
-            result = Square::PLAYER1;
+    inline unsigned int opponant(const unsigned int pla) {
+        unsigned int result = 0;
+        if (pla == 1)
+            result = 2;
+        else if (pla == 2)
+            result = 1;
         return result;
     }
 
@@ -60,23 +81,52 @@ private:
         return value;
     }
 
-    bool checkDoubleThree(unsigned int x, unsigned int y, Square::Player& player);
-    bool checkFivePrize(unsigned int x, unsigned int y, Square::Player& player);
-    int checkFivePrize(unsigned int x, unsigned int y, unsigned int xvec, unsigned int yvec, Square::Player& player);
-    bool Link3OrMore(unsigned int x, unsigned int y, const Square::Player& player);
-    bool EndLink2OrMore(unsigned int x, unsigned int y, const Square::Player& player);
-    bool checkfiveWin(unsigned int x, unsigned int y, Square::Player& player);
-    bool checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player);
-    bool checkNear2Block(unsigned int x, unsigned int y, const Square::Player& player);
-    void checkWin(unsigned int x, unsigned int y, Square::Player& player);
-    unsigned int checkPrize(unsigned int x, unsigned int y, const Square::Player& player);
-    bool checkPrize(unsigned int x, unsigned int y, int xvec, int yvec, const Square::Player& play);
-    void cleanRock(unsigned int x, unsigned int y, int xvec, int yvec, const Square::Player& play);
-    void propagation(unsigned int x, unsigned int y, const Square::Player& player);
-    void propagation(unsigned int x, unsigned int y, const Square::Player& player,
+	inline Vector invert(Vector dir) {
+		switch (dir) {
+			case UP: return DOWN;
+			case DOWN: return UP;
+			case LEFT: return RIGHT;
+			case RIGHT: return LEFT;
+		}
+		return UP;
+	}
+
+	void InitDirection();
+	bool goTo(unsigned int& x, unsigned int& y, Vector dir);
+	unsigned int getDirAlign(const Square& value, Vector dir);
+	bool ispartOfAlign(const Square& value, int size);
+
+	/*
+	* Fonction de check pour les double alignement de trois
+	*/
+    bool checkDoubleThree(unsigned int x, unsigned int y, unsigned int player);
+	bool isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+
+	/*
+	* Fonction pour la victoire par alignement de 5
+	*/ 
+	void checkWin(unsigned int x, unsigned int y, unsigned int player);
+    bool checkfiveWin(unsigned int x, unsigned int y);
+	bool checkFivePrize(unsigned int x, unsigned int y, unsigned int player);
+	unsigned int checkFivePrize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+
+	 /*
+	* Fonction pour la prise de pierre
+	*/
+	unsigned int checkPrize(unsigned int x, unsigned int y, const unsigned int player);
+    bool checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    bool checkIsTakable(unsigned x, unsigned int y, Vector dir, unsigned int player);
+	void cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+
+	/*
+	* Fonction pour la propagation
+	*/
+
+	void propagation(unsigned int x, unsigned int y, const unsigned int player);
+    void propagation(unsigned int x, unsigned int y, const unsigned int player,
             unsigned int dir, unsigned int usize);
 
-    int lineSize(unsigned int x, unsigned int y, const Square::Player& player, int dir);
+    int lineSize(unsigned int x, unsigned int y, const unsigned int player, int dir);
 };
 
 #endif	/* REFEREE_HPP */
