@@ -12,7 +12,8 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-
+    Ui::MainWindow  *ui;
+    QGraphicsScene  *scene;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -20,8 +21,6 @@ public:
 
     void DrawCadre();
 
-private:
-    Ui::MainWindow *ui;
 
 protected:
     void resizeEvent(QResizeEvent *event);
