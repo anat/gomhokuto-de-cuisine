@@ -9,26 +9,92 @@
 #include <iostream>
 
 Referee::Referee(Board& board) 
-	: _board(board), _winner(Square::NOPLAYER), _fivePrize(false), _doubleThree(false) {
+	: _board(board), _winner(0), _fivePrize(false), _doubleThree(false), _directionIncrement() {
+		InitDirection();
 }
 
 Referee::Referee(const Referee& orig)  
-	: _board(orig._board), _winner(orig._winner), _fivePrize(orig._fivePrize), _doubleThree(orig._doubleThree) {
+	: _board(orig._board), _winner(orig._winner), _fivePrize(orig._fivePrize), _doubleThree(orig._doubleThree), _directionIncrement(orig._directionIncrement) {
 }
 
 Referee::~Referee() {
 }
 
+void Referee::InitDirection() {
+	_directionIncrement.push_back(Coord(1, 0));
+	_directionIncrement.push_back(Coord(1, -1));
+	_directionIncrement.push_back(Coord(0, -1));
+	_directionIncrement.push_back(Coord(-1, -1));
+	_directionIncrement.push_back(Coord(-1, 0));
+	_directionIncrement.push_back(Coord(-1, 1));
+	_directionIncrement.push_back(Coord(0, 1));
+	_directionIncrement.push_back(Coord(1, 1));
+}
+
+/**
+* deplace x et y dans la direction choisie
+*/
+bool Referee::goTo(unsigned int& x, unsigned int& y, Vector dir) {
+	if (checkPosition(x + _directionIncrement[dir].x, y + _directionIncrement[dir].y)) {
+		x += _directionIncrement[dir].x;
+		y += _directionIncrement[dir].y;
+
+		return true;
+	}
+	return false;
+}
+
+/**
+* Recupere la valeur de l'alignement dans la direction choisie
+*/
+unsigned int Referee::getDirAlign(const Square& value, Vector dir){
+	if (dir == RIGHT || dir == LEFT)
+		return GET_HORZ(value.getRawData());
+	if (dir == UP || dir == DOWN)
+		return GET_VERT(value.getRawData());
+	if (dir == UP_LEFT || dir == DOWN_RIGHT)
+		return GET_DIAGL(value.getRawData());
+	if (dir == UP_RIGHT || dir == DOWN_LEFT)
+		return GET_DIAGR(value.getRawData());
+	return 0;
+}
+
+/*
+* Teste si la case fait partie d'au moins un alignement de 'size'
+*/
+bool Referee::ispartOfAlign(const Square& value, int size) {
+	return (
+		GET_DIAGL(value.getRawData()) >= size ||
+		GET_DIAGR(value.getRawData()) >= size || 
+		GET_HORZ(value.getRawData()) >= size || 
+		GET_VERT(value.getRawData()) >= size
+		);
+}
+
+/**
+* get de l'atribut qui contient le gagnant
+*/
+unsigned int Referee::checkWin() const {
+	return _winner;
+}
+
+/**
+* reset le gagnant
+*/
+void Referee::reset() {
+	_winner = 0;
+}
+
 /**
 * Tente de placer une pierre
 */
-int Referee::tryPlaceRock(unsigned int x, unsigned int y, Square::Player& player) {
+int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
 	int value = -1;
 
 	if (testPosition(x, y, player)) {
-		_board(x, y).setPlayer(player);
-		value = checkPrize(x, y, player);
+		_board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(player));
 		propagation(x, y, player);
+		value = checkPrize(x, y, player);
 		checkWin(x, y, player);
 	}
 	return value;
@@ -37,10 +103,10 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, Square::Player& player
 /**
 * Determine si la position est valide pour une nouvelle pierre
 */
-bool Referee::testPosition(unsigned int x, unsigned int y, Square::Player& player) {
+bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) {
 	bool value = false;
 
-	if (checkPosition(x, y) && _board(x, y).getPlayer() == Square::NOPLAYER) { //rajouter les tests de pattern ici
+	if (checkPosition(x, y) && GET_PLAYER(_board(x, y).getRawData()) == 0) { //rajouter les tests de pattern ici
 
 		value = true;
 		if (_doubleThree)
@@ -52,29 +118,66 @@ bool Referee::testPosition(unsigned int x, unsigned int y, Square::Player& playe
 /**
 * cherche dans toute les directions si il a des pierre a prendre
 */
-unsigned int Referee::checkPrize(unsigned int x, unsigned int y, const Square::Player& player)
+unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int player)
 {
 	unsigned int result = 0;
 
-	//if (_board(x, y).getValues(opponant(player))[Square::END_LINK2] > 1) {
-	for (int xvec = -1; xvec < 2; xvec++) {
-		for (int yvec = -1; yvec < 2; yvec++) {
-			if ((xvec || yvec) && checkPrize(x, y, xvec, yvec, player)) {
-				cleanRock(x, y, xvec, yvec, player);
-				result++;
-			}
+	for (std::size_t i = 0; i < _directionIncrement.size(); ++i) {
+		if (checkPrize(x, y, static_cast<Vector>(i), player)) {
+			cleanRock(x, y, static_cast<Vector>(i), player);
+			result++;
 		}
 	}
-	//	}
 	return result;
 }
 
 /**
+* cherche si il y a une prise dans une direction
+*/
+bool Referee::checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	unsigned int i = 0;
+	if (checkIsTakable(x, y, dir, player)) 
+	{
+		goTo(x, y, dir);
+		_board(x, y).setRawData(_board(x, y).getRawData() | IS_TAKABLE(1));
+		goTo(x, y, dir);
+		_board(x, y).setRawData(_board(x, y).getRawData() | IS_TAKABLE(1));
+		if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
+			return true;
+	}
+	return false;
+}
+
+/**
+* check si les pions dans la direction sont prenable par le joueurs player
+*/ 
+
+bool Referee::checkIsTakable(unsigned x, unsigned int y, Vector dir, unsigned int player) {
+	return (goTo(x, y, dir) && 
+		GET_PLAYER(_board(x, y).getRawData()) == opponant(player) && 
+		getDirAlign(_board(x, y), dir) == 2 && goTo(x, y, dir) && goTo(x, y, dir));
+}
+
+/**
+* clean les pierre trouver comme prise
+*/
+void Referee::cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	goTo(x, y, dir);
+	_board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(0));
+	propagation_inverse(x, y, opponant(player));
+
+	goTo(x, y, dir);
+	_board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(0));
+	propagation_inverse(x, y, opponant(player));
+}
+
+
+/**
 * Determine si le coup est gagnant
 */
-void Referee::checkWin(unsigned int x, unsigned int y, Square::Player& player)
+void Referee::checkWin(unsigned int x, unsigned int y, unsigned int player)
 {
-	if (checkfiveWin(x, y, player)) {
+	if (ispartOfAlign(_board(x, y), 5)) {
 		if (_fivePrize) {
 			if (checkFivePrize(x, y, player))
 				_winner = player;
@@ -84,12 +187,50 @@ void Referee::checkWin(unsigned int x, unsigned int y, Square::Player& player)
 	}
 }
 
-bool Referee::checkfiveWin(unsigned int x, unsigned int y, Square::Player& player)
-{
-	return ((_board(x, y)._diagl > 4) || (_board(x, y)._horz > 4) || (_board(x, y)._vert > 4) || (_board(x ,y)._diagr > 4));
+
+/**
+* Fonction de test de la regle speciale des 5 pions lors d'une tentative de victoire
+*/
+bool Referee::checkFivePrize(unsigned int x, unsigned int y, unsigned int player) {
+	if (GET_DIAGL(_board(x, y).getRawData()) > 4) {
+		unsigned int size = checkFivePrize(x, y, UP_LEFT , player);
+		size += checkFivePrize(x, y, DOWN_RIGHT, player);
+		if (size > 4)
+			return true;
+	}
+
+	if (GET_DIAGR(_board(x, y).getRawData()) > 4) {
+		unsigned int size = checkFivePrize(x, y, UP_RIGHT, player);
+		size += checkFivePrize(x, y, DOWN_LEFT, player);
+		if (size > 4)
+			return true;
+	}
+
+	if (GET_HORZ(_board(x, y).getRawData()) > 4) {
+		unsigned int size = checkFivePrize(x, y, RIGHT, player);
+		size += checkFivePrize(x, y, LEFT, player);
+		if (size > 4)
+			return true;
+	}
+
+	if (GET_VERT(_board(x, y).getRawData()) > 4) {
+		unsigned int size = checkFivePrize(x, y, UP, player);
+		size += checkFivePrize(x, y, DOWN, player);
+		if (size > 4)
+			return true;
+	}
+
+	return false;
 }
 
+unsigned int Referee::checkFivePrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	int cleanRock = 0;
 
+	while (goTo(x, y, dir) && (GET_PLAYER(_board(x, y).getRawData()) == player) && (GET_TAKABLE(_board(x, y).getRawData()) == 0)) {
+		cleanRock++;
+	}
+	return cleanRock;
+}
 
 /**
 * Get/Set pour les regles speciales
@@ -112,174 +253,52 @@ bool Referee::fivePrize(bool value) {
 	return _fivePrize;
 }
 
-/**
-* Fonction de test de la regle speciale des 5 pions lors d'une tentative de victoire
-*/
-bool Referee::checkFivePrize(unsigned int x, unsigned int y, Square::Player& player) {
-	if (_board(x, y)._horz > 4) {
-		unsigned int size = checkFivePrize(x, y, 1, 0, player);
-		size += checkFivePrize(x, y, -1, 0, player);
-		if (size > 4)
-			return true;
-	}
-	if (_board(x, y)._vert > 4) {
-		unsigned int size = checkFivePrize(x, y, 0, 1, player);
-		size += checkFivePrize(x, y, 0, -1, player);
-		if (size > 4)
-			return true;
-	}
-	if (_board(x, y)._diagl > 4) {
-		unsigned int size = checkFivePrize(x, y, -1, -1, player);
-		size += checkFivePrize(x, y, 1, 1, player);
-		if (size > 4)
-			return true;
-	}
-	if (_board(x, y)._diagr > 4) {
-		unsigned int size = checkFivePrize(x, y, -1, 1, player);
-		size += checkFivePrize(x, y, 1, -1, player);
-		if (size > 4)
-			return true;
-	}
-	return false;
-}
-
-int Referee::checkFivePrize(unsigned int x, unsigned int y, unsigned int xvec, unsigned int yvec, Square::Player& player) {
-	int cleanRock = 0;
-
-	x += xvec;
-	y += yvec;
-	while (checkPosition(x, y) && _board(x, y).getPlayer() == player && !checkNear2Block(x, y, opponant(player))) {
-		x += xvec;
-		y += yvec;
-		cleanRock++;
-	}
-	return cleanRock;
-}
-
-/**
-* Test si une pierre appartient au joueurs player et est a <= 2 case de x et y
-*/
-bool Referee::checkNear2Block(unsigned int x, unsigned int y, const Square::Player& player) {\
-	for (int xvec = -1; xvec < 1; xvec++) {
-		for (int yvec = -1; yvec < 1; yvec++) {
-			if (checkPosition(x + xvec, y + yvec) && 
-				(_board(x, y).getValues(player)[Square::LINK1] 
-				|| _board(x, y).getValues(player)[Square::LINK2] 
-				|| _board(x, y).getValues(player)[Square::LINK3] 
-				|| _board(x, y).getValues(player)[Square::LINK4] 
-				|| _board(x, y).getValues(player)[Square::LINK5])
-				) 
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 /*
-* Fonction de test de la regle speciale des double 3 pions align�
+* Fonction de test de la regle speciale des double 3 pions align
 */
-bool Referee::checkDoubleThree(unsigned int x, unsigned int y, Square::Player& player) {
-	for (int xvec = -1; xvec < 1; xvec++) {
-		for (int yvec = -1; yvec < 1; yvec++) {
-			if (_board(x + xvec, y + yvec).getPlayer() == opponant(player))
-				return true;
-		}
+bool Referee::checkDoubleThree(unsigned int x, unsigned int y, unsigned int player) {
+	unsigned int num = 0;
+	for (unsigned int i = 0; i < _directionIncrement.size(); i++) {
+		if (isPartOfFree3Align(x, y, static_cast<Vector>(i), player))
+			num++;
 	}
 
-	if (Link3OrMore(x, y, player) && EndLink2OrMore(x, y, player))
+	if (num > 2)
 		return false;
-
-	for (int xvec = -1; xvec < 1; xvec++) {
-		for (int yvec = -1; yvec < 1; yvec++) {
-			if (EndLink2OrMore(x + xvec, y + yvec, player) && !checkNearBlock(x, y, x + xvec, y + yvec, player)) {
-				return false;
-			}
-		}
-	}
-
 	return true;
 }
 
-/**
-* Test si une case a des alignement de 3 ou plus proche
-*/
-bool Referee::Link3OrMore(unsigned int x, unsigned int y, const Square::Player& player) {
-	return (_board(x, y).getValues(player)[Square::LINK3] || _board(x, y).getValues(player)[Square::LINK4] || _board(x, y).getValues(player)[Square::LINK5]);
-}
-
-/**
-* Test si la case est une fin d'alignement de 2 pions ou plus
-*/
-bool Referee::EndLink2OrMore(unsigned int x, unsigned int y, const Square::Player& player) {
-	return (_board(x, y).getValues(player)[Square::END_LINK2] || _board(x, y).getValues(player)[Square::END_LINK3] || _board(x, y).getValues(player)[Square::END_LINK4] || _board(x, y).getValues(player)[Square::END_LINK5]);
-}
-
-/**
-* Test si une pierre appartenant au joueurs 'player', est autour des coordonn�e x et y et est a cot� des coordonn�e xorig, yorig
-*/
-bool Referee::checkNearBlock(unsigned int xorig, unsigned int yorig, unsigned int x, unsigned int y, const Square::Player& player) {\
-	for (int xvec = -1; xvec < 1; xvec++) {
-		for (int yvec = -1; yvec < 1; yvec++) {
-			if ((_board(x + xvec, y + yvec).getPlayer() == player) && (abs((x + xvec) - xorig) > 1 || abs((y + yvec) - yorig) > 1))
-				return false;				
-		}
+bool Referee::isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	unsigned int xnear = x;
+	unsigned int ynear = y;
+	if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player) &&
+		(classicFree3Align(x, y, dir, player) || unClassicFree3Align(x, y, dir, player)))
+	{
+		return true;
 	}
-	return true;
-}
-
-
-
-
-/**
-* cherche si il y a une prise dans une direction
-*/
-bool Referee::checkPrize(unsigned int x, unsigned int y, int xvec, int yvec, const Square::Player& play) {
-	unsigned int count = 0;
-
-	do {
-		x += xvec;
-		y += yvec;
-		count++;
-	} while ((count <= 2) && checkPosition(x, y) && (_board(x, y).getPlayer() == opponant(play)));
-
-	if (count > 2)
-		return (checkPosition(x, y) && (_board(x, y).getPlayer() == play));
 	return false;
 }
 
-/**
-* clean les pierre trouver comme prise
-*/
-void Referee::cleanRock(unsigned int x, unsigned int y, int xvec, int yvec, const Square::Player& play) {
-	for (unsigned int i = 0; i < 2; i++)
-	{
-		x += xvec;
-		y += yvec;
-		propagation_inverse(x, y, opponant(play));
-	}
+bool Referee::classicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	return (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player));
 }
 
-/**
-* get de l'atribut qui contient le gagnant
-*/
-const Square::Player& Referee::checkWin() const {
-	return _winner;
-}
-
-/**
-* reset le gagnant
-*/
-void Referee::reset() {
-	_winner = Square::NOPLAYER;
+bool Referee::unClassicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+	return (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == 0 && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && 
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player &&
+		goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player));
 }
 
 /* Try to propagate in EVERY directions */
-void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& player)
+void Referee::propagation(unsigned int x, unsigned int y, unsigned int player)
 {
+
 	int usize; /* Updated size of (horizontal/vertical/diagonal) line */
 
+		/*
 	//std::cout << " ORG " << x << " " << y << std::endl;
 	if (checkPosition(x, y+1))
 	  _board(x, y)._vert  = _board(x, y+1)._vert;
@@ -350,9 +369,10 @@ void Referee::updateTruc(unsigned int x, unsigned int y, const Square::Player& p
   }*/
 
 /* Try to propagate in ONE direction */
-void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& player,
+void Referee::propagation(unsigned int x, unsigned int y, unsigned int player,
 	unsigned int dir, unsigned int usize)
 {
+	/*
 	int i = 0x8;
 
 	do
@@ -385,10 +405,12 @@ void Referee::propagation(unsigned int x, unsigned int y, const Square::Player& 
 		}
 		propagation(x, y, player, dir, usize);
 	}
+	*/
 }
 
-void Referee::propagation_inverse(unsigned int x, unsigned int y, const Square::Player& player)
+void Referee::propagation_inverse(unsigned int x, unsigned int y, unsigned int player)
 {
+	/*
 	int usize1;
 	int usize2;
 
@@ -418,10 +440,12 @@ void Referee::propagation_inverse(unsigned int x, unsigned int y, const Square::
 	_board(x, y)._diagl = 0;
 	_board(x, y)._diagr = 0;
 	_board(x, y).setPlayer(Square::NOPLAYER);
+	*/
 }
 
-int Referee::lineSize(unsigned int x, unsigned int y, const Square::Player& player, int dir)
+int Referee::lineSize(unsigned int x, unsigned int y, unsigned int player, int dir)
 {
+	/*
 	int i = 0x8;
 
 	do
@@ -437,5 +461,7 @@ int Referee::lineSize(unsigned int x, unsigned int y, const Square::Player& play
 
 	if (_board(x, y).getPlayer() == player)
 		return lineSize(x, y, player, dir) + 1;
-	return 0;
+
+	*/
+		return 0;
 }

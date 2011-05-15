@@ -8,24 +8,24 @@
 #ifndef APLAYER_H
 #define	APLAYER_H
 
-#include "Referee.hpp"
-#include "Square.hpp"
 
+#include "Board.hpp"
+#include "Referee.hpp"
 
 class APlayer
 {
 public :
-    APlayer(Square::Player player);
+    APlayer(unsigned int player);
     virtual ~APlayer();
     
     int getNBPawnTaken() const;
-    Square::Player & getPlayerNum();
+    unsigned int getPlayerNum();
     void addPawnTaken(int nb);
     virtual void doAction(Board & gameboard, Referee & referee) = 0;
 
 private:
     int _nbPawnTaken;
-    Square::Player _player;
+    unsigned int _player;
 };
 
 #endif	/* APLAYER_H */
