@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QObject::connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(print_status()));
 }
 
 MainWindow::~MainWindow()
@@ -16,9 +17,9 @@ MainWindow::~MainWindow()
     delete scene;
 }
 
-void MainWindow::DrawCadre()
+void MainWindow::DrawCadre(QColor &color)
 {
-    QPen pen(Qt::white, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    QPen pen(color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     float size = 19;
     int border = 25;
     float height = ui->gameboard->geometry().height();
@@ -36,24 +37,24 @@ void MainWindow::DrawCadre()
         ui->gameboard->scene()->addLine(h_line, pen);
         ui->gameboard->scene()->addLine(v_line, pen);
     }
-    Drawrepere(border + 3 * refw, border + 3 * refh);
-    Drawrepere(border + 3 * refw, border + 9 * refh);
-    Drawrepere(border + 3 * refw, border + 15 * refh);
-    Drawrepere(border + 9 * refw, border + 3 * refh);
-    Drawrepere(border + 9 * refw, border + 9 * refh);
-    Drawrepere(border + 9 * refw, border + 15 * refh);
-    Drawrepere(border + 15 * refw, border + 3 * refh);
-    Drawrepere(border + 15 * refw, border + 9 * refh);
-    Drawrepere(border + 15 * refw, border + 15 * refh);
+    Drawrepere(color, border + 3 * refw, border + 3 * refh);
+    Drawrepere(color, border + 3 * refw, border + 9 * refh);
+    Drawrepere(color, border + 3 * refw, border + 15 * refh);
+    Drawrepere(color, border + 9 * refw, border + 3 * refh);
+    Drawrepere(color, border + 9 * refw, border + 9 * refh);
+    Drawrepere(color, border + 9 * refw, border + 15 * refh);
+    Drawrepere(color, border + 15 * refw, border + 3 * refh);
+    Drawrepere(color, border + 15 * refw, border + 9 * refh);
+    Drawrepere(color, border + 15 * refw, border + 15 * refh);
 
 }
 
-void MainWindow::Drawrepere(int x, int y)
+void MainWindow::Drawrepere(QColor &color, int x, int y)
 {
-    QPen pen(Qt::white, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    QPen pen(color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     QGraphicsScene *canvas = ui->gameboard->scene();
     QAbstractGraphicsShapeItem* i = canvas->addEllipse(QRectF(0,0,8,8), pen);
-    i->setBrush( Qt::white);
+    i->setBrush(color);
     i->setPos(x - 4, y - 4);
 }
 
@@ -65,10 +66,16 @@ void MainWindow::resizeEvent(QResizeEvent *event)
                                ui->gameboard->geometry().height() - 5);
     ui->gameboard->setScene(scene);
     ui->gameboard->scene()->clear();
-    QImage *image = new QImage(":/Background/gazon.jpg");
+    QImage *image = new QImage(":/Background/parquet.jpg");
     QBrush *brush = new QBrush(*image);
     scene->setBackgroundBrush(*brush);
-    DrawCadre();
+    QColor color(Qt::black);
+    DrawCadre(color);
     update();
     QWidget::resizeEvent(event);
+}
+
+void MainWindow::print_status()
+{
+    ui->statusBar->showMessage("ready to go");
 }
