@@ -17,4 +17,4 @@ HEADERS  += headers/mainwindow.h
 
 FORMS    += forms/mainwindow.ui
 
-RESOURCES +=
+RESOURCES += ressources/texture.qrc
