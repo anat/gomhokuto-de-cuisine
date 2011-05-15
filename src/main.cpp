@@ -7,9 +7,9 @@
 
 #include <iostream>
 
-//#include "Board.hpp"
-//#include "Referee.hpp"
-//#include "Game.hpp"
+#include "Board.hpp"
+#include "Referee.hpp"
+#include "Game.hpp"
 
 /* Proto test/debug */
 //void cleanBoard(Board &plateau);
@@ -22,25 +22,10 @@
 int main(void) {
     //Board plateau;
     //Referee arbitre(plateau);
-
     
-    Square s;
-//    Square::Data & data = s.getData();
-//    data.player = 1;
-//    data.is_takable = 0;
-//    data.diagl = 1;
-//    data.diagr = 3;
-//    data.horz = 2;
-//    data.vert = 0;
-//    s.setData(data);
-    int32_t data = s.getRawData();
-    data |= PLAYER(1) | DIAGL(1) | DIAGR(3) | HORZ(2);
-    s.setRawData(data);
-    s.dumpData();
-    //if (plateau(1, 2).getPlayer() == Square::NOPLAYER)
-    //std::cout << "caca" << std::endl;
-    //Game game;
-    //game.doGame();
+    //plateau.DumpBoard();
+    Game game;
+    game.doGame();
     //testCheck(plateau, arbitre);
     return 0;
 }

@@ -92,7 +92,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
 	int value = -1;
 
 	if (testPosition(x, y, player)) {
-		_board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(1));
+		_board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(player));
 		propagation(x, y, player);
 		value = checkPrize(x, y, player);
 		checkWin(x, y, player);
