@@ -13,9 +13,9 @@
 #include "mainwindow.hpp"
 
 
-/* Proto test/debug */
+/* Proto test/debug (Zinkiete pas, je nettoierai toutes mes saletes bientot) */
 //void cleanBoard(Board &plateau);
-//void dbgDumpBoard(Board &plateau, int limit);
+void dbgDumpBoard(Board &plateau, int limit);
 //void testCheck(Board &plateau, Referee &arbitre);
 //void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump);
 
@@ -39,9 +39,23 @@ int main(int ac, char **av) {
         Game game;
         game.doGame();
     }
-    else
+    else if (ac == 2 && QString(av[1]) == "papa") 
     {
+      Board plateau;
+      Referee arbitre(plateau);
 
+      arbitre.tryPlaceRock(1, 2, PLAYER1);
+      arbitre.tryPlaceRock(3, 2, PLAYER1);
+      arbitre.tryPlaceRock(4, 2, PLAYER1);
+      arbitre.tryPlaceRock(5, 2, PLAYER1);
+      arbitre.tryPlaceRock(2, 3, PLAYER1);
+      arbitre.tryPlaceRock(3, 3, PLAYER1);
+      arbitre.tryPlaceRock(2, 5, PLAYER1);
+      arbitre.tryPlaceRock(3, 5, PLAYER1);
+      arbitre.tryPlaceRock(3, 4, PLAYER1);
+
+      arbitre.propagation_inverse(3, 4, PLAYER1);
+      dbgDumpBoard(plateau, 10);
     }
     return 1;
     //Board plateau;
@@ -55,12 +69,6 @@ int main(int ac, char **av) {
 //    data.horz = 2;
 //    data.vert = 0;
 //    s.setData(data);
-
-    //if (plateau(1, 2).getPlayer() == Square::NOPLAYER)
-    //std::cout << "caca" << std::endl;
-    //plateau.DumpBoard();
-
-    //testCheck(plateau, arbitre);
 }
 
 
@@ -163,33 +171,33 @@ int main(int ac, char **av) {
 //	plateau(i, j)._diagr = 0;
 //      }
 //}
-//
-//void dbgDumpBoard(Board &plateau, int limit = 19)
-//{
-//  int i, j;
-//  char c;
-//
-//  std::cout << "   0  1  2  3  4  5  6  7  8  9"
-//	    << "  10 11 12 13 14 15 16 17 18" << std::endl;
-//  for (i = 0; i < limit; i++) /* Y */
-//    {
-//      std::cout.width(2);
-//      std::cout << i;
-//      for (j = 0; j < 19; j++) /* X */
-//	{
-//	  switch (plateau(j, i).getPlayer())
-//	    {
-//	    case Square::NOPLAYER: c = '.'; break;
-//	    case Square::PLAYER1:  c = 'X'; break;
-//	    case Square::PLAYER2:  c = 'O'; break;
-//	    default:               c = '?'; break;
-//	    }
-//	  std::cout << " ";
-//	  std::cout << c;
-//	  std::cout << " ";
-//	}
-//      std::cout << std::endl;
-//    }
-//  if (limit != 19)
-//    std::cout << "   [...]" << std::endl;
-//}
+
+void dbgDumpBoard(Board &plateau, int limit = 19)
+{
+  int i, j;
+  char c;
+
+  std::cout << "   0  1  2  3  4  5  6  7  8  9"
+	    << "  10 11 12 13 14 15 16 17 18" << std::endl;
+  for (i = 0; i < limit; i++) /* Y */
+    {
+      std::cout.width(2);
+      std::cout << i;
+      for (j = 0; j < 19; j++) /* X */
+	{
+	  switch (GET_PLAYER(plateau(j, i).getRawData()))
+	    {
+	    case NOPLAYER: c = '.'; break;
+	    case PLAYER1:  c = 'X'; break;
+	    case PLAYER2:  c = 'O'; break;
+	    default:               c = '?'; break;
+	    }
+	  std::cout << " ";
+	  std::cout << c;
+	  std::cout << " ";
+	}
+      std::cout << std::endl;
+    }
+  if (limit != 19)
+    std::cout << "   [...]" << std::endl;
+}

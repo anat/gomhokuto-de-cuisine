@@ -6,6 +6,7 @@
 */
 
 #include "Referee.hpp"
+#include "Game.hpp"
 #include <iostream>
 
 Referee::Referee(Board& board) 
@@ -149,7 +150,7 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
 * cherche si il y a une prise dans une direction
 */
 bool Referee::checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
-	unsigned int i = 0;
+  //unsigned int i = 0;
 	if (checkIsTakable(x, y, dir, player)) 
 	{
 		goTo(x, y, dir);
@@ -373,172 +374,133 @@ bool Referee::isFreeAlign(unsigned int x, unsigned int y, Vector dirorig, Vector
 void Referee::propagation(unsigned int x, unsigned int y, unsigned int player)
 {
 
-	int usize; /* Updated size of (horizontal/vertical/diagonal) line */
+  int usize; /* Updated size of (horizontal/vertical/diagonal) line */
 
-	/*
-	//std::cout << " ORG " << x << " " << y << std::endl;
-	if (checkPosition(x, y+1))
-	_board(x, y)._vert  = _board(x, y+1)._vert;
-	if (checkPosition(x, y-1))
-	_board(x, y)._vert += _board(x, y-1)._vert;
-	usize = _board(x, y)._vert + 1;
+  std::cout << " ORG " << x << " " << y << std::endl;
+  if (checkPosition(x, y+1))
+    _board(x, y).getData().vert  = _board(x, y+1).getData().vert;
+  if (checkPosition(x, y-1))
+    _board(x, y).getData().vert += _board(x, y-1).getData().vert;
+  usize = _board(x, y).getData().vert += 1;
+  
+  propagation(x, y, player, DIR_UP               , usize);
+  propagation(x, y, player, DIR_DOWN             , usize);
 
-	propagation(x, y, player, DIR_UP               , usize);
-	propagation(x, y, player, DIR_DOWN             , usize);
-
-	if (checkPosition(x-1, y))
-	_board(x, y)._vert  = _board(x-1, y)._vert;
-	if (checkPosition(x+1, y))
-	_board(x, y)._vert += _board(x+1, y)._vert;
-	usize = _board(x, y)._horz + 1;
-
-	propagation(x, y, player, DIR_LEFT             , usize);
-	propagation(x, y, player, DIR_RIGHT            , usize);
-
-	if (checkPosition(x-1, y-1))
-	_board(x, y)._vert  = _board(x-1, y-1)._vert;
-	if (checkPosition(x+1, y+1))
-	_board(x, y)._vert += _board(x+1, y+1)._vert;
-	usize = _board(x, y)._diagl + 1;
-
-	propagation(x, y, player, DIR_UP   | DIR_LEFT  , usize);
-	propagation(x, y, player, DIR_DOWN | DIR_RIGHT , usize);
-
-	if (checkPosition(x+1, y-1))
-	_board(x, y)._vert  = _board(x+1, y-1)._vert;
-	if (checkPosition(x-1, y+1))
-	_board(x, y)._vert += _board(x-1, y+1)._vert;
-	usize = _board(x, y)._diagr + 1;
-
-	propagation(x, y, player, DIR_UP   | DIR_RIGHT , usize);
-	propagation(x, y, player, DIR_DOWN | DIR_LEFT  , usize);
-
-	/*
-	int link[5] = {0};
-
-	if (_board(x, y)._horz == 1  || _board(x, y)._vert == 1 ||
-	_board(x, y)._diagl == 1 || _board(x, y)._diagr == 1)
-	link[0]++;
-	link[_board(x, y)._horz  - 1]++;
-	link[_board(x, y)._vert  - 1]++;
-	link[_board(x, y)._diagl - 1]++;
-	link[_board(x, y)._diagr - 1]++;
-
-	updateTruc(x-1, y-1, player, link);
-	updateTruc(x-1, y,   player, link);
-	updateTruc(x-1, y+1, player, link);
-	updateTruc(x,   y-1, player, link);
-	updateTruc(x,   y+1, player, link);
-	updateTruc(x+1, y-1, player, link);
-	updateTruc(x+1, y,   player, link);
-	updateTruc(x+1, y+1, player, link);*/
+  //usize = _board(x, y)._horz = _board(x-1, y)._horz + _board(x+1, y)._horz + 1;
+  
+  if (checkPosition(x-1, y))
+    _board(x, y).getData().horz  = _board(x-1, y).getData().horz;
+  if (checkPosition(x+1, y))
+    _board(x, y).getData().horz += _board(x+1, y).getData().horz;
+  usize = _board(x, y).getData().horz += 1;
+  
+  propagation(x, y, player, DIR_LEFT             , usize);
+  propagation(x, y, player, DIR_RIGHT            , usize);
+  
+  if (checkPosition(x-1, y-1))
+    _board(x, y).getData().diagl  = _board(x-1, y-1).getData().diagl;
+  if (checkPosition(x+1, y+1))
+    _board(x, y).getData().diagl += _board(x+1, y+1).getData().diagl;
+  usize = _board(x, y).getData().diagl += 1;
+  
+  propagation(x, y, player, DIR_UP   | DIR_LEFT  , usize);
+  propagation(x, y, player, DIR_DOWN | DIR_RIGHT , usize);
+  
+  if (checkPosition(x+1, y-1))
+    _board(x, y).getData().diagr  = _board(x+1, y-1).getData().diagr;
+  if (checkPosition(x-1, y+1))
+    _board(x, y).getData().diagr += _board(x-1, y+1).getData().diagr;
+  usize = _board(x, y).getData().diagr += 1;
+  
+  propagation(x, y, player, DIR_UP   | DIR_RIGHT , usize);
+  propagation(x, y, player, DIR_DOWN | DIR_LEFT  , usize);
 }
-/*
-void Referee::updateTruc(unsigned int x, unsigned int y, const Square::Player& player, int l[5])
-//int l1, int l2, int l3, int l4, int l5)
-{
-std::cout << "Update : " << l[0]  << l[1]  << l[2]  << l[3]  << l[4] << std::endl;
-_board(x, y).getValues(player)[Square::LINK1] += l[0];
-_board(x, y).getValues(player)[Square::LINK2] += l[1];
-_board(x, y).getValues(player)[Square::LINK3] += l[2];
-_board(x, y).getValues(player)[Square::LINK4] += l[3];
-_board(x, y).getValues(player)[Square::LINK5] += l[4];
-}*/
 
 /* Try to propagate in ONE direction */
 void Referee::propagation(unsigned int x, unsigned int y, unsigned int player,
 	unsigned int dir, unsigned int usize)
 {
-	/*
-	int i = 0x8;
+  int i = 0x8;
 
-	do
-	switch(dir & i)
+  do
+    switch(dir & i)
+      {
+      case DIR_UP:    y--; break;
+      case DIR_DOWN:  y++; break;
+      case DIR_LEFT:  x--; break;
+      case DIR_RIGHT: x++; break;
+      default:             break;
+      }
+  while ((i >>= 1));
+  
+  if (checkPosition(x, y) && GET_PLAYER(_board(x, y).getRawData()) == player)
+    {
+      std::cout << "  IN " << x << " " << y << "  usize(" << usize << ")" << std::endl;
+      switch(dir)
 	{
-	case DIR_UP:    y--; break;
-	case DIR_DOWN:  y++; break;
-	case DIR_LEFT:  x--; break;
-	case DIR_RIGHT: x++; break;
-	default:             break;
-	}
-	while ((i >>= 1));
-
-
-
-	if (checkPosition(x, y) && _board(x, y).getPlayer() == player)
-	{
-	std::cout << "  IN " << x << " " << y << "  usize(" << usize << ")" << std::endl;
-	switch(dir)
-	{
-	case DIR_UP:               _board(x, y)._vert  = usize; break;
-	case DIR_DOWN:             _board(x, y)._vert  = usize; break;
-	case DIR_LEFT:             _board(x, y)._horz  = usize; break;
-	case DIR_RIGHT:            _board(x, y)._horz  = usize; break;
-	case DIR_UP   | DIR_LEFT:  _board(x, y)._diagl = usize; break;
-	case DIR_DOWN | DIR_RIGHT: _board(x, y)._diagl = usize; break;
-	case DIR_UP   | DIR_RIGHT: _board(x, y)._diagr = usize; break;
-	case DIR_DOWN | DIR_LEFT:  _board(x, y)._diagr = usize; break;
+	case DIR_UP:               _board(x, y).getData().vert  = usize; break;
+	case DIR_DOWN:             _board(x, y).getData().vert  = usize; break;
+	case DIR_LEFT:             _board(x, y).getData().horz  = usize; break;
+	case DIR_RIGHT:            _board(x, y).getData().horz  = usize; break;
+	case DIR_UP   | DIR_LEFT:  _board(x, y).getData().diagl = usize; break;
+	case DIR_DOWN | DIR_RIGHT: _board(x, y).getData().diagl = usize; break;
+	case DIR_UP   | DIR_RIGHT: _board(x, y).getData().diagr = usize; break;
+	case DIR_DOWN | DIR_LEFT:  _board(x, y).getData().diagr = usize; break;
 	default:                    break;
 	}
-	propagation(x, y, player, dir, usize);
-	}
-	*/
+      propagation(x, y, player, dir, usize);
+    }
 }
 
 void Referee::propagation_inverse(unsigned int x, unsigned int y, unsigned int player)
 {
-	/*
-	int usize1;
-	int usize2;
+  int usize1;
+  int usize2;
 
-	std::cout << " ORG " << x << " " << y << "    <- INVERSE" << std::endl;
-	usize1 = lineSize(x, y, player, DIR_UP);
-	usize2 = _board(x, y)._vert - usize1 - 1;
-	propagation(x, y, player, DIR_UP               , usize1);
-	propagation(x, y, player, DIR_DOWN             , usize2);
+  std::cout << " ORG " << x << " " << y << "    <- INVERSE" << std::endl;
+  usize1 = lineSize(x, y, player, DIR_UP);
+  usize2 = _board(x, y).getData().vert - usize1 - 1;
+  propagation(x, y, player, DIR_UP               , usize1);
+  propagation(x, y, player, DIR_DOWN             , usize2);
+  
+  usize1 = lineSize(x, y, player, DIR_LEFT);
+  usize2 = _board(x, y).getData().horz - usize1 - 1;
+  propagation(x, y, player, DIR_LEFT             , usize1);
+  propagation(x, y, player, DIR_RIGHT            , usize2);
 
-	usize1 = lineSize(x, y, player, DIR_LEFT);
-	usize2 = _board(x, y)._horz - usize1 - 1;
-	propagation(x, y, player, DIR_LEFT             , usize1);
-	propagation(x, y, player, DIR_RIGHT            , usize2);
+  usize1 = lineSize(x, y, player, DIR_UP | DIR_LEFT);
+  usize2 = _board(x, y).getData().diagl - usize1 - 1;
+  propagation(x, y, player, DIR_UP   | DIR_LEFT  , usize1);
+  propagation(x, y, player, DIR_DOWN | DIR_RIGHT , usize2);
 
-	usize1 = lineSize(x, y, player, DIR_UP | DIR_LEFT);
-	usize2 = _board(x, y)._diagl - usize1 - 1;
-	propagation(x, y, player, DIR_UP   | DIR_LEFT  , usize1);
-	propagation(x, y, player, DIR_DOWN | DIR_RIGHT , usize2);
+  usize1 = lineSize(x, y, player, DIR_UP | DIR_RIGHT);
+  usize2 = _board(x, y).getData().diagr - usize1 - 1;
+  propagation(x, y, player, DIR_UP   | DIR_RIGHT , usize1);
+  propagation(x, y, player, DIR_DOWN | DIR_LEFT  , usize2);  
 
-	usize1 = lineSize(x, y, player, DIR_UP | DIR_RIGHT);
-	usize2 = _board(x, y)._diagr - usize1 - 1;
-	propagation(x, y, player, DIR_UP   | DIR_RIGHT , usize1);
-	propagation(x, y, player, DIR_DOWN | DIR_LEFT  , usize2);  
-
-	_board(x, y)._horz  = 0;
-	_board(x, y)._vert  = 0;
-	_board(x, y)._diagl = 0;
-	_board(x, y)._diagr = 0;
-	_board(x, y).setPlayer(Square::NOPLAYER);
-	*/
+  _board(x, y).getData().horz   = 0;
+  _board(x, y).getData().vert   = 0;
+  _board(x, y).getData().diagl  = 0;
+  _board(x, y).getData().diagr  = 0;
+  _board(x, y).getData().player = NOPLAYER;
 }
 
 int Referee::lineSize(unsigned int x, unsigned int y, unsigned int player, int dir)
 {
-	/*
-	int i = 0x8;
+  int i = 0x8;
 
-	do
-	switch(dir & i)
-	{
-	case DIR_UP:    y--; break;
-	case DIR_DOWN:  y++; break;
-	case DIR_LEFT:  x--; break;
-	case DIR_RIGHT: x++; break;
-	default:             break;
-	}
-	while ((i >>= 1));
-
-	if (_board(x, y).getPlayer() == player)
-	return lineSize(x, y, player, dir) + 1;
-
-	*/
-	return 0;
+  do
+    switch(dir & i)
+      {
+      case DIR_UP:    y--; break;
+      case DIR_DOWN:  y++; break;
+      case DIR_LEFT:  x--; break;
+      case DIR_RIGHT: x++; break;
+      default:             break;
+      }
+  while ((i >>= 1));
+  
+  if (GET_PLAYER(_board(x, y).getRawData()) == player)
+    return lineSize(x, y, player, dir) + 1;
+  return 0;
 }

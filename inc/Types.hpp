@@ -8,8 +8,7 @@
 #ifndef TYPES_HPP_
 #define TYPES_HPP_
 
-#  include <stdint.h>
-# ifdef  UNIX
+# ifdef  __unix__
 #  include <stdint.h>
 # elif   WIN32
 #  include <BaseTsd.h>
