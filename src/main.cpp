@@ -25,19 +25,14 @@ int main(int ac, char **av) {
     if (ac == 1)
     {
         QApplication a(ac, av);
-    MainWindow w;
-    w.show();
-    return a.exec();
+        MainWindow w;
+        w.show();
+        return a.exec();
     }
     else if (ac == 2 && QString(av[1]) == "iaonly")
     {
-        Square s;
-        int32_t data = s.getRawData();
-        data |= PLAYER(1) | DIAGL(1) | DIAGR(3) | HORZ(2);
-        s.setRawData(data);
-        s.dumpData();
         Game game;
-        game.doGame();
+        game.doGameTerminal();
     }
     else if (ac == 2 && QString(av[1]) == "papa") 
     {

@@ -25,16 +25,21 @@ public:
     
     unsigned int     getPlayerTurn();
     APlayer *  getCurrentPlayer();
-    void       doGame();
+    void       doGameGui(int x, int y);
+    void       doGameTerminal();
     void       newGame(bool vs_computer = false);
     bool       checkWin();
     Board &    getGameBoard();
-
+    bool       getDoubleThree();
+    bool       getFivePrize();
+    void       setDoubleThree(bool value);
+    void       setFivePrize(bool value);
+    
 private:
     std::vector<APlayer*>   _players;
     Board                   _gameboard;
     Referee                 _referee;
-    unsigned int            _playerTurn;    
+    unsigned int            _playerTurn;
 };
 
 #endif	/* GAME_H */
