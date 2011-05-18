@@ -53,7 +53,7 @@ void Square::dumpData()
     std::cout << "diagr : " << GET_DIAGR(_data) << std::endl;
     std::cout << "horz : " << GET_HORZ(_data) << std::endl;
     std::cout << "vert : " << GET_VERT(_data) << std::endl;
-    std::cout << "value : " << this->getRawData()<< std::endl;
+    std::cout << "value : " << std::dec << this->getRawData()<< std::endl;
     std::cout << "value hex : 0x" << std::hex;
     std::cout << this->getRawData() << std::endl;
 }

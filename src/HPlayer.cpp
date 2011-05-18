@@ -34,6 +34,8 @@ void HPlayer::doAction(Board& gameboard, Referee& referee)
         }
         else
             addPawnTaken(res);
+        std::cout << "RES : " << res << std::endl;
+        std::cout << getNBPawnTaken() << std::endl;
     }
     while (res == -1);
 }

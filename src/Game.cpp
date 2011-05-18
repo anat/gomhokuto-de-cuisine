@@ -31,7 +31,13 @@ APlayer * Game::getCurrentPlayer()
     return (_players[i - 1]);
 }
 
-void Game::doGame()
+void Game::doGameGui(int x, int y)
+{
+    
+}
+
+
+void Game::doGameTerminal()
 {
     bool stillRunning = true;
     while (stillRunning)
@@ -68,4 +74,24 @@ bool Game::checkWin()
 Board &    Game::getGameBoard()
 {
     return (_gameboard);
+}
+
+bool    Game::getFivePrize()
+{
+    return (_referee.fivePrize());
+}
+
+bool    Game::getDoubleThree()
+{
+    return (_referee.doubleThree());
+}
+
+void    Game::setFivePrize(bool value)
+{
+    _referee.fivePrize(value);
+}
+
+void    Game::setDoubleThree(bool value)
+{
+    _referee.doubleThree(value);
 }
