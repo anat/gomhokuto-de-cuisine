@@ -25,7 +25,7 @@ public:
     
     unsigned int     getPlayerTurn();
     APlayer *  getCurrentPlayer();
-    void       doGameGui(int x, int y);
+    bool       doGameGui(int x, int y);
     void       doGameTerminal();
     void       newGame(bool vs_computer = false);
     bool       checkWin();

@@ -31,9 +31,14 @@ APlayer * Game::getCurrentPlayer()
     return (_players[i - 1]);
 }
 
-void Game::doGameGui(int x, int y)
+bool Game::doGameGui(int x, int y)
 {
-    
+    bool winner = false;
+    getCurrentPlayer()->doAction(_gameboard, _referee, x, y);
+    if (!(winner = checkWin()))
+        _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
+            (PLAYER1);
+    return (winner);
 }
 
 
