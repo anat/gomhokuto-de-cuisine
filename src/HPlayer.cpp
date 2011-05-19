@@ -15,28 +15,35 @@ HPlayer::~HPlayer() {
 }
 
 
-void HPlayer::doAction(Board& gameboard, Referee& referee)
+void HPlayer::doAction(Board& gameboard, Referee& referee, int x, int y)
 {
-    int x = 0, y = 0;
     int res = 0;
-    do 
+    if (x < 0 && y < 0)
     {
-        gameboard.DumpBoard();
-        std::cout << "Player " << this->getPlayerNum();
-        std::cout << " you want play on x :";
-        std::cin >> x;
-        std::cout << " y : ";
-        std::cin >> y;
-        res = referee.tryPlaceRock(x,y, this->getPlayerNum());
-        if (res == -1) {
-            std::cout << "you can't play here x : " << x;
-            std::cout << " y : " << y << std::endl;
+        do 
+        {
+            gameboard.DumpBoard();
+            std::cout << "Player " << this->getPlayerNum();
+            std::cout << " you want play on x :";
+            std::cin >> x;
+            std::cout << " y : ";
+            std::cin >> y;
+            res = referee.tryPlaceRock(x,y, this->getPlayerNum());
+            if (res == -1) {
+                std::cout << "you can't play here x : " << x;
+                std::cout << " y : " << y << std::endl;
+            }
+            else
+                addPawnTaken(res);
+            std::cout << "RES : " << res << std::endl;
+            std::cout << getNBPawnTaken() << std::endl;
         }
-        else
-            addPawnTaken(res);
-        std::cout << "RES : " << res << std::endl;
-        std::cout << getNBPawnTaken() << std::endl;
+        while (res == -1);
     }
-    while (res == -1);
+    else
+    {
+        res = referee.tryPlaceRock(x, y, this->getPlayerNum());
+        if (res != -1)
+                addPawnTaken(res);
+    }
 }
-
