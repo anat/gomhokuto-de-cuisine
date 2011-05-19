@@ -38,6 +38,7 @@ bool Game::doGameGui(int x, int y)
     if (!(winner = checkWin()))
         _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
             (PLAYER1);
+    emit clear();
     return (winner);
 }
 
