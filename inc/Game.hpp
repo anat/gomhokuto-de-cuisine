@@ -8,6 +8,7 @@
 #ifndef GAME_H
 #define	GAME_H
 
+#include <QtGui>
 #include <vector>
 #include "Referee.hpp"
 #include "Board.hpp"
@@ -18,7 +19,10 @@
 #define PLAYER2 2
 #define NB_MAX_PLAYER 2
 
-class Game {
+class Game : public QObject {
+
+    Q_OBJECT
+
 public:    
     Game(bool vs_computer = false);
     virtual ~Game();
@@ -34,6 +38,9 @@ public:
     bool       getFivePrize();
     void       setDoubleThree(bool value);
     void       setFivePrize(bool value);
+    
+signals:
+    void clear();
     
 private:
     std::vector<APlayer*>   _players;
