@@ -49,31 +49,26 @@ int main(int ac, char **av) {
       arbitre.tryPlaceRock(3, 5, PLAYER1);
       arbitre.tryPlaceRock(3, 4, PLAYER1);
 
-      arbitre.propagation_inverse(3, 4, PLAYER1);
+      //arbitre.propagation_inverse(3, 4, PLAYER1);
       dbgDumpBoard(plateau, 10);
     }
     return 1;
-    //Board plateau;
-    //Referee arbitre(plateau);
-    
-//    Square::Data & data = s.getData();
-//    data.player = 1;
-//    data.is_takable = 0;
-//    data.diagl = 1;
-//    data.diagr = 3;
-//    data.horz = 2;
-//    data.vert = 0;
-//    s.setData(data);
 }
 
+/*
+int main(void) {
+    Game game;
+    game.doGameTerminal();
+}
+ * */
 
 /* *****  FONCTIONS DE TEST / DEBUG  ***** */
 
 /*
-** Tests pour verifier le fonctionnement de l'arbitre (Regle #2)
-** Tout ces tests place une piece a un endroit vide mais non accessible,
-** si le test FAIL c'est qu'on a reussi a placer la piece (pas normal).
-*/
+ ** Tests pour verifier le fonctionnement de l'arbitre (Regle #2)
+ ** Tout ces tests place une piece a un endroit vide mais non accessible,
+ ** si le test FAIL c'est qu'on a reussi a placer la piece (pas normal).
+ */
 //void testCheck(Board &plateau, Referee &arbitre)
 //{
 //  Square::Player toto;
@@ -167,32 +162,32 @@ int main(int ac, char **av) {
 //      }
 //}
 
-void dbgDumpBoard(Board &plateau, int limit = 19)
-{
-  int i, j;
-  char c;
+void dbgDumpBoard(Board &plateau, int limit = 19) {
+    int i, j;
+    char c;
 
-  std::cout << "   0  1  2  3  4  5  6  7  8  9"
-	    << "  10 11 12 13 14 15 16 17 18" << std::endl;
-  for (i = 0; i < limit; i++) /* Y */
-    {
-      std::cout.width(2);
-      std::cout << i;
-      for (j = 0; j < 19; j++) /* X */
-	{
-	  switch (GET_PLAYER(plateau(j, i).getRawData()))
-	    {
-	    case NOPLAYER: c = '.'; break;
-	    case PLAYER1:  c = 'X'; break;
-	    case PLAYER2:  c = 'O'; break;
-	    default:               c = '?'; break;
-	    }
-	  std::cout << " ";
-	  std::cout << c;
-	  std::cout << " ";
-	}
-      std::cout << std::endl;
+    std::cout << "   0  1  2  3  4  5  6  7  8  9"
+            << "  10 11 12 13 14 15 16 17 18" << std::endl;
+    for (i = 0; i < limit; i++) /* Y */ {
+        std::cout.width(2);
+        std::cout << i;
+        for (j = 0; j < 19; j++) /* X */ {
+            switch (GET_PLAYER(plateau(j, i).getRawData())) {
+                case NOPLAYER: c = '.';
+                    break;
+                case PLAYER1: c = 'X';
+                    break;
+                case PLAYER2: c = 'O';
+                    break;
+                default: c = '?';
+                    break;
+            }
+            std::cout << " ";
+            std::cout << c;
+            std::cout << " ";
+        }
+        std::cout << std::endl;
     }
-  if (limit != 19)
-    std::cout << "   [...]" << std::endl;
+    if (limit != 19)
+        std::cout << "   [...]" << std::endl;
 }
