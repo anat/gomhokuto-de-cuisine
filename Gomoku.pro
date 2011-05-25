@@ -21,8 +21,15 @@ SOURCES += ./src/main.cpp\
         ./src/Square.cpp \
         ./src/gridmanager.cpp
 
-
-HEADERS  += ./inc/mainwindow.hpp
+HEADERS  += ./inc/mainwindow.hpp \
+    ./inc/Types.hpp \
+    ./inc/Square.hpp \
+    ./inc/Referee.hpp \
+    ./inc/HPlayer.hpp \
+    ./inc/gridmanager.hpp \
+    ./inc/Game.hpp \
+    ./inc/Board.hpp \
+    ./inc/APlayer.hpp
 
 FORMS    += ./forms/mainwindow.ui
 
