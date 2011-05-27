@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QtGui>
 
+#include "Game.hpp"
+
 namespace Ui {
     class MainWindow;
 }
@@ -12,20 +14,23 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-    Ui::MainWindow  *ui;
-    QGraphicsScene  *scene;
-    int             border;
-    float           refh;
-    float           refw;
+    Ui::MainWindow * _ui;
+    QGraphicsScene * _scene;
+    Game           * _game;
+    int              _sizeboard;
+    int              _border;
+    float            _refh;
+    float            _refw;
 
-    void DrawCadre(QColor &color);
-    void Drawrepere(QColor &color, int x, int y);
+    void DrawShelf(QColor &color);
+    void DrawMark(QColor &color, int x, int y);
+    void DrawPiece(int x, int y);
+    void DrawBoard();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void DrawPiece(int x, int y);
 
 protected:
     void resizeEvent(QResizeEvent *event);
