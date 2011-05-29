@@ -34,8 +34,8 @@ APlayer * Game::getCurrentPlayer()
 bool Game::doGameGui(int x, int y)
 {
     bool winner = false;
-    getCurrentPlayer()->doAction(_gameboard, _referee, x, y);
-    if (!(winner = checkWin()))
+    bool doActionIsOk = getCurrentPlayer()->doAction(_gameboard, _referee, x, y);
+    if (!(winner = checkWin()) && doActionIsOk)
         _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
             (PLAYER1);
     emit clear();
