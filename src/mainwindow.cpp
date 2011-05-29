@@ -23,7 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(trytopose(int,int)));
     QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(print_status(int,int)));
     QObject::connect(this->_param, SIGNAL(SignalModif()), this, SLOT(DrawAll()));
-
+    QObject::connect(this->_game, SIGNAL(winner(int)), this, SLOT(TheWinnerIs(int)));
+    QObject::connect(this->_param, SIGNAL(SignalDoubleThree(int)), this, SLOT(checkDoubleThree(int)));
+    QObject::connect(this->_param, SIGNAL(SignalFivePrize(int)), this, SLOT(checkFivePrize(int)));
 }
 
 MainWindow::~MainWindow()
@@ -52,6 +54,9 @@ void MainWindow::InfoDraw()
                  "_heightWB= " << _heightWB << std::endl <<
                  "_widthWB= " << _widthWB << std::endl;
 
+
+    std::cout << "DoubleThree= " << this->_game->getDoubleThree() << std::endl <<
+                 "FivePrize= " << this->_game->getFivePrize() << std::endl;
 }
 
 void MainWindow::DrawScene()
@@ -204,9 +209,9 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         emit SignalPosMouse(nx, ny);
 }
 
-void MainWindow::print_status()
+void MainWindow::print_status(QString text)
 {
-    _ui->statusBar->showMessage("ready to go");
+    _ui->statusBar->showMessage(text);
 }
 
 void MainWindow::print_status(int x, int y)
@@ -240,4 +245,25 @@ void MainWindow::trytopose(int x, int y)
 void MainWindow::ShowParameter()
 {
     _param->show();
+}
+
+void MainWindow::TheWinnerIs(int player)
+{
+    _param->show();
+}
+
+void MainWindow::checkDoubleThree(int val)
+{
+    if (val == 0)
+        this->_game->setDoubleThree(false);
+    else
+        this->_game->setDoubleThree(true);
+}
+
+void MainWindow::checkFivePrize(int val)
+{
+    if (val == 0)
+        this->_game->setFivePrize(false);
+    else
+        this->_game->setFivePrize(true);
 }

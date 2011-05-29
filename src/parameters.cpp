@@ -15,7 +15,8 @@ Parameters::Parameters(QWidget *parent) :
     QObject::connect(ui->BackgroundList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetBackground(QListWidgetItem*)));
     QObject::connect(this, SIGNAL(SignalBackgroundPreview()), this, SLOT(drawBackgroundPreview()));
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(closeparam()));
-   // QObject::connect(ui->DoubleThree, SIGNAL(stateChanged(int)), this, SLOT(closeparam()));
+    QObject::connect(ui->DoubleThree, SIGNAL(stateChanged(int)), this, SLOT(CheckDoubleThree(int)));
+    QObject::connect(ui->FivePrize, SIGNAL(stateChanged(int)), this, SLOT(CheckFivePrize(int)));
 
     drawBackgroundPreview();
 }
@@ -65,12 +66,12 @@ void Parameters::FillBackgroundList()
     }
 }
 
-void Parameters::checkDoubleThree()
+void Parameters::CheckDoubleThree(int val)
 {
-
+    emit SignalDoubleThree(val);
 }
 
-void Parameters::checkFivePrize()
+void Parameters::CheckFivePrize(int val)
 {
-
+    emit SignalFivePrize(val);
 }
