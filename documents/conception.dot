@@ -1,0 +1,67 @@
+digraph G {
+	fontname = "Bitstream Vera Sans"
+	fontsize = 8
+
+	node [
+	     fontname = "Bitstream Vera Sans"
+	     fontsize = 8
+	     shape = "record"
+	]
+
+	edge [
+	     fontname = "Bitstream Vera Sans"
+	     fontsize = 8
+	]
+
+	// Classes
+	IRuler [
+	       label = "{IRuler|| }"
+	]
+	
+	GameBoard [
+		  label = "{GameBoard|| }"
+	]
+
+	Frame [
+	      label = "{Frame|| }"
+	]
+
+	Player [
+	       label = "{Player|| }"
+	]
+
+	Pawn [
+	     label = "{Pawn|| }"
+	]
+
+	// Dependance
+	edge [
+	     arrowhead = "vee"
+	     style = "dotted"
+	]
+
+	// Heritage
+	edge [
+	     arrowhead = "empty"
+	     style = "dotted"
+	]
+
+	GameBoard -> IRuler
+
+	// Agregat
+	edge [
+	     arrowhead = "odiamond"
+	     style = "filled"
+	]
+
+	Pawn -> Frame
+	Player -> GameBoard
+	Pawn -> Player
+
+	// Composition
+	edge [
+	     arrowhead = "diamond"
+	]
+
+	Frame -> GameBoard
+}
