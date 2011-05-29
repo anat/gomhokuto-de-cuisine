@@ -44,6 +44,7 @@ bool Game::doGameGui(int x, int y)
         std::cout << "Gagnant ? " << mWinner << std::endl;
         std::cout << "Who ? " << _playerTurn << std::endl;
         emit winner(_playerTurn);
+        std::cout << "signal emit: winner()" << std::endl;
     }
     _gameboard.DumpBoard();
     return (mWinner);

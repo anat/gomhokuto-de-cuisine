@@ -40,18 +40,23 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    Game& GetGame();
 
 protected:
     void resizeEvent(QResizeEvent *event);
     void mousePressEvent(QMouseEvent *event);
 
 public slots:
-    void print_status();
+    void print_status(QString);
     void print_status(int x, int y);
     void print_circle();
     void DrawAll();
     void trytopose(int x, int y);
     void ShowParameter();
+    void TheWinnerIs(int);
+
+    void checkDoubleThree(int val);
+    void checkFivePrize(int val);
 
 signals:
     void SignalPosMouse(int x, int y);

@@ -31,13 +31,14 @@ public slots:
     void drawBackgroundPreview();
     void closeparam();
 
-    void checkDoubleThree();
-    void checkFivePrize();
+    void CheckDoubleThree(int val);
+    void CheckFivePrize(int val);
 
 signals:
     void SignalBackgroundPreview();
     void SignalModif();
-
+    void SignalDoubleThree(int val);
+    void SignalFivePrize(int val);
 };
 
 #endif // PARAMETERS_HPP
