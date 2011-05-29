@@ -21,7 +21,7 @@ public :
     int getNBPawnTaken() const;
     unsigned int getPlayerNum();
     void addPawnTaken(int nb);
-    virtual void doAction(Board & gameboard, Referee & referee, int x = -1, int y = -1) = 0;
+    virtual bool doAction(Board & gameboard, Referee & referee, int x = -1, int y = -1) = 0;
 
 private:
     int _nbPawnTaken;

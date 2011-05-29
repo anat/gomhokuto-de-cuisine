@@ -41,6 +41,7 @@ public:
     
 signals:
     void clear();
+    void winner(int player);
     
 private:
     std::vector<APlayer*>   _players;
