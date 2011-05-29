@@ -14,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
     _sizeboard = 19;
     _border = 25;
 
-    //QObject::connect(_ui->actionNew, SIGNAL(triggered()), this, SLOT(print_status()));
     QObject::connect(_ui->actionParameters, SIGNAL(triggered()), this, SLOT(ShowParameter()));
 
     QObject::connect(_ui->actionQuitter, SIGNAL(triggered()), _param, SLOT(close()));
