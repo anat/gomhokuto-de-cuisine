@@ -7,19 +7,23 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     _ui(new Ui::MainWindow)
 {
+    _param = new Parameters(this);
     _ui->setupUi(this);
     _game = new Game();
     _scene = NULL;
     _sizeboard = 19;
     _border = 25;
-    _background = ":/Background/parquet.jpg";
-
 
     //QObject::connect(_ui->actionNew, SIGNAL(triggered()), this, SLOT(print_status()));
-    QObject::connect(_ui->actionParameters, SIGNAL(triggered()), this, SLOT(print_circle()));
+    QObject::connect(_ui->actionParameters, SIGNAL(triggered()), this, SLOT(ShowParameter()));
+
+    QObject::connect(_ui->actionQuitter, SIGNAL(triggered()), _param, SLOT(close()));
+    QObject::connect(_ui->actionQuitter, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(this, SIGNAL(ReadyToDraw()), this, SLOT(DrawAll()));
     QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(trytopose(int,int)));
     QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(print_status(int,int)));
+    QObject::connect(this->_param, SIGNAL(SignalModif()), this, SLOT(DrawAll()));
+
 }
 
 MainWindow::~MainWindow()
@@ -27,6 +31,7 @@ MainWindow::~MainWindow()
     delete _ui;
     delete _game;
     delete _scene;
+    delete _param;
 }
 
 void MainWindow::InfoDraw()
@@ -61,7 +66,7 @@ void MainWindow::DrawScene()
 
 void MainWindow::DrawShelf(QColor &color)
 { 
-    QImage *image = new QImage(_background);
+    QImage *image = new QImage(_param->GetBackground());
     QBrush *brush = new QBrush(*image);
     _ui->GameBoard->scene()->setBackgroundBrush(*brush);
     QPen pen(color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -152,7 +157,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     this->InfoDraw();
     update();
     this->DrawScene();
-    emit ReadyToDraw();
+    emit this->ReadyToDraw();
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -225,3 +230,7 @@ void MainWindow::trytopose(int x, int y)
     emit ReadyToDraw();
 }
 
+void MainWindow::ShowParameter()
+{
+    _param->show();
+}
