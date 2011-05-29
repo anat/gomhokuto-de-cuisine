@@ -12,11 +12,14 @@ MainWindow::MainWindow(QWidget *parent) :
     _scene = NULL;
     _sizeboard = 19;
     _border = 25;
+    _background = ":/Background/parquet.jpg";
 
-    QObject::connect(_ui->actionNew, SIGNAL(triggered()), this, SLOT(print_status()));
+
+    //QObject::connect(_ui->actionNew, SIGNAL(triggered()), this, SLOT(print_status()));
     QObject::connect(_ui->actionParameters, SIGNAL(triggered()), this, SLOT(print_circle()));
     QObject::connect(this, SIGNAL(ReadyToDraw()), this, SLOT(DrawAll()));
     QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(trytopose(int,int)));
+    QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(print_status(int,int)));
 }
 
 MainWindow::~MainWindow()
@@ -28,7 +31,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::InfoDraw()
 {
-
     float size = (float) _sizeboard;
 
     _height = (float)_ui->WGameBoard->height();
@@ -59,7 +61,7 @@ void MainWindow::DrawScene()
 
 void MainWindow::DrawShelf(QColor &color)
 { 
-    QImage *image = new QImage(":/Background/parquet.jpg");
+    QImage *image = new QImage(_background);
     QBrush *brush = new QBrush(*image);
     _ui->GameBoard->scene()->setBackgroundBrush(*brush);
     QPen pen(color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -100,6 +102,28 @@ void MainWindow::DrawPiece(int x, int y)
     i->setPen(Qt::NoPen);
     i->setBrush( QColor(qrand()%32*8,qrand()%32*8,qrand()%32*8) );
     i->setPos(x - 15, y - 15);
+}
+
+void MainWindow::DrawPiece(QString *path)
+{
+    /*if ( butterfly_fn.isEmpty() )
+        return;
+    if ( !butterflyimg ) {
+        butterflyimg = new QImage[4];
+        butterflyimg[0].load( butterfly_fn );
+        butterflyimg[1] = butterflyimg[0].scaled( int(butterflyimg[0].width()*0.75),
+                int(butterflyimg[0].height()*0.75), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        butterflyimg[2] = butterflyimg[0].scaled( int(butterflyimg[0].width()*0.5),
+                int(butterflyimg[0].height()*0.5), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        butterflyimg[3] = butterflyimg[0].scaled( int(butterflyimg[0].width()*0.25),
+                int(butterflyimg[0].height()*0.25), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    }
+    QAbstractGraphicsShapeItem* i = new ImageItem(butterflyimg[qrand()%4]);
+    canvas.addItem(i);
+    i->setPos(qrand()%int(canvas.width()-butterflyimg->width()),
+            qrand()%int(canvas.height()-butterflyimg->height()));
+    i->setZValue(qrand()%256+250);
+    */
 }
 
 void MainWindow::DrawBoard()
@@ -173,6 +197,14 @@ void MainWindow::print_status()
     _ui->statusBar->showMessage("ready to go");
 }
 
+void MainWindow::print_status(int x, int y)
+{
+    QString res;
+    res = "Pose piece on (" + QString::number(x) +
+            ", " + QString::number(y) + ")" ;
+    _ui->statusBar->showMessage(res, 3000);
+}
+
 void MainWindow::print_circle()
 {
 }
@@ -189,6 +221,7 @@ void MainWindow::DrawAll()
 void MainWindow::trytopose(int x, int y)
 {
     // inserer dans le tableau, une piece a la position x,y
+    x= x; y = y;
     emit ReadyToDraw();
 }
 
