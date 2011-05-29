@@ -53,7 +53,6 @@ public slots:
     void trytopose(int x, int y);
     void ShowParameter();
 
-
 signals:
     void SignalPosMouse(int x, int y);
     void ReadyToDraw();

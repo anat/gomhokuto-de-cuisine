@@ -102,11 +102,11 @@ void MainWindow::DrawMark(QColor &color, int x, int y)
 void MainWindow::DrawPiece(int x, int y)
 {
     std::cout << "DrawPiece enter" << std::endl;
-    QAbstractGraphicsShapeItem* i = _ui->GameBoard->scene()->addEllipse(QRectF(0, 0, 30, 30));
+    QAbstractGraphicsShapeItem* i = _ui->GameBoard->scene()->addEllipse(QRectF(0, 0, 28, 28));
     //i->setFlag(QGraphicsItem::ItemIsMovable);
     i->setPen(Qt::NoPen);
     i->setBrush( QColor(qrand()%32*8,qrand()%32*8,qrand()%32*8) );
-    i->setPos(x - 15, y - 15);
+    i->setPos(x - 14, y - 14);
 }
 
 void MainWindow::DrawPiece(QString *path)
@@ -139,10 +139,12 @@ void MainWindow::DrawBoard()
             switch (this->_game->getGameBoard().getCase(x, y).getData().player)
             {
             case PLAYER1:
-                this->DrawPiece(x, y);
+                this->DrawPiece(_border + x * _refw,
+                                _border + y * _refh);
                 break;
             case PLAYER2:
-                this->DrawPiece(x, y);
+                this->DrawPiece(_border + x * _refw,
+                                _border + y * _refh);
                 break;
             default:
                 break;
@@ -226,6 +228,7 @@ void MainWindow::DrawAll()
 void MainWindow::trytopose(int x, int y)
 {
     // inserer dans le tableau, une piece a la position x,y
+    _game->doGameGui(x, y);
     x= x; y = y;
     emit ReadyToDraw();
 }
