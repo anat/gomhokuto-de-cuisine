@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow
     void DrawShelf(QColor &color);
     void DrawMark(QColor &color, int x, int y);
     void DrawBoard();
-    void DrawPiece(int x, int y);
+    void DrawPiece(QColor &color, int x, int y);
     void DrawPiece(QString *path);
 
 public:

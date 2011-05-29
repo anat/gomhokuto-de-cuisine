@@ -15,6 +15,7 @@ Parameters::Parameters(QWidget *parent) :
     QObject::connect(ui->BackgroundList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(SetBackground(QListWidgetItem*)));
     QObject::connect(this, SIGNAL(SignalBackgroundPreview()), this, SLOT(drawBackgroundPreview()));
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(closeparam()));
+   // QObject::connect(ui->DoubleThree, SIGNAL(stateChanged(int)), this, SLOT(closeparam()));
 
     drawBackgroundPreview();
 }
@@ -62,4 +63,14 @@ void Parameters::FillBackgroundList()
         if (fileInfo.absoluteFilePath() == _background)
             ui->BackgroundList->setCurrentItem(nwItem);
     }
+}
+
+void Parameters::checkDoubleThree()
+{
+
+}
+
+void Parameters::checkFivePrize()
+{
+
 }

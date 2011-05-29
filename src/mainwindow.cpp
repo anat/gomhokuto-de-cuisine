@@ -99,13 +99,13 @@ void MainWindow::DrawMark(QColor &color, int x, int y)
     i->setPos(x - 4, y - 4);
 }
 
-void MainWindow::DrawPiece(int x, int y)
+void MainWindow::DrawPiece(QColor &color, int x, int y)
 {
     std::cout << "DrawPiece enter" << std::endl;
     QAbstractGraphicsShapeItem* i = _ui->GameBoard->scene()->addEllipse(QRectF(0, 0, 28, 28));
     //i->setFlag(QGraphicsItem::ItemIsMovable);
     i->setPen(Qt::NoPen);
-    i->setBrush( QColor(qrand()%32*8,qrand()%32*8,qrand()%32*8) );
+    i->setBrush(color);
     i->setPos(x - 14, y - 14);
 }
 
@@ -139,13 +139,18 @@ void MainWindow::DrawBoard()
             switch (this->_game->getGameBoard().getCase(x, y).getData().player)
             {
             case PLAYER1:
-                this->DrawPiece(_border + x * _refw,
+{
+                QColor color1(Qt::black);
+                this->DrawPiece(color1, _border + x * _refw,
                                 _border + y * _refh);
                 break;
+}
             case PLAYER2:
-                this->DrawPiece(_border + x * _refw,
+{                QColor color2(Qt::white);
+                this->DrawPiece(color2, _border + x * _refw,
                                 _border + y * _refh);
                 break;
+}
             default:
                 break;
             }
@@ -219,7 +224,6 @@ void MainWindow::print_circle()
 void MainWindow::DrawAll()
 {
     QColor color(Qt::black);
-
     _ui->GameBoard->scene()->clear();
     this->DrawShelf(color);
     this->DrawBoard();

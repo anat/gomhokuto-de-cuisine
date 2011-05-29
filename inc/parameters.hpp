@@ -31,6 +31,9 @@ public slots:
     void drawBackgroundPreview();
     void closeparam();
 
+    void checkDoubleThree();
+    void checkFivePrize();
+
 signals:
     void SignalBackgroundPreview();
     void SignalModif();
