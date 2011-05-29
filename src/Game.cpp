@@ -33,13 +33,20 @@ APlayer * Game::getCurrentPlayer()
 
 bool Game::doGameGui(int x, int y)
 {
-    bool winner = false;
+    bool mWinner = false;
     bool doActionIsOk = getCurrentPlayer()->doAction(_gameboard, _referee, x, y);
-    if (!(winner = checkWin()) && doActionIsOk)
+    if (!(mWinner = checkWin()) && doActionIsOk)
         _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
             (PLAYER1);
     emit clear();
-    return (winner);
+    if (mWinner)
+    {
+        std::cout << "Gagnant ? " << mWinner << std::endl;
+        std::cout << "Who ? " << _playerTurn << std::endl;
+        emit winner(_playerTurn);
+    }
+    _gameboard.DumpBoard();
+    return (mWinner);
 }
 
 
