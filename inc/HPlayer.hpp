@@ -15,7 +15,7 @@ public:
     HPlayer(unsigned int player);
     virtual ~HPlayer();
 private:
-    void doAction(Board & gameboard, Referee & referee, int x, int y);
+    bool doAction(Board & gameboard, Referee & referee, int x, int y);
 
 };
 
