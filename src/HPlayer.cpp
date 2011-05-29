@@ -15,7 +15,7 @@ HPlayer::~HPlayer() {
 }
 
 
-void HPlayer::doAction(Board& gameboard, Referee& referee, int x, int y)
+bool HPlayer::doAction(Board& gameboard, Referee& referee, int x, int y)
 {
     int res = 0;
     if (x < 0 && y < 0)
@@ -45,5 +45,8 @@ void HPlayer::doAction(Board& gameboard, Referee& referee, int x, int y)
         res = referee.tryPlaceRock(x, y, this->getPlayerNum());
         if (res != -1)
                 addPawnTaken(res);
+        else
+            return false;
     }
+    return true;
 }
