@@ -5,6 +5,7 @@
 #include <QtGui>
 
 #include "Game.hpp"
+#include "parameters.hpp"
 
 namespace Ui {
     class MainWindow;
@@ -15,9 +16,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
     Ui::MainWindow * _ui;
+    Parameters     * _param;
     QGraphicsScene * _scene;
     Game           * _game;
-    QString          _background;
     int              _sizeboard;
     int              _border;
     float            _refh;
@@ -28,9 +29,7 @@ class MainWindow : public QMainWindow
     float            _width;
 
     void DrawScene();
-
     void InfoDraw();
-
     void DrawShelf(QColor &color);
     void DrawMark(QColor &color, int x, int y);
     void DrawBoard();
@@ -52,6 +51,8 @@ public slots:
     void print_circle();
     void DrawAll();
     void trytopose(int x, int y);
+    void ShowParameter();
+
 
 signals:
     void SignalPosMouse(int x, int y);

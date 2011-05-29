@@ -19,7 +19,8 @@ SOURCES += ./src/main.cpp\
         ./src/mainwindow.cpp\
         ./src/Referee.cpp\
         ./src/Square.cpp \
-        ./src/gridmanager.cpp
+        ./src/gridmanager.cpp \
+    src/parameters.cpp
 
 HEADERS  += ./inc/mainwindow.hpp \
     ./inc/Types.hpp \
@@ -29,9 +30,11 @@ HEADERS  += ./inc/mainwindow.hpp \
     ./inc/gridmanager.hpp \
     ./inc/Game.hpp \
     ./inc/Board.hpp \
-    ./inc/APlayer.hpp
+    ./inc/APlayer.hpp \
+    inc/parameters.hpp
 
-FORMS    += ./forms/mainwindow.ui
+FORMS    += ./forms/mainwindow.ui \
+    forms/parameters.ui
 
 RESOURCES += \
     ressources/texture.qrc
