@@ -8,31 +8,48 @@ MainWindow::MainWindow(QWidget *parent) :
     _ui(new Ui::MainWindow)
 {
     _param = new Parameters(this);
+    _nGame = new NewGame(this);
+    _finalState = new FinalState(this);
     _ui->setupUi(this);
-    _game = new Game();
     _scene = NULL;
     _sizeboard = 19;
     _border = 25;
 
     QObject::connect(_ui->actionParameters, SIGNAL(triggered()), this, SLOT(ShowParameter()));
+    QObject::connect(_ui->actionNew, SIGNAL(triggered()), this, SLOT(ShowNewGame()));
 
     QObject::connect(_ui->actionQuitter, SIGNAL(triggered()), _param, SLOT(close()));
     QObject::connect(_ui->actionQuitter, SIGNAL(triggered()), this, SLOT(close()));
+
+    QObject::connect(this, SIGNAL(SignalNewGame()), this, SLOT(ShowNewGame()));
     QObject::connect(this, SIGNAL(ReadyToDraw()), this, SLOT(DrawAll()));
     QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(trytopose(int,int)));
     QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(print_status(int,int)));
+    QObject::connect(this, SIGNAL(SignalError(QString*)), this, SLOT(ShowError(QString*)));
+
+    QObject::connect(this->_nGame, SIGNAL(SignalWinner(int)), this, SLOT(TheWinnerIs(int)));
+    QObject::connect(this->_nGame, SIGNAL(SignalClear()), this, SLOT(DrawAll()));
+
     QObject::connect(this->_param, SIGNAL(SignalModif()), this, SLOT(DrawAll()));
-    QObject::connect(this->_game, SIGNAL(winner(int)), this, SLOT(TheWinnerIs(int)));
     QObject::connect(this->_param, SIGNAL(SignalDoubleThree(int)), this, SLOT(checkDoubleThree(int)));
     QObject::connect(this->_param, SIGNAL(SignalFivePrize(int)), this, SLOT(checkFivePrize(int)));
+
+    QObject::connect(this->_finalState, SIGNAL(SignalAgain()), this->_nGame, SLOT(CreateNewGame()));
+    QObject::connect(this->_finalState, SIGNAL(SignalNew()), this, SLOT(ShowNewGame()));
+    QObject::connect(this->_finalState, SIGNAL(SignalClose()), this, SLOT(close()));
+
+    QObject::connect(this->_nGame, SIGNAL(SignalReste(int,int)), this, SLOT(SetReste(int,int)));
+    QObject::connect(this->_nGame, SIGNAL(SignalTaken(int,int)), this, SLOT(SetTake(int,int)));
+    QObject::connect(this, SIGNAL(SignalWhoPlay(int)), this, SLOT(SetWhoPlay(int)));
 }
 
 MainWindow::~MainWindow()
 {
     delete _ui;
-    delete _game;
     delete _scene;
     delete _param;
+    delete _nGame;
+    delete _finalState;
 }
 
 void MainWindow::InfoDraw()
@@ -53,9 +70,10 @@ void MainWindow::InfoDraw()
                  "_heightWB= " << _heightWB << std::endl <<
                  "_widthWB= " << _widthWB << std::endl;
 
-
-    std::cout << "DoubleThree= " << this->_game->getDoubleThree() << std::endl <<
-                 "FivePrize= " << this->_game->getFivePrize() << std::endl;
+    /*
+    std::cout << "DoubleThree= " << this->_nGame->getGame()->getDoubleThree() << std::endl <<
+                 "FivePrize= " << this->_nGame->getGame()->getFivePrize() << std::endl;
+                 */
 }
 
 void MainWindow::DrawScene()
@@ -137,28 +155,34 @@ void MainWindow::DrawPiece(QString *path)
 
 void MainWindow::DrawBoard()
 {
-    for (int x = 0; x < this->_sizeboard; x++)
-        for (int y = 0; y < this->_sizeboard; y++)
-        {
-            switch (this->_game->getGameBoard().getCase(x, y).getData().player)
+    if (this->_nGame->getGame() != NULL)
+    {
+        for (int x = 0; x < this->_sizeboard; x++)
+            for (int y = 0; y < this->_sizeboard; y++)
             {
-            case PLAYER1:
-{
-                QColor color1(Qt::black);
-                this->DrawPiece(color1, _border + x * _refw,
-                                _border + y * _refh);
-                break;
-}
-            case PLAYER2:
-{                QColor color2(Qt::white);
-                this->DrawPiece(color2, _border + x * _refw,
-                                _border + y * _refh);
-                break;
-}
-            default:
-                break;
+                switch (this->_nGame->getGame()->getGameBoard().getCase(x, y).getData().player)
+                {
+                case PLAYER1:
+                {
+                    QColor color1(Qt::black);
+                    this->DrawPiece(color1, _border + x * _refw,
+                                    _border + y * _refh);
+                    break;
+                }
+                case PLAYER2:
+                {                QColor color2(Qt::white);
+                    this->DrawPiece(color2, _border + x * _refw,
+                                    _border + y * _refh);
+                    break;
+                }
+                default:
+                    break;
+                }
             }
-        }
+        emit SignalWhoPlay(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
+    }
+    else
+        emit SignalNewGame();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -178,7 +202,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     for (x = 0; x < _sizeboard; x++)
     {
         if ((event->pos().x() > (float)x * _refw + _border - _refw / 2) &&
-            (event->pos().x() < (float)x * _refw + _border + _refw / 2))
+                (event->pos().x() < (float)x * _refw + _border + _refw / 2))
         {
             nx = x;
             break;
@@ -187,7 +211,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     for (y = 0; y < _sizeboard; y++)
     {
         if ((event->pos().y() > (float)y * _refh + _border - _refh / 2) &&
-            (event->pos().y() < (float)y * _refh + _border + _refh / 2))
+                (event->pos().y() < (float)y * _refh + _border + _refh / 2))
         {
             ny = y;
             break;
@@ -236,9 +260,16 @@ void MainWindow::DrawAll()
 void MainWindow::trytopose(int x, int y)
 {
     // inserer dans le tableau, une piece a la position x,y
-    _game->doGameGui(x, y);
-    x= x; y = y;
-    emit ReadyToDraw();
+    if (this->_nGame->getGame() != NULL)
+    {
+        _nGame->getGame()->doGameGui(x, y);
+        emit ReadyToDraw();
+    }
+    else
+    {
+        QString *text = new QString("You need to create a new game");
+        emit SignalError(text);
+    }
 }
 
 void MainWindow::ShowParameter()
@@ -246,23 +277,95 @@ void MainWindow::ShowParameter()
     _param->show();
 }
 
+void MainWindow::ShowNewGame()
+{
+    _nGame->show();
+}
+
+void MainWindow::ShowError(QString * message)
+{
+    QMessageBox::critical(0, "Critical", *message);
+    delete message;
+}
+
 void MainWindow::TheWinnerIs(int player)
 {
-    _param->show();
+    _finalState->show();
 }
 
 void MainWindow::checkDoubleThree(int val)
 {
-    if (val == 0)
-        this->_game->setDoubleThree(false);
-    else
-        this->_game->setDoubleThree(true);
+    if (this->_nGame->getGame() != NULL)
+        if (val == 0)
+            this->_nGame->getGame()->setDoubleThree(false);
+        else
+            this->_nGame->getGame()->setDoubleThree(true);
 }
 
 void MainWindow::checkFivePrize(int val)
 {
-    if (val == 0)
-        this->_game->setFivePrize(false);
-    else
-        this->_game->setFivePrize(true);
+    if (this->_nGame->getGame() != NULL)
+        if (val == 0)
+            this->_nGame->getGame()->setFivePrize(false);
+        else
+            this->_nGame->getGame()->setFivePrize(true);
+}
+
+void MainWindow::SetTake(int player, int val)
+{
+    switch (player)
+    {
+    case 1:
+    {
+        _ui->TakeP1->setDigitCount(val);
+        break;
+    }
+    case 2:
+    {
+        _ui->TakeP2->setDigitCount(val);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void MainWindow::SetReste(int player, int val)
+{
+    switch (player)
+    {
+    case 1:
+    {
+        _ui->RestantP1->setDigitCount(val);
+        break;
+    }
+    case 2:
+    {
+        _ui->RestantP2->setDigitCount(val);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void MainWindow::SetWhoPlay(int player)
+{
+    switch (player)
+    {
+    case 1:
+    {
+        _ui->Player1box->setChecked(true);
+        _ui->Player2box->setChecked(false);
+        break;
+    }
+    case 2:
+    {
+        _ui->Player2box->setChecked(true);
+        _ui->Player1box->setChecked(false);
+        break;
+    }
+    default:
+        break;
+    }
 }

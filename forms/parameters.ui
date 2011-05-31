@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Parameters</class>
  <widget class="QDialog" name="Parameters">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,6 +12,18 @@
     <width>446</width>
     <height>512</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>446</width>
+    <height>512</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>446</width>
+    <height>512</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Parameters</string>
@@ -133,6 +148,22 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Parameters</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>222</x>
+     <y>491</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>222</x>
+     <y>255</y>
     </hint>
    </hints>
   </connection>
