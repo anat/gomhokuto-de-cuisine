@@ -134,22 +134,29 @@ private:
      */
     void setHorz(Square& square, unsigned int lineSize) {
         std::cout << "set Horz lineSize " << lineSize << std::endl;
-        square.setRawData(square.getRawData() | HORZ(lineSize));
+        square.getData().horz = lineSize;
+
+        //square.setRawData(square.getRawData() | HORZ(lineSize));
     }
 
     void setVert(Square& square, unsigned int lineSize) {
         std::cout << "set Vert lineSize " << lineSize << std::endl;
-        square.setRawData(square.getRawData() | VERT(lineSize));
+        square.getData().vert = lineSize;
+        
+        //square.setRawData(square.getRawData() | VERT(lineSize));
     }
 
     void setDiagl(Square& square, unsigned int lineSize) {
         std::cout << "set DiagL lineSize " << lineSize << std::endl;
-        square.setRawData(square.getRawData() | DIAGL(lineSize));
+        square.getData().diagl = lineSize;
+        //square.setRawData(square.getRawData() | DIAGL(lineSize));
     }
 
     void setDiagr(Square& square, unsigned int lineSize) {
         std::cout << "set DiargR lineSize " << lineSize << std::endl;
-        square.setRawData(square.getRawData() | DIAGR(lineSize));
+        square.getData().diagr = lineSize;
+
+        //square.setRawData(square.getRawData() | DIAGR(lineSize));
     }
 
     unsigned int getHorz(const Square& square) const {

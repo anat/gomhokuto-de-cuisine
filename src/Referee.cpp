@@ -112,7 +112,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
     int value = -1;
 
     if (testPosition(x, y, player)) {
-        _board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(player));
+        _board(x, y).getData().player = player;
         fpropagation(x, y, player);
         value = checkPrize(x, y, player);
         checkIsTakable(x, y, player);
@@ -162,9 +162,11 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
 bool Referee::checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
     if (checkCanTake(x, y, dir, player)) {
         goTo(x, y, dir);
-        _board(x, y).setRawData(_board(x, y).getRawData() | IS_TAKABLE(1));
+        _board(x, y).getData().is_takable = 1;
+        
         goTo(x, y, dir);
-        _board(x, y).setRawData(_board(x, y).getRawData() | IS_TAKABLE(1));
+        _board(x, y).getData().is_takable = 1;
+        
         if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
             return true;
     }
@@ -220,9 +222,9 @@ void Referee::checkIsTakable(unsigned int x, unsigned int y, unsigned int player
                 unsigned int xtmp = x;
                 unsigned int ytmp = y;
 
-                _board(x, y).setRawData(_board(x, y).getRawData() | IS_TAKABLE(1));
+                _board(x ,y).getData().is_takable = 1;
                 goTo(xtmp, ytmp, it->first);
-                _board(xtmp, ytmp).setRawData(_board(xtmp, ytmp).getRawData() | IS_TAKABLE(1));
+                _board(x ,y).getData().is_takable = 1;
             }
             ++it;
         }
