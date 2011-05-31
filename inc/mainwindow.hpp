@@ -39,7 +39,7 @@ class MainWindow : public QMainWindow
     void DrawPiece(QColor &color, int x, int y);
     void DrawPiece(QString *path);
 
-    void SetTaken(int player, int val);
+    void SetTaken(int player);
 
 
 public:

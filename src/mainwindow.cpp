@@ -185,8 +185,7 @@ void MainWindow::DrawBoard()
                     break;
                 }
             }
-        SetTaken(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum(),
-                 this->_nGame->getGame()->getCurrentPlayer()->getNBPawnTaken());
+        SetTaken(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
         emit SignalWhoPlay(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
     }
     else
@@ -310,7 +309,8 @@ void MainWindow::TheWinnerIs(int player)
 
 void MainWindow::checkDoubleThree(int val)
 {
-    if (this->_nGame->getGame() != NULL) {
+    if (this->_nGame->getGame() != NULL)
+    {
         if (val == 0)
             this->_nGame->getGame()->setDoubleThree(false);
         else
@@ -320,7 +320,8 @@ void MainWindow::checkDoubleThree(int val)
 
 void MainWindow::checkFivePrize(int val)
 {
-    if (this->_nGame->getGame() != NULL) {
+    if (this->_nGame->getGame() != NULL)
+    {
         if (val == 0)
             this->_nGame->getGame()->setFivePrize(false);
         else
@@ -328,23 +329,32 @@ void MainWindow::checkFivePrize(int val)
     }
 }
 
-void MainWindow::SetTaken(int player, int val)
+void MainWindow::SetTaken(int player)
 {
-    switch (player)
+    static APlayer *player1 = NULL, *player2 = NULL;
+
+    if (player1 != NULL && player2 != NULL)
     {
-    case 1:
-    {
-        _ui->TakeP1->display(val);
-        break;
+        _ui->TakeP1->display(player1->getNBPawnTaken());
+        _ui->TakeP2->display(player2->getNBPawnTaken());
     }
-    case 2:
-    {
-        _ui->TakeP2->display(val);
-        break;
-    }
-    default:
-        break;
-    }
+    else
+        switch (player)
+        {
+        case 1:
+        {
+            player1 = this->_nGame->getGame()->getCurrentPlayer();
+
+            break;
+        }
+        case 2:
+        {
+            player2 = this->_nGame->getGame()->getCurrentPlayer();
+            break;
+        }
+        default:
+            break;
+        }
 }
 
 void MainWindow::SetWhoPlay(int player)
