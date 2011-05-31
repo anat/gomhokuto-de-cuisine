@@ -20,9 +20,6 @@ NewGame::NewGame(QWidget *parent) :
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(CreateNewGame()));
     QObject::connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(CancelNewGame()));
 
-    //   QObject::connect(this->_game, SIGNAL(SignalReste(int,int)), this, SLOT(SetReste(int,int)));
-    //   QObject::connect(this->_Game, SIGNAL(SignalTaken(int,int)), this, SLOT(SetTake(int,int)));
-
 }
 
 NewGame::~NewGame()
@@ -81,14 +78,4 @@ void NewGame::TheWinnerIs(int val)
 {
     _winner = val;
     emit SignalWinner(_winner);
-}
-
-void NewGame::SetTake(int player, int val)
-{
-    emit SignalTaken(player, val);
-}
-
-void NewGame::SetReste(int player, int val)
-{
-    emit SignalReste(player, val);
 }

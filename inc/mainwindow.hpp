@@ -39,6 +39,9 @@ class MainWindow : public QMainWindow
     void DrawPiece(QColor &color, int x, int y);
     void DrawPiece(QString *path);
 
+    void SetTaken(int player, int val);
+
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -54,6 +57,7 @@ public slots:
     void print_status(int x, int y);
     void print_circle();
     void DrawAll();
+    void DrawAllAndModif();
     void trytopose(int x, int y);
     void ShowParameter();
     void ShowNewGame();
@@ -63,11 +67,7 @@ public slots:
     void checkDoubleThree(int val);
     void checkFivePrize(int val);
 
-    void SetTake(int player, int val);
-    void SetReste(int player, int val);
-
     void SetWhoPlay(int);
-
 
 signals:
     void SignalNewGame();
