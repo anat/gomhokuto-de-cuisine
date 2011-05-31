@@ -1,7 +1,7 @@
 #include <QDir>
 #include <iostream>
 
-#include "inc/parameters.hpp"
+#include "parameters.hpp"
 #include "ui_parameters.h"
 
 Parameters::Parameters(QWidget *parent) :

@@ -11,6 +11,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <iostream>
 
 #include "Board.hpp"
 
@@ -128,15 +129,44 @@ private:
     bool ispartOfAlign(const Square& value, int size);
     bool ispartOfExactAlign(const Square& value, int size);
 
-    void setHorz(Square& square, unsigned int value);
-    void setVert(Square& square, unsigned int value);
-    void setDiagl(Square& square, unsigned int value);
-    void setDiagr(Square& square, unsigned int value);
+    /**
+     * Recupere la valeur de l'alignement dans la direction choisie
+     */
+    void setHorz(Square& square, unsigned int lineSize) {
+        std::cout << "set Horz lineSize " << lineSize << std::endl;
+        square.setRawData(square.getRawData() | HORZ(lineSize));
+    }
 
-    unsigned int getHorz(const Square& square) const;
-    unsigned int getVert(const Square& square) const;
-    unsigned int getDiagl(const Square& square) const;
-    unsigned int getDiagr(const Square& square) const;
+    void setVert(Square& square, unsigned int lineSize) {
+        std::cout << "set Vert lineSize " << lineSize << std::endl;
+        square.setRawData(square.getRawData() | VERT(lineSize));
+    }
+
+    void setDiagl(Square& square, unsigned int lineSize) {
+        std::cout << "set DiagL lineSize " << lineSize << std::endl;
+        square.setRawData(square.getRawData() | DIAGL(lineSize));
+    }
+
+    void setDiagr(Square& square, unsigned int lineSize) {
+        std::cout << "set DiargR lineSize " << lineSize << std::endl;
+        square.setRawData(square.getRawData() | DIAGR(lineSize));
+    }
+
+    unsigned int getHorz(const Square& square) const {
+        return GET_HORZ(square.getRawData());
+    }
+
+    unsigned int getVert(const Square& square) const {
+        return GET_VERT(square.getRawData());
+    }
+
+    unsigned int getDiagl(const Square& square) const {
+        return GET_DIAGL(square.getRawData());
+    }
+
+    unsigned int getDiagr(const Square& square) const {
+        return GET_DIAGR(square.getRawData());
+    }
 
     /*
      * Fonction de check pour les double alignement de trois
@@ -188,6 +218,15 @@ private:
     void fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
     std::size_t flineSize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
     void fsetline(unsigned int x, unsigned int y, Vector dir, unsigned int player, unsigned int value);
+
+    /**
+     * Fonction de Debug
+     */
+
+    void dumpSquare(unsigned int x, unsigned int y);
+    void dumpDirection(unsigned int x, unsigned int y, Vector dir);
+    void dumpPropagation(unsigned int x, unsigned int y);
+
 };
 
 #endif	/* REFEREE_HPP */

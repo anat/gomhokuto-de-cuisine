@@ -1,4 +1,4 @@
-#include "./inc/gridmanager.hpp"
+#include "gridmanager.hpp"
 
 GridManager::GridManager(QGraphicsScene *currentView) :
     currentScene(currentView)
