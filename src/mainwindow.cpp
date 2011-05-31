@@ -310,20 +310,22 @@ void MainWindow::TheWinnerIs(int player)
 
 void MainWindow::checkDoubleThree(int val)
 {
-    if (this->_nGame->getGame() != NULL)
+    if (this->_nGame->getGame() != NULL) {
         if (val == 0)
             this->_nGame->getGame()->setDoubleThree(false);
         else
             this->_nGame->getGame()->setDoubleThree(true);
+    }
 }
 
 void MainWindow::checkFivePrize(int val)
 {
-    if (this->_nGame->getGame() != NULL)
+    if (this->_nGame->getGame() != NULL) {
         if (val == 0)
             this->_nGame->getGame()->setFivePrize(false);
         else
             this->_nGame->getGame()->setFivePrize(true);
+    }
 }
 
 void MainWindow::SetTaken(int player, int val)

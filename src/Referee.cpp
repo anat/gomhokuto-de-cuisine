@@ -38,12 +38,12 @@ void Referee::initDirMap() {
  * deplace x et y dans la direction choisie
  */
 bool Referee::goTo(unsigned int& x, unsigned int& y, Vector dir) {
-    if (dir) {
+    if (dir != NONE) {
         DirMap::iterator it = _directionMap.find(dir);
+
         if (it != _directionMap.end() && checkPosition(x + it->second.direction.x, y + it->second.direction.y)) {
             x += it->second.direction.x;
             y += it->second.direction.y;
-
             return true;
         }
     }
@@ -178,11 +178,15 @@ bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) 
 unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int player) {
     unsigned int result = 0;
 
-    for (std::size_t i = 0; i < _directionMap.size(); ++i) {
-        if (checkPrize(x, y, static_cast<Vector> (i), player)) {
-            cleanRock(x, y, static_cast<Vector> (i), player);
+    DirMap::iterator it = _directionMap.begin();
+    DirMap::iterator ite = _directionMap.end();
+
+    while (it != ite) {
+        if (checkPrize(x, y, it->first, player)) {
+            cleanRock(x, y, it->first, player);
             result++;
         }
+        ++it;
     }
     return result;
 }
@@ -219,13 +223,14 @@ void Referee::cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int
     unsigned int xtmp, ytmp;
 
     goTo(x, y, dir);
-    _board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(0));
-
+    std::cout << "## x " << x << " ## y " << y << std::endl;
+    _board(x, y).setRawData(0);
     xtmp = x;
     ytmp = y;
 
     goTo(x, y, dir);
-    _board(x, y).setRawData(_board(x, y).getRawData() | PLAYER(0));
+    std::cout << "## x " << x << " ## y " << y << std::endl;
+    _board(x, y).setRawData(0);
 
     fpropagation_inverse(xtmp, ytmp, opponant(player));
     fpropagation_inverse(x, y, opponant(player));
