@@ -32,15 +32,9 @@ public slots:
     void CancelNewGame();
     void TheWinnerIs(int);
 
-    void SetTake(int player, int val);
-    void SetReste(int player, int val);
-
 signals:
     void SignalClear();
     void SignalWinner(int);
-
-    void SignalTaken(int player, int val);
-    void SignalReste(int player, int val);
 };
 
 #endif // NEWGAME_HPP

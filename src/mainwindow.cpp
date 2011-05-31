@@ -15,6 +15,14 @@ MainWindow::MainWindow(QWidget *parent) :
     _sizeboard = 19;
     _border = 25;
 
+    QPalette PalP1(_ui->Player1box->palette());
+    QPalette PalP2(_ui->Player1box->palette());
+
+    PalP1.setColor(QPalette::Background, Qt::green);
+    PalP2.setColor(QPalette::Background, Qt::green);
+    _ui->Player1box->setPalette(PalP1);
+    _ui->Player2box->setPalette(PalP2);
+
     QObject::connect(_ui->actionParameters, SIGNAL(triggered()), this, SLOT(ShowParameter()));
     QObject::connect(_ui->actionNew, SIGNAL(triggered()), this, SLOT(ShowNewGame()));
 
@@ -28,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, SIGNAL(SignalError(QString*)), this, SLOT(ShowError(QString*)));
 
     QObject::connect(this->_nGame, SIGNAL(SignalWinner(int)), this, SLOT(TheWinnerIs(int)));
-    QObject::connect(this->_nGame, SIGNAL(SignalClear()), this, SLOT(DrawAll()));
+    QObject::connect(this->_nGame, SIGNAL(SignalClear()), this, SLOT(DrawAllAndModif()));
 
     QObject::connect(this->_param, SIGNAL(SignalModif()), this, SLOT(DrawAll()));
     QObject::connect(this->_param, SIGNAL(SignalDoubleThree(int)), this, SLOT(checkDoubleThree(int)));
@@ -38,8 +46,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this->_finalState, SIGNAL(SignalNew()), this, SLOT(ShowNewGame()));
     QObject::connect(this->_finalState, SIGNAL(SignalClose()), this, SLOT(close()));
 
-    QObject::connect(this->_nGame, SIGNAL(SignalReste(int,int)), this, SLOT(SetReste(int,int)));
-    QObject::connect(this->_nGame, SIGNAL(SignalTaken(int,int)), this, SLOT(SetTake(int,int)));
     QObject::connect(this, SIGNAL(SignalWhoPlay(int)), this, SLOT(SetWhoPlay(int)));
 }
 
@@ -179,6 +185,8 @@ void MainWindow::DrawBoard()
                     break;
                 }
             }
+        SetTaken(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum(),
+                 this->_nGame->getGame()->getCurrentPlayer()->getNBPawnTaken());
         emit SignalWhoPlay(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
     }
     else
@@ -257,6 +265,13 @@ void MainWindow::DrawAll()
     this->DrawBoard();
 }
 
+void MainWindow::DrawAllAndModif()
+{
+    DrawAll();
+    _ui->TakeP1->display(0);
+    _ui->TakeP2->display(0);
+}
+
 void MainWindow::trytopose(int x, int y)
 {
     // inserer dans le tableau, une piece a la position x,y
@@ -311,37 +326,18 @@ void MainWindow::checkFivePrize(int val)
             this->_nGame->getGame()->setFivePrize(true);
 }
 
-void MainWindow::SetTake(int player, int val)
+void MainWindow::SetTaken(int player, int val)
 {
     switch (player)
     {
     case 1:
     {
-        _ui->TakeP1->setDigitCount(val);
+        _ui->TakeP1->display(val);
         break;
     }
     case 2:
     {
-        _ui->TakeP2->setDigitCount(val);
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void MainWindow::SetReste(int player, int val)
-{
-    switch (player)
-    {
-    case 1:
-    {
-        _ui->RestantP1->setDigitCount(val);
-        break;
-    }
-    case 2:
-    {
-        _ui->RestantP2->setDigitCount(val);
+        _ui->TakeP2->display(val);
         break;
     }
     default:
@@ -355,14 +351,14 @@ void MainWindow::SetWhoPlay(int player)
     {
     case 1:
     {
-        _ui->Player1box->setChecked(true);
-        _ui->Player2box->setChecked(false);
+        _ui->Player1box->setAutoFillBackground(true);
+        _ui->Player2box->setAutoFillBackground(false);
         break;
     }
     case 2:
     {
-        _ui->Player2box->setChecked(true);
-        _ui->Player1box->setChecked(false);
+        _ui->Player2box->setAutoFillBackground(true);
+        _ui->Player1box->setAutoFillBackground(false);
         break;
     }
     default:
