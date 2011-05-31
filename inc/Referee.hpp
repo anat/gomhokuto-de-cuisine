@@ -95,7 +95,7 @@ private:
     WinList _winLineList;
     DirMap _directionMap;
 
-    inline unsigned int opponant(const unsigned int pla) {
+    inline unsigned int opponant(const unsigned int pla) const {
         unsigned int result = 0;
         if (pla == 1)
             result = 2;
@@ -104,18 +104,18 @@ private:
         return result;
     }
 
-    inline bool checkPosition(unsigned int x, unsigned int y) {
+    inline bool checkPosition(unsigned int x, unsigned int y) const {
         return (x < _board.getSize() && y < _board.getSize());
     }
 
-    inline unsigned int abs(int value) {
+    inline unsigned int abs(int value) const {
         if (value < 0)
             return value * -1;
         return value;
     }
 
-    inline Vector invert(Vector dir) {
-        DirMap::iterator it = _directionMap.find(dir);
+    inline Vector invert(Vector dir) const {
+        DirMap::const_iterator it = _directionMap.find(dir);
 
         if (it != _directionMap.end())
             return it->second.invert;
@@ -123,8 +123,8 @@ private:
     }
 
     void initDirMap();
-    bool goTo(unsigned int& x, unsigned int& y, Vector dir);
-    unsigned int getDirAlign(const Square& value, Vector dir);
+    bool goTo(unsigned int& x, unsigned int& y, Vector dir) const;
+    unsigned int getDirAlign(const Square& value, Vector dir) const;
     void setDirAlign(Square& square, Vector dir, unsigned int value);
     bool ispartOfAlign(const Square& value, int size);
     bool ispartOfExactAlign(const Square& value, int size);
@@ -133,30 +133,34 @@ private:
      * Recupere la valeur de l'alignement dans la direction choisie
      */
     void setHorz(Square& square, unsigned int lineSize) {
-        std::cout << "set Horz lineSize " << lineSize << std::endl;
+        
         square.getData().horz = lineSize;
 
         //square.setRawData(square.getRawData() | HORZ(lineSize));
     }
 
     void setVert(Square& square, unsigned int lineSize) {
-        std::cout << "set Vert lineSize " << lineSize << std::endl;
+        
         square.getData().vert = lineSize;
         
         //square.setRawData(square.getRawData() | VERT(lineSize));
     }
 
     void setDiagl(Square& square, unsigned int lineSize) {
-        std::cout << "set DiagL lineSize " << lineSize << std::endl;
+        
         square.getData().diagl = lineSize;
         //square.setRawData(square.getRawData() | DIAGL(lineSize));
     }
 
     void setDiagr(Square& square, unsigned int lineSize) {
-        std::cout << "set DiargR lineSize " << lineSize << std::endl;
+        
         square.getData().diagr = lineSize;
 
         //square.setRawData(square.getRawData() | DIAGR(lineSize));
+    }
+
+    void setTakable(Square& square, bool value) {
+        square.getData().is_takable = value;
     }
 
     unsigned int getHorz(const Square& square) const {
@@ -191,7 +195,7 @@ private:
     void checkWin(unsigned int x, unsigned int y);
     void checkWinList();
     void checkIsTakable(unsigned int x, unsigned int y, unsigned int player);
-    bool checkIsTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    bool checkIsTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
     bool checkIsTakableInvert(unsigned int x, unsigned int y, Vector dir, unsigned int player);
     bool checkfiveWin(unsigned int x, unsigned int y);
     bool checkFivePrize(unsigned int x, unsigned int y);
@@ -201,8 +205,8 @@ private:
      * Fonction pour la prise de pierre
      */
     unsigned int checkPrize(unsigned int x, unsigned int y, const unsigned int player);
-    bool checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
-    bool checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player);
+    bool checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
+    bool checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player) const;
     void cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int player);
 
     /*
@@ -225,14 +229,14 @@ private:
     void fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
     std::size_t flineSize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
     void fsetline(unsigned int x, unsigned int y, Vector dir, unsigned int player, unsigned int value);
-
+    void resetTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player, bool takable);
     /**
      * Fonction de Debug
      */
 
-    void dumpSquare(unsigned int x, unsigned int y);
-    void dumpDirection(unsigned int x, unsigned int y, Vector dir);
-    void dumpPropagation(unsigned int x, unsigned int y);
+    void dumpSquare(unsigned int x, unsigned int y) const;
+    void dumpDirection(unsigned int x, unsigned int y, Vector dir) const;
+    void dumpPropagation(unsigned int x, unsigned int y) const;
 
 };
 
