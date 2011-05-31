@@ -6,6 +6,8 @@
 
 #include "Game.hpp"
 #include "parameters.hpp"
+#include "newgame.hpp"
+#include "finalstate.hpp"
 
 namespace Ui {
     class MainWindow;
@@ -17,8 +19,9 @@ class MainWindow : public QMainWindow
 
     Ui::MainWindow * _ui;
     Parameters     * _param;
+    NewGame        * _nGame;
+    FinalState     * _finalState;
     QGraphicsScene * _scene;
-    Game           * _game;
     int              _sizeboard;
     int              _border;
     float            _refh;
@@ -53,14 +56,26 @@ public slots:
     void DrawAll();
     void trytopose(int x, int y);
     void ShowParameter();
+    void ShowNewGame();
+    void ShowError(QString*);
     void TheWinnerIs(int);
 
     void checkDoubleThree(int val);
     void checkFivePrize(int val);
 
+    void SetTake(int player, int val);
+    void SetReste(int player, int val);
+
+    void SetWhoPlay(int);
+
+
 signals:
+    void SignalNewGame();
     void SignalPosMouse(int x, int y);
     void ReadyToDraw();
+    void SignalError(QString*);
+
+    void SignalWhoPlay(int player);
 };
 
 #endif // MAINWINDOW_H
