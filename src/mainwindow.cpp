@@ -3,6 +3,14 @@
 
 #include <iostream>
 
+#ifdef __WIN32__
+#define MENU_SIZE       (21)
+#else
+#define MENU_SIZE       (0)
+#endif
+
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     _ui(new Ui::MainWindow)
@@ -68,6 +76,7 @@ void MainWindow::InfoDraw()
     _widthWB = _width - 2 * _border;
     _refh = _heightWB / (size - 1);
     _refw = _widthWB / (size - 1);
+    /*
     std::cout << "_height= " << _height << std::endl <<
                  "_width= " << _width << std::endl <<
                  "_border= " << _border << std::endl <<
@@ -76,10 +85,10 @@ void MainWindow::InfoDraw()
                  "_heightWB= " << _heightWB << std::endl <<
                  "_widthWB= " << _widthWB << std::endl;
 
-    /*
+
     std::cout << "DoubleThree= " << this->_nGame->getGame()->getDoubleThree() << std::endl <<
                  "FivePrize= " << this->_nGame->getGame()->getFivePrize() << std::endl;
-                 */
+    */
 }
 
 void MainWindow::DrawScene()
@@ -129,7 +138,7 @@ void MainWindow::DrawMark(QColor &color, int x, int y)
 
 void MainWindow::DrawPiece(QColor &color, int x, int y)
 {
-    std::cout << "DrawPiece enter" << std::endl;
+    //std::cout << "DrawPiece enter" << std::endl;
     QAbstractGraphicsShapeItem* i = _ui->GameBoard->scene()->addEllipse(QRectF(0, 0, 28, 28));
     //i->setFlag(QGraphicsItem::ItemIsMovable);
     i->setPen(Qt::NoPen);
@@ -185,7 +194,7 @@ void MainWindow::DrawBoard()
                     break;
                 }
             }
-        SetTaken(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
+        SetTakens();
         emit SignalWhoPlay(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
     }
     else
@@ -195,7 +204,7 @@ void MainWindow::DrawBoard()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     event = event;
-    std::cout << "signal emit: SignalResize()" << std::endl;
+    //std::cout << "signal emit: SignalResize()" << std::endl;
     this->InfoDraw();
     update();
     this->DrawScene();
@@ -217,13 +226,14 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     }
     for (y = 0; y < _sizeboard; y++)
     {
-        if ((event->pos().y() > (float)y * _refh + _border - _refh / 2) &&
-                (event->pos().y() < (float)y * _refh + _border + _refh / 2))
+        if ((event->pos().y() - MENU_SIZE > (float)y * _refh + _border - _refh / 2) &&
+                (event->pos().y() - MENU_SIZE < (float)y * _refh + _border + _refh / 2))
         {
             ny = y;
             break;
         }
     }
+    /*
     std::cout << "_height= " << _height << std::endl <<
                  "_width= " << _width << std::endl <<
                  "_border= " << _border << std::endl <<
@@ -235,6 +245,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
                  "y = " << event->pos().y() << std::endl <<
                  "my new x= " << nx << std::endl <<
                  "my new y= " << ny << std::endl;
+    */
     if (ny != -1 && nx != -1)
         emit SignalPosMouse(nx, ny);
 }
@@ -329,32 +340,11 @@ void MainWindow::checkFivePrize(int val)
     }
 }
 
-void MainWindow::SetTaken(int player)
+void MainWindow::SetTakens()
 {
-    static APlayer *player1 = NULL, *player2 = NULL;
+    _ui->TakeP1->display(this->_nGame->getGame()->getPlayers()[0]->getNBPawnTaken());
+    _ui->TakeP2->display(this->_nGame->getGame()->getPlayers()[1]->getNBPawnTaken());
 
-    if (player1 != NULL && player2 != NULL)
-    {
-        _ui->TakeP1->display(player1->getNBPawnTaken());
-        _ui->TakeP2->display(player2->getNBPawnTaken());
-    }
-    else
-        switch (player)
-        {
-        case 1:
-        {
-            player1 = this->_nGame->getGame()->getCurrentPlayer();
-
-            break;
-        }
-        case 2:
-        {
-            player2 = this->_nGame->getGame()->getCurrentPlayer();
-            break;
-        }
-        default:
-            break;
-        }
 }
 
 void MainWindow::SetWhoPlay(int player)
