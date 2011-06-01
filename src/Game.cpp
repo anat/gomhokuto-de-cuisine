@@ -31,6 +31,11 @@ APlayer * Game::getCurrentPlayer()
     return (_players[i - 1]);
 }
 
+std::vector<APlayer*> const & Game::getPlayers() const
+{
+    return (_players);
+}
+
 bool Game::doGameGui(int x, int y)
 {
     bool mWinner = false;

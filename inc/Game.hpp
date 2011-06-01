@@ -29,6 +29,7 @@ public:
     
     unsigned int     getPlayerTurn();
     APlayer *  getCurrentPlayer();
+    std::vector<APlayer*> const & getPlayers() const;
     bool       doGameGui(int x, int y);
     void       doGameTerminal();
     void       newGame(bool vs_computer = false);
