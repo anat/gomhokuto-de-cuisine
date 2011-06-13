@@ -37,9 +37,9 @@ void Referee::initDirMap() {
 /**
  * deplace x et y dans la direction choisie
  */
-bool Referee::goTo(unsigned int& x, unsigned int& y, Vector dir) {
+bool Referee::goTo(unsigned int& x, unsigned int& y, Vector dir) const {
     if (dir != NONE) {
-        DirMap::iterator it = _directionMap.find(dir);
+        DirMap::const_iterator it = _directionMap.find(dir);
 
         if (it != _directionMap.end() && checkPosition(x + it->second.direction.x, y + it->second.direction.y)) {
             x += it->second.direction.x;
@@ -50,8 +50,8 @@ bool Referee::goTo(unsigned int& x, unsigned int& y, Vector dir) {
     return false;
 }
 
-unsigned int Referee::getDirAlign(const Square& square, Vector dir) {
-    DirMap::iterator it = _directionMap.find(dir);
+unsigned int Referee::getDirAlign(const Square& square, Vector dir) const {
+    DirMap::const_iterator it = _directionMap.find(dir);
 
     if (dir && it != _directionMap.end() && it->second.getter) {
         return (this->*(it->second.getter))(square);
@@ -60,7 +60,7 @@ unsigned int Referee::getDirAlign(const Square& square, Vector dir) {
 }
 
 void Referee::setDirAlign(Square& square, Vector dir, unsigned int lineSize) {
-    DirMap::iterator it = _directionMap.find(dir);
+    DirMap::const_iterator it = _directionMap.find(dir);
 
     if (dir && it != _directionMap.end() && it->second.getter) {
         (this->*(it->second.setter))(square, lineSize);
@@ -143,8 +143,8 @@ bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) 
 unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int player) {
     unsigned int result = 0;
 
-    DirMap::iterator it = _directionMap.begin();
-    DirMap::iterator ite = _directionMap.end();
+    DirMap::const_iterator it = _directionMap.begin();
+    DirMap::const_iterator ite = _directionMap.end();
 
     while (it != ite) {
         if (checkPrize(x, y, it->first, player)) {
@@ -159,14 +159,14 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
 /**
  * cherche si il y a une prise dans une direction
  */
-bool Referee::checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+bool Referee::checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) const {
     if (checkCanTake(x, y, dir, player)) {
         goTo(x, y, dir);
         _board(x, y).getData().is_takable = 1;
-        
+
         goTo(x, y, dir);
         _board(x, y).getData().is_takable = 1;
-        
+
         if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
             return true;
     }
@@ -177,7 +177,7 @@ bool Referee::checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned in
  * check si les pions dans la direction sont prenable par le joueurs player
  */
 
-bool Referee::checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player) {
+bool Referee::checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player) const {
 #ifdef DEBUG
     if (goTo(x, y, dir)) {
         unsigned int playertmp = GET_PLAYER(_board(x, y).getRawData());
@@ -213,6 +213,7 @@ void Referee::cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int
 }
 
 void Referee::checkIsTakable(unsigned int x, unsigned int y, unsigned int player) {
+    setTakable(_board(x, y), false);
     if (ispartOfExactAlign(_board(x, y), 2)) {
         DirMap::iterator it = _directionMap.begin();
         DirMap::iterator ite = _directionMap.end();
@@ -222,16 +223,16 @@ void Referee::checkIsTakable(unsigned int x, unsigned int y, unsigned int player
                 unsigned int xtmp = x;
                 unsigned int ytmp = y;
 
-                _board(x ,y).getData().is_takable = 1;
+                setTakable(_board(x, y), true);
                 goTo(xtmp, ytmp, it->first);
-                _board(x ,y).getData().is_takable = 1;
+                setTakable(_board(xtmp, ytmp), true);
             }
             ++it;
         }
     }
 }
 
-bool Referee::checkIsTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
+bool Referee::checkIsTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player) const {
     unsigned int xinv = x;
     unsigned int yinv = y;
 
@@ -590,19 +591,27 @@ void Referee::fpropagation(unsigned int x, unsigned int y, Vector dir, const uns
     unsigned int lineSize = 0;
 
     lineSize = flineSize(x, y, dir, player) + flineSize(x, y, invert(dir), player) + 1;
+    setDirAlign(_board(x, y), dir, lineSize);
+
     fsetline(x, y, dir, player, lineSize);
     fsetline(x, y, invert(dir), player, lineSize);
-    setDirAlign(_board(x, y), dir, lineSize);
 }
 
 void Referee::fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player) {
-    for (unsigned int i = 0; i < _directionMap.size(); i++)
-        fpropag_inverse_to(x, y, static_cast<Vector> (i), player);
+    DirMap::const_iterator it = _directionMap.begin();
+    DirMap::const_iterator ite = _directionMap.end();
+
+    while (it != ite) {
+        fpropag_inverse_to(x, y, it->first, player);
+        ++it;
+    }
 }
 
 void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir, const unsigned int player) {
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
+    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
         fpropagation(x, y, player);
+        checkIsTakable(x, y, player);
+    }
 }
 
 std::size_t Referee::flineSize(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
@@ -617,10 +626,18 @@ std::size_t Referee::flineSize(unsigned int x, unsigned int y, Vector dir, unsig
 void Referee::fsetline(unsigned int x, unsigned int y, Vector dir, unsigned int player, unsigned int value) {
     while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
         setDirAlign(_board(x, y), dir, value);
+        if (!ispartOfExactAlign(_board(x, y), 2))
+            setTakable(_board(x, y), false);
     }
 }
 
-void Referee::dumpSquare(unsigned int x, unsigned int y) {
+void Referee::resetTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player, bool takable) {
+    while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+        setTakable(_board(x, y), takable);
+    }
+}
+
+void Referee::dumpSquare(unsigned int x, unsigned int y) const {
     std::cout << "###########" << std::endl;
     std::cout << "x = " << x << " y= " << y << std::endl;
     std::cout << "player " << GET_PLAYER(_board(x, y).getRawData()) << std::endl;
@@ -636,14 +653,14 @@ void Referee::dumpSquare(unsigned int x, unsigned int y) {
     std::cout << "###########" << std::endl;
 }
 
-void Referee::dumpDirection(unsigned int x, unsigned int y, Vector dir) {
+void Referee::dumpDirection(unsigned int x, unsigned int y, Vector dir) const {
     while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != 0)
         dumpSquare(x, y);
 }
 
-void Referee::dumpPropagation(unsigned int x, unsigned int y) {
-    DirMap::iterator it = _directionMap.begin();
-    DirMap::iterator ite = _directionMap.end();
+void Referee::dumpPropagation(unsigned int x, unsigned int y) const {
+    DirMap::const_iterator it = _directionMap.begin();
+    DirMap::const_iterator ite = _directionMap.end();
 
     dumpSquare(x, y);
     while (it != ite) {

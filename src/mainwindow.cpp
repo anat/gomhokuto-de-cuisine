@@ -3,6 +3,14 @@
 
 #include <iostream>
 
+#ifdef __WIN32__
+#define MENU_SIZE       (21)
+#else
+#define MENU_SIZE       (0)
+#endif
+
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     _ui(new Ui::MainWindow)
@@ -186,7 +194,7 @@ void MainWindow::DrawBoard()
                     break;
                 }
             }
-        SetTaken(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
+        SetTakens();
         emit SignalWhoPlay(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
     }
     else
@@ -218,8 +226,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     }
     for (y = 0; y < _sizeboard; y++)
     {
-        if ((event->pos().y() > (float)y * _refh + _border - _refh / 2) &&
-                (event->pos().y() < (float)y * _refh + _border + _refh / 2))
+        if ((event->pos().y() - MENU_SIZE > (float)y * _refh + _border - _refh / 2) &&
+                (event->pos().y() - MENU_SIZE < (float)y * _refh + _border + _refh / 2))
         {
             ny = y;
             break;
@@ -333,32 +341,11 @@ void MainWindow::checkFivePrize(int val)
     }
 }
 
-void MainWindow::SetTaken(int player)
+void MainWindow::SetTakens()
 {
-    static APlayer *player1 = NULL, *player2 = NULL;
+    _ui->TakeP1->display(this->_nGame->getGame()->getPlayers()[0]->getNBPawnTaken());
+    _ui->TakeP2->display(this->_nGame->getGame()->getPlayers()[1]->getNBPawnTaken());
 
-    if (player1 != NULL && player2 != NULL)
-    {
-        _ui->TakeP1->display(player1->getNBPawnTaken());
-        _ui->TakeP2->display(player2->getNBPawnTaken());
-    }
-    else
-        switch (player)
-        {
-        case 1:
-        {
-            player1 = this->_nGame->getGame()->getCurrentPlayer();
-
-            break;
-        }
-        case 2:
-        {
-            player2 = this->_nGame->getGame()->getCurrentPlayer();
-            break;
-        }
-        default:
-            break;
-        }
 }
 
 void MainWindow::SetWhoPlay(int player)
