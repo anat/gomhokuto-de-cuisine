@@ -23,7 +23,8 @@ SOURCES += \
     src/gridmanager.cpp \
     src/parameters.cpp \
     src/newgame.cpp \
-    src/finalstate.cpp
+    src/finalstate.cpp \
+    src/open.cpp
 
 HEADERS  += \
     inc/mainwindow.hpp \
@@ -37,13 +38,15 @@ HEADERS  += \
     inc/APlayer.hpp \
     inc/parameters.hpp \
     inc/newgame.hpp \
-    inc/finalstate.hpp
+    inc/finalstate.hpp \
+    inc/open.hpp
 
 FORMS    += \
     forms/mainwindow.ui \
     forms/parameters.ui \
     forms/newgame.ui \
-    forms/finalstate.ui
+    forms/finalstate.ui \
+    forms/open.ui
 
 RESOURCES += \
     ressources/texture.qrc

@@ -33,3 +33,11 @@ void FinalState::CloseButton()
     emit SignalClose();
     this->close();
 }
+
+void FinalState::State(int player)
+{
+    if (player == 1)
+        this->setStyleSheet("QDialog{background-image: url(:/Finish/BlackWin.png);}");
+    else
+        this->setStyleSheet("QDialog{background-image: url(:/Finish/WhiteWin.png);}");
+}

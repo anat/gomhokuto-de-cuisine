@@ -15,6 +15,8 @@ public:
     explicit FinalState(QWidget *parent = 0);
     ~FinalState();
 
+    void State(int player);
+
 private:
     Ui::FinalState *ui;
 

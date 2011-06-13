@@ -68,6 +68,7 @@ void MainWindow::InfoDraw()
     _widthWB = _width - 2 * _border;
     _refh = _heightWB / (size - 1);
     _refw = _widthWB / (size - 1);
+    /*
     std::cout << "_height= " << _height << std::endl <<
                  "_width= " << _width << std::endl <<
                  "_border= " << _border << std::endl <<
@@ -76,10 +77,10 @@ void MainWindow::InfoDraw()
                  "_heightWB= " << _heightWB << std::endl <<
                  "_widthWB= " << _widthWB << std::endl;
 
-    /*
+
     std::cout << "DoubleThree= " << this->_nGame->getGame()->getDoubleThree() << std::endl <<
                  "FivePrize= " << this->_nGame->getGame()->getFivePrize() << std::endl;
-                 */
+    */
 }
 
 void MainWindow::DrawScene()
@@ -129,7 +130,7 @@ void MainWindow::DrawMark(QColor &color, int x, int y)
 
 void MainWindow::DrawPiece(QColor &color, int x, int y)
 {
-    std::cout << "DrawPiece enter" << std::endl;
+    //std::cout << "DrawPiece enter" << std::endl;
     QAbstractGraphicsShapeItem* i = _ui->GameBoard->scene()->addEllipse(QRectF(0, 0, 28, 28));
     //i->setFlag(QGraphicsItem::ItemIsMovable);
     i->setPen(Qt::NoPen);
@@ -195,7 +196,7 @@ void MainWindow::DrawBoard()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     event = event;
-    std::cout << "signal emit: SignalResize()" << std::endl;
+    //std::cout << "signal emit: SignalResize()" << std::endl;
     this->InfoDraw();
     update();
     this->DrawScene();
@@ -224,6 +225,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             break;
         }
     }
+    /*
     std::cout << "_height= " << _height << std::endl <<
                  "_width= " << _width << std::endl <<
                  "_border= " << _border << std::endl <<
@@ -235,6 +237,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
                  "y = " << event->pos().y() << std::endl <<
                  "my new x= " << nx << std::endl <<
                  "my new y= " << ny << std::endl;
+    */
     if (ny != -1 && nx != -1)
         emit SignalPosMouse(nx, ny);
 }
@@ -304,6 +307,7 @@ void MainWindow::ShowError(QString * message)
 
 void MainWindow::TheWinnerIs(int player)
 {
+    _finalState->State(player);
     _finalState->show();
 }
 
