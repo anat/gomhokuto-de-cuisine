@@ -24,7 +24,9 @@ SOURCES += \
     src/parameters.cpp \
     src/newgame.cpp \
     src/finalstate.cpp \
-    src/open.cpp
+    src/open.cpp \
+    src/BasicHeuristic.cpp \
+    src/RefereeManager.cpp
 
 HEADERS  += \
     inc/mainwindow.hpp \
@@ -39,7 +41,14 @@ HEADERS  += \
     inc/parameters.hpp \
     inc/newgame.hpp \
     inc/finalstate.hpp \
-    inc/open.hpp
+    inc/open.hpp \
+    inc/PlayerAi.hpp \
+    inc/IHeuristic.hpp \
+    inc/BasicHeuristic.hpp \
+    inc/Singleton.hpp \
+    inc/RefereeManager.hpp \
+    inc/Coord.hpp \
+    inc/Array.hpp
 
 FORMS    += \
     forms/mainwindow.ui \

@@ -10,11 +10,11 @@
 #include "Game.hpp"
 
 
-Board::Board(std::size_t size) : _tab(), _size(size) {
-	_tab.resize(size, std::vector<Square>(size));
+Board::Board() : _tab()
+{
 }
 
-Board::Board(const Board& orig) : _tab(orig._tab), _size(orig._size) {
+Board::Board(const Board& orig) : _tab(orig._tab) {
 }
 
 Board::~Board() {
@@ -50,11 +50,11 @@ void Board::setCase(unsigned int x, unsigned int y, const Square& value) {
 }
 
 std::size_t Board::getSize() const {
-    return _size;
+    return _tab.size();
 }
 
 bool Board::checkSize(unsigned int x, unsigned int y) const {
-    return ((x < _size) && (y < _size));
+    return ((x < _tab.size()) && (y < _tab.size()));
 }
 
 void Board::DumpBoard()
@@ -64,11 +64,11 @@ void Board::DumpBoard()
 
   std::cout << "   0  1  2  3  4  5  6  7  8  9"
 	    << "  10 11 12 13 14 15 16 17 18" << std::endl;
-  for (i = 0; i < _size; i++) /* Y */
+  for (i = 0; i < _tab.size(); ++i) /* Y */
   {
       std::cout.width(2);
       std::cout << i;
-      for (j = 0; j < _size; j++) /* X */
+      for (j = 0; j < _tab.size(); j++) /* X */
 	{
 	  switch (GET_PLAYER(_tab[i][j].getRawData()))
 	    {
@@ -87,8 +87,7 @@ void Board::DumpBoard()
   
 void Board::reset()
 {
-    for (unsigned int i = 0; i < _size; ++i)
-        _tab[i].clear();
-    _tab.clear();
-    _tab.resize(_size, std::vector<Square>(_size));
+    for (unsigned int i = 0; i < _tab.size(); ++i)
+        for (unsigned int o = 0; o < _tab[i].size(); ++o)
+            _tab[i][o].setRawData(0);
 }

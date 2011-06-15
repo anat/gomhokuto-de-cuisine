@@ -45,10 +45,18 @@ public:
     Square::Data &      getData();
     void                setData(Square::Data & data);
     void                dumpData();
+
+    void setHorz(unsigned int lineSize);
+    void setVert(unsigned int lineSize);
+    void setDiagl(unsigned int lineSize);
+    void setDiagr(unsigned int lineSize);
+    unsigned int getHorz() const;
+    unsigned int getVert() const;
+    unsigned int getDiagl() const;
+    unsigned int getDiagr() const;
     
 private:
      int32_t _data;
-
 };
 
 #endif	/* SQUARE_HPP */
