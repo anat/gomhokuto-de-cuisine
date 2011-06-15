@@ -8,8 +8,7 @@
 #ifndef BOARD_HPP
 #define	BOARD_HPP
 
-#include <vector>
-
+#include "Array.hpp"
 #include "Square.hpp"
 
 class BoardException : public std::exception {
@@ -20,9 +19,9 @@ class BoardException : public std::exception {
 
 class Board {
 public:
-    typedef std::vector< std::vector< Square > > SquareTab;
+    typedef Array< Array< Square, 19 >, 19 > SquareTab;
 
-    Board(std::size_t size = 19);
+    Board();
     Board(const Board& orig);
     ~Board();
 
@@ -37,7 +36,6 @@ public:
 
 private:
     SquareTab _tab;
-    std::size_t _size;
 
     bool checkSize(unsigned int x, unsigned int y) const;
 };
