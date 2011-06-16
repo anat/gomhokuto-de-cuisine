@@ -30,6 +30,7 @@ class Referee {
 public:
     Referee(Board& board);
     Referee(const Referee& orig);
+    Referee(const Referee& orig, Board& board);
     virtual ~Referee();
 
     int tryPlaceRock(unsigned int x, unsigned int y, unsigned int player); //Test et si ok place
@@ -40,13 +41,15 @@ public:
     bool doubleThree(bool value);
     bool fivePrize(bool value);
     void reset();
+    unsigned int getScore(unsigned int player);
 
 private:
     typedef std::list<Coord> WinList;
 
-    Board& _board;
-    unsigned int _winner;
     WinList _winLineList;
+    Board& _board;
+    Array< unsigned int, 2 > _score;
+    unsigned int _winner;
 
     inline unsigned int opponant(const unsigned int pla) const {
         unsigned int result = 0;
@@ -75,6 +78,8 @@ private:
         return RefereeManager::NONE;
     }
 
+    void setScore(unsigned int player, unsigned int value);
+
     bool goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir) const;
     unsigned int getDirAlign(const Square& value, RefereeManager::Vector dir) const;
     void setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int value);
@@ -95,7 +100,7 @@ private:
     /*
      * Fonction pour la victoire par alignement de 5
      */
-    void checkWin(unsigned int x, unsigned int y);
+    void checkWin(unsigned int x, unsigned int y, unsigned int player);
     void checkWinList();
     void checkIsTakable(unsigned int x, unsigned int y, unsigned int player);
     bool checkIsTakable(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const;

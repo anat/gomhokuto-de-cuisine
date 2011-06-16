@@ -11,7 +11,7 @@ public:
 
     virtual ~IHeuristic() {}
 
-    virtual HeuristicValue getHeuristic(Board& gameBoard, unsigned int player) = 0;
+    virtual HeuristicValue operator()(Board& gameBoard, unsigned int player) = 0;
 };
 
 #endif // IHEURISTIC_HPP

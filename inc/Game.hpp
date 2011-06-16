@@ -20,35 +20,33 @@
 #define NB_MAX_PLAYER 2
 
 class Game : public QObject {
-
     Q_OBJECT
 
-public:    
+public:
     Game(bool vs_computer = false);
     virtual ~Game();
-    
-    unsigned int     getPlayerTurn();
-    APlayer *  getCurrentPlayer();
+
+    unsigned int getPlayerTurn();
+    APlayer * getCurrentPlayer();
     std::vector<APlayer*> const & getPlayers() const;
-    bool       doGameGui(int x, int y);
-    void       doGameTerminal();
-    void       newGame(bool vs_computer = false);
-    bool       checkWin();
-    Board &    getGameBoard();
-    bool       getDoubleThree();
-    bool       getFivePrize();
-    void       setDoubleThree(bool value);
-    void       setFivePrize(bool value);
-    
+    bool doGameGui(int x, int y);
+    bool checkWin();
+    Board & getGameBoard();
+    bool getDoubleThree();
+    bool getFivePrize();
+    void setDoubleThree(bool value);
+    void setFivePrize(bool value);
+
 signals:
     void clear();
     void winner(int player);
-    
+
 private:
-    std::vector<APlayer*>   _players;
-    Board                   _gameboard;
-    Referee                 _referee;
-    unsigned int            _playerTurn;
+    std::vector<APlayer*> _players;
+    Board _gameboard;
+    Referee _referee;
+    unsigned int _playerTurn;
+    bool _vs_computer;
 };
 
 #endif	/* GAME_H */

@@ -2,13 +2,18 @@
 #define BASICHEURISTIC_HPP
 
 #include "IHeuristic.hpp"
+#include "Square.hpp"
 
 class Board;
 
-class BasicHeuristic : IHeuristic<int>
+class BasicHeuristic : public IHeuristic<int>
 {
 public:
-    HeuristicValue getHeuristic(Board& gameBoard, unsigned int player);
+    HeuristicValue operator()(Board& gameBoard, unsigned int player);
+
+private:
+    int good(Square::Data& square);
+    int bad(Square::Data& square);
 };
 
 #endif // BASICHEURISTIC_HPP

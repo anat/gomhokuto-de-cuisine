@@ -146,7 +146,7 @@ void MainWindow::DrawPiece(QColor &color, int x, int y)
     i->setPos(x - 14, y - 14);
 }
 
-void MainWindow::DrawPiece(QString *path)
+void MainWindow::DrawPiece(QString *)
 {
     /*if ( butterfly_fn.isEmpty() )
         return;

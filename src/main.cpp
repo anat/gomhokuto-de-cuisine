@@ -29,11 +29,6 @@ int main(int ac, char **av) {
         w.show();
         return a.exec();
     }
-    else if (ac == 2 && QString(av[1]) == "iaonly")
-    {
-        Game game;
-        game.doGameTerminal();
-    }
     else if (ac == 2 && QString(av[1]) == "papa") 
     {
       Board plateau;

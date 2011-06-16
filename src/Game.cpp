@@ -8,109 +8,78 @@
 #include <iostream>
 #include "Game.hpp"
 #include "HPlayer.hpp"
+#include "PlayerAi.hpp"
+#include "BasicHeuristic.hpp"
 
-Game::Game(bool) 
-        : _players(2), _gameboard(), _referee(_gameboard), 
-          _playerTurn(PLAYER1)
-{
-    _players[PLAYER1 - 1] = new HPlayer(PLAYER1);
-    _players[PLAYER2 - 1] = new HPlayer(PLAYER2);
+Game::Game(bool vs_computer)
+: _players(2), _gameboard(), _referee(_gameboard), _playerTurn(PLAYER1), _vs_computer(vs_computer) {
+    if (!vs_computer) {
+        _players[PLAYER1 - 1] = new HPlayer(PLAYER1);
+        _players[PLAYER2 - 1] = new HPlayer(PLAYER2);
+    } else {
+        _players[PLAYER1 - 1] = new HPlayer(PLAYER1);
+        _players[PLAYER2 - 1] = new PlayerAi< BasicHeuristic >(PLAYER2);
+    }
 }
 
 Game::~Game() {
 }
 
-unsigned int Game::getPlayerTurn()
-{
+unsigned int Game::getPlayerTurn() {
     return (_playerTurn);
 }
 
-APlayer * Game::getCurrentPlayer()
-{
-    int i = (int)_playerTurn;
+APlayer * Game::getCurrentPlayer() {
+    int i = (int) _playerTurn;
     return (_players[i - 1]);
 }
 
-std::vector<APlayer*> const & Game::getPlayers() const
-{
+std::vector<APlayer*> const & Game::getPlayers() const {
     return (_players);
 }
 
-bool Game::doGameGui(int x, int y)
-{
+bool Game::doGameGui(int x, int y) {
     bool mWinner = false;
     bool doActionIsOk = getCurrentPlayer()->doAction(_gameboard, _referee, x, y);
     if (!(mWinner = checkWin()) && doActionIsOk)
-        _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
+        if (!_vs_computer)
+        {
+            _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
             (PLAYER1);
+            getCurrentPlayer()->doAction(_gameboard, _referee);
+        }
+        _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
+        (PLAYER1);
     emit clear();
-    if (mWinner)
-    {
-        std::cout << "Gagnant ? " << mWinner << std::endl;
-        std::cout << "Who ? " << _playerTurn << std::endl;
+    if (mWinner) {
         emit winner(_playerTurn);
-        std::cout << "signal emit: winner()" << std::endl;
     }
-    _gameboard.DumpBoard();
+    //_gameboard.DumpBoard();
     return (mWinner);
 }
 
-
-void Game::doGameTerminal()
-{
-    bool stillRunning = true;
-    while (stillRunning)
-    {
-        getCurrentPlayer()->doAction(_gameboard, _referee);
-        stillRunning = !checkWin();
-        if (!stillRunning)
-            break;
-        _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
-            (PLAYER1);
-    }
-    std::cout << "Player : " << getCurrentPlayer()->getPlayerNum() << " win the game !!!" << std::endl;
-}
-
-void Game::newGame(bool)
-{
-    delete _players[0];
-    delete _players[1];
-    _referee.reset();
-    _gameboard.reset();
-    _players[PLAYER1 - 1] = new HPlayer(PLAYER1);
-    _players[PLAYER2 - 1] = new HPlayer(PLAYER2);
-}
-
-bool Game::checkWin()
-{
+bool Game::checkWin() {
     if (_referee.checkWin() != NOPLAYER)
-        return true;
-    if (getCurrentPlayer()->getNBPawnTaken() >= 5)
         return true;
     return false;
 }
 
-Board &    Game::getGameBoard()
-{
+Board & Game::getGameBoard() {
     return (_gameboard);
 }
 
-bool    Game::getFivePrize()
-{
+bool Game::getFivePrize() {
     return (_referee.fivePrize());
 }
 
-bool    Game::getDoubleThree()
-{
+bool Game::getDoubleThree() {
     return (_referee.doubleThree());
 }
 
-void    Game::setFivePrize(bool value)
-{
+void Game::setFivePrize(bool value) {
     _referee.fivePrize(value);
 }
 
-void    Game::setDoubleThree(bool value)
-{
+void Game::setDoubleThree(bool value) {
     _referee.doubleThree(value);
 }
