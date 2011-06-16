@@ -7,11 +7,11 @@
 #include "Board.hpp"
 #include "APlayer.hpp"
 
-template < typename IHeuristic >
+template < typename IHeuristic, typename ISearchCase >
 class PlayerAi : public APlayer {
 public:
     typedef typename IHeuristic::HeuristicValue HeuristicValue;
-    typedef std::vector<Coord> CoordContainer;
+    typedef typename ISearchCase::CoordContainer CoordContainer;
     typedef typename std::map< HeuristicValue, Coord > FinalContainer;
 
     PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _maxDepth(3) {
@@ -36,10 +36,10 @@ public:
 
         CoordContainer possibleCase;
 
-        searchCase(gameboard, possibleCase);
+        _searchCase(gameboard, possibleCase);
 
-        CoordContainer::iterator it = possibleCase.begin();
-        CoordContainer::iterator ite = possibleCase.end();
+        typename CoordContainer::iterator it = possibleCase.begin();
+        typename CoordContainer::iterator ite = possibleCase.end();
         FinalContainer finalContainer;
 
         while (it != ite) {
@@ -69,10 +69,10 @@ public:
 
         CoordContainer possibleCase;
 
-        searchCase(origin, possibleCase);
+        _searchCase(origin, possibleCase);
 
-        CoordContainer::iterator it = possibleCase.begin();
-        CoordContainer::iterator ite = possibleCase.end();
+        typename CoordContainer::iterator it = possibleCase.begin();
+        typename CoordContainer::iterator ite = possibleCase.end();
         FinalContainer finalCoord;
 
         HeuristicValue result = HeuristicValue();
@@ -105,10 +105,10 @@ public:
 
         CoordContainer possibleCase;
 
-        searchCase(origin, possibleCase);
+        _searchCase(origin, possibleCase);
 
-        CoordContainer::iterator it = possibleCase.begin();
-        CoordContainer::iterator ite = possibleCase.end();
+        typename CoordContainer::iterator it = possibleCase.begin();
+        typename CoordContainer::iterator ite = possibleCase.end();
         FinalContainer finalCoord;
 
         HeuristicValue result = HeuristicValue();
@@ -135,18 +135,8 @@ public:
     }
 private:
     IHeuristic _heuristic;
+    ISearchCase _searchCase;
     unsigned int _maxDepth;
-
-    void searchCase(Board& game, CoordContainer& possibleCase) {
-        unsigned int size = game.getSize();
-        for (unsigned int x = 0; x < size; ++x) {
-            for (unsigned int y = 0; y < size; ++y) {
-                if (game(x, y).getData().player == 0) {
-                    possibleCase.push_back(Coord(x, y));
-                }
-            }
-        }
-    }
 };
 
 #endif // PLAYERAI_HPP
