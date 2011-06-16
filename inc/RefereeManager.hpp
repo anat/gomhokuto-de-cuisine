@@ -35,7 +35,9 @@ public:
 
         DirInfo(const Vector& inv, const Coord& dir, setDirFunc set, getDirFunc get)
         : invert(inv), direction(dir), setter(set), getter(get)
-        {}
+        {
+            //std::cout << "DirInfo x " << direction.x << " y " << direction.y << std::endl;
+        }
 
         DirInfo()
         : invert(NONE), direction(Coord(0, 0)), setter(0), getter(0)
@@ -49,19 +51,12 @@ public:
 
     typedef std::map<Vector, DirInfo> DirMap;
 
-    DirMap::iterator find(Vector& value);
-    DirMap::iterator begin();
-    DirMap::iterator end();
-
-    DirMap::const_iterator find(Vector& value) const;
-    DirMap::const_iterator begin() const;
-    DirMap::const_iterator end() const;
-
     unsigned int size() const;
     bool fivePrize() const;
     bool doubleThree() const;
     void setFivePrize(bool value);
     void setDoubleThree(bool value);
+    DirMap& map();
 
 private:
     DirMap _directionMap;

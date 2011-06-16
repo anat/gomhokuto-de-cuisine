@@ -1,8 +1,10 @@
 
+#include <iostream>
 #include "RefereeManager.hpp"
 
-RefereeManager::RefereeManager() : _fivePrize(false), _doubleThree(false)
+RefereeManager::RefereeManager() : _directionMap(), _mapSize(), _fivePrize(false), _doubleThree(false)
 {
+    //std::cout << "CACA" << std::endl;
     _directionMap[NONE] = DirInfo(NONE, Coord(0, 0), 0, 0);
     _directionMap[RIGHT] = DirInfo(LEFT, Coord(1, 0), &Square::setHorz, &Square::getHorz);
     _directionMap[UP_RIGHT] = DirInfo(DOWN_LEFT, Coord(1, -1), &Square::setDiagr, &Square::getDiagr);
@@ -14,41 +16,20 @@ RefereeManager::RefereeManager() : _fivePrize(false), _doubleThree(false)
     _directionMap[DOWN_RIGHT] = DirInfo(UP_LEFT, Coord(1, 1), &Square::setDiagl, &Square::getDiagl);
 
     _mapSize = _directionMap.size();
+
+    DirMap::iterator it = _directionMap.begin();
+    DirMap::iterator ite = _directionMap.end();
+
+//    while (it != ite) {
+//        std::cout << "x " << it->second.direction.x << " y " << it->second.direction.y << std::endl;
+//        ++it;
+//    }
+    //std::cout << "CACA" << std::endl;
 }
 
 RefereeManager::RefereeManager(const RefereeManager &orig)
     : _directionMap(orig._directionMap), _fivePrize(orig._fivePrize), _doubleThree(orig._doubleThree)
 {}
-
-RefereeManager::DirMap::iterator RefereeManager::find(Vector &value)
-{
-    return _directionMap.find(value);
-}
-
-RefereeManager::DirMap::const_iterator RefereeManager::find(Vector &value) const
-{
-    return _directionMap.find(value);
-}
-
-RefereeManager::DirMap::iterator RefereeManager::begin()
-{
-    return _directionMap.begin();
-}
-
-RefereeManager::DirMap::const_iterator RefereeManager::begin() const
-{
-    return _directionMap.begin();
-}
-
-RefereeManager::DirMap::iterator RefereeManager::end()
-{
-    return _directionMap.end();
-}
-
-RefereeManager::DirMap::const_iterator RefereeManager::end() const
-{
-    return _directionMap.end();
-}
 
 unsigned int RefereeManager::size() const
 {
@@ -73,4 +54,9 @@ void RefereeManager::setDoubleThree(bool value)
 void RefereeManager::setFivePrize(bool value)
 {
     _fivePrize = value;
+}
+
+RefereeManager::DirMap& RefereeManager::map()
+{
+    return _directionMap;
 }

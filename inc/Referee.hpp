@@ -68,9 +68,9 @@ private:
     }
 
     inline RefereeManager::Vector invert(RefereeManager::Vector dir) const {
-        RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().find(dir);
+        RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
 
-        if (it != Singleton<RefereeManager>::Instance().end())
+        if (it != Singleton<RefereeManager>::Instance().map().end())
             return it->second.invert;
         return RefereeManager::NONE;
     }
@@ -80,9 +80,7 @@ private:
     void setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int value);
     bool ispartOfAlign(const Square& value, int size);
     bool ispartOfExactAlign(const Square& value, int size);
-    void setTakable(Square& square, bool value) {
-        square.getData().is_takable = value;
-    }
+    void setTakable(Square& square, bool value);
 
     /*
      * Fonction de check pour les double alignement de trois

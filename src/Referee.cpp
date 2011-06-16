@@ -26,9 +26,9 @@ Referee::~Referee() {
  */
 bool Referee::goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir) const {
     if (dir != RefereeManager::NONE) {
-        RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().find(dir);
+        RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
 
-        if (it != Singleton<RefereeManager>::Instance().end() && checkPosition(x + it->second.direction.x, y + it->second.direction.y)) {
+        if (it != Singleton<RefereeManager>::Instance().map().end() && checkPosition(x + it->second.direction.x, y + it->second.direction.y)) {
             x += it->second.direction.x;
             y += it->second.direction.y;
             return true;
@@ -38,18 +38,18 @@ bool Referee::goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir)
 }
 
 unsigned int Referee::getDirAlign(const Square& square, RefereeManager::Vector dir) const {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().find(dir);
+    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
 
-    if (dir && it != Singleton<RefereeManager>::Instance().end() && it->second.getter) {
+    if (dir && it != Singleton<RefereeManager>::Instance().map().end() && it->second.getter) {
         return (square.*(it->second.getter))();
     }
     return 0;
 }
 
 void Referee::setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int lineSize) {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().find(dir);
+    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
 
-    if (dir && it != Singleton<RefereeManager>::Instance().end() && it->second.getter) {
+    if (dir && it != Singleton<RefereeManager>::Instance().map().end() && it->second.getter) {
         (square.*(it->second.setter))(lineSize);
     }
 }
@@ -76,6 +76,10 @@ bool Referee::ispartOfExactAlign(const Square& value, int size) {
             GET_HORZ(value.getRawData()) == size ||
             GET_VERT(value.getRawData()) == size
             );
+}
+
+void Referee::setTakable(Square& square, bool value) {
+    square.getData().is_takable = value;
 }
 
 /**
@@ -130,8 +134,8 @@ bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) 
 unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int player) {
     unsigned int result = 0;
 
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().begin();
-    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().end();
+    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().begin();
+    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().map().end();
 
     while (it != ite) {
         if (checkPrize(x, y, it->first, player)) {
@@ -202,8 +206,8 @@ void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector d
 void Referee::checkIsTakable(unsigned int x, unsigned int y, unsigned int player) {
     setTakable(_board(x, y), false);
     if (ispartOfExactAlign(_board(x, y), 2)) {
-        RefereeManager::DirMap::iterator it = Singleton<RefereeManager>::Instance().begin();
-        RefereeManager::DirMap::iterator ite = Singleton<RefereeManager>::Instance().end();
+        RefereeManager::DirMap::iterator it = Singleton<RefereeManager>::Instance().map().begin();
+        RefereeManager::DirMap::iterator ite = Singleton<RefereeManager>::Instance().map().end();
 
         while (it != ite) {
             if (checkIsTakable(x, y, it->first, player)) {
@@ -585,8 +589,8 @@ void Referee::fpropagation(unsigned int x, unsigned int y, RefereeManager::Vecto
 }
 
 void Referee::fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player) {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().begin();
-    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().end();
+    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().begin();
+    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().map().end();
 
     while (it != ite) {
         fpropag_inverse_to(x, y, it->first, player);
@@ -646,8 +650,8 @@ void Referee::dumpDirection(unsigned int x, unsigned int y, RefereeManager::Vect
 }
 
 void Referee::dumpPropagation(unsigned int x, unsigned int y) const {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().begin();
-    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().end();
+    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().begin();
+    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().map().end();
 
     dumpSquare(x, y);
     while (it != ite) {
