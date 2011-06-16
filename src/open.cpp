@@ -1,4 +1,4 @@
-#include "inc/open.hpp"
+#include "open.hpp"
 #include "ui_open.h"
 
 Open::Open(QWidget *parent) :
