@@ -11,14 +11,13 @@
 
 
 Board::Board() : _tab()
-{
-}
+{ }
 
-Board::Board(const Board& orig) : _tab(orig._tab) {
-}
+Board::Board(const Board& orig) : _tab(orig._tab)
+{ }
 
-Board::~Board() {
-}
+Board::~Board()
+{ }
 
 const Square& Board::getCase(unsigned int x, unsigned int y) const {
     if (checkSize(x, y))

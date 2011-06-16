@@ -6,17 +6,13 @@
 struct Coord {
 
     Coord() : x(0), y(0)
-    {
-        std::cout << "Coord wait what ??" << std::endl;
-    }
+    { }
 
     Coord(int x_, int y_) : x(x_), y(y_)
     { }
 
     Coord(const Coord& orig) : x(orig.x), y(orig.y)
-    {
-        
-    }
+    { }
 
     ~Coord() {}
 

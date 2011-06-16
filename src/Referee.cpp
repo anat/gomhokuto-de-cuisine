@@ -11,14 +11,26 @@
 #include "Game.hpp"
 
 Referee::Referee(Board& board)
-: _board(board), _winner(0), _winLineList() {
-}
+: _winLineList(), _board(board), _score(), _winner(0)
+{ }
 
 Referee::Referee(const Referee& orig)
-: _board(orig._board), _winner(orig._winner), _winLineList(orig._winLineList) {
+: _winLineList(orig._winLineList), _board(orig._board), _score(orig._score), _winner(orig._winner)
+{ }
+
+Referee::Referee(const Referee& orig, Board& board)
+: _winLineList(orig._winLineList), _board(board), _score(orig._score), _winner(orig._winner)
+{ }
+
+Referee::~Referee()
+{ }
+
+void Referee::setScore(unsigned int player, unsigned int value) {
+    _score[player & 1] = value;
 }
 
-Referee::~Referee() {
+unsigned int Referee::getScore(unsigned int player) {
+    return _score[player & 1];
 }
 
 /**
@@ -27,7 +39,7 @@ Referee::~Referee() {
 bool Referee::goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir) const {
     if (dir != RefereeManager::NONE) {
         RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
-
+        
         if (it != Singleton<RefereeManager>::Instance().map().end() && checkPosition(x + it->second.direction.x, y + it->second.direction.y)) {
             x += it->second.direction.x;
             y += it->second.direction.y;
@@ -106,8 +118,9 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
         _board(x, y).getData().player = player;
         fpropagation(x, y, player);
         value = checkPrize(x, y, player);
+        setScore(player, value * 2);
         checkIsTakable(x, y, player);
-        checkWin(x, y);
+        checkWin(x, y, player);
         dumpPropagation(x, y);
     }
     return value;
@@ -234,10 +247,12 @@ bool Referee::checkIsTakable(unsigned int x, unsigned int y, RefereeManager::Vec
 /**
  * Determine si le coup est gagnant
  */
-void Referee::checkWin(unsigned int x, unsigned int y) {
-    if (ispartOfAlign(_board(x, y), 5)) {
+void Referee::checkWin(unsigned int x, unsigned int y, unsigned int player) {
+    if (getScore(player) >= 10)
+        _winner = player;
+    else if (ispartOfAlign(_board(x, y), 5)) {
         _winLineList.push_back(Coord(x, y));
-        _board(x, y).dumpData();
+        //_board(x, y).dumpData();
         checkWinList();
     }
 }
