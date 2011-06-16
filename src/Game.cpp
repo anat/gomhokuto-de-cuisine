@@ -10,6 +10,7 @@
 #include "HPlayer.hpp"
 #include "PlayerAi.hpp"
 #include "BasicHeuristic.hpp"
+#include "BasicSearchCase.hpp"
 
 Game::Game(bool vs_computer)
 : _players(2), _gameboard(), _referee(_gameboard), _playerTurn(PLAYER1), _vs_computer(vs_computer) {
@@ -18,7 +19,7 @@ Game::Game(bool vs_computer)
         _players[PLAYER2 - 1] = new HPlayer(PLAYER2);
     } else {
         _players[PLAYER1 - 1] = new HPlayer(PLAYER1);
-        _players[PLAYER2 - 1] = new PlayerAi< BasicHeuristic >(PLAYER2);
+        _players[PLAYER2 - 1] = new PlayerAi< BasicHeuristic, BasicSearchCase >(PLAYER2);
     }
 }
 
@@ -41,8 +42,8 @@ std::vector<APlayer*> const & Game::getPlayers() const {
 bool Game::doGameGui(int x, int y) {
     bool mWinner = false;
     bool doActionIsOk = getCurrentPlayer()->doAction(_gameboard, _referee, x, y);
-    if (!(mWinner = checkWin()) && doActionIsOk)
-        if (!_vs_computer)
+    if (!(mWinner = checkWin()) && doActionIsOk) {
+        if (_vs_computer)
         {
             _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
             (PLAYER1);
@@ -50,6 +51,7 @@ bool Game::doGameGui(int x, int y) {
         }
         _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
         (PLAYER1);
+    }
     emit clear();
     if (mWinner) {
         emit winner(_playerTurn);
