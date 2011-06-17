@@ -2,7 +2,7 @@
 #include "BasicHeuristic.hpp"
 #include "Board.hpp"
 
-typename BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsigned int player) {
+BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsigned int player) {
     int result = 0;
 
     for (unsigned int x = 0; x < gameBoard.getSize(); ++x) {
