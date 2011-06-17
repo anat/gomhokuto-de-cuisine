@@ -26,7 +26,8 @@ SOURCES += \
     src/finalstate.cpp \
     src/open.cpp \
     src/BasicHeuristic.cpp \
-    src/RefereeManager.cpp
+    src/RefereeManager.cpp \
+    src/BasicSearchCase.cpp
 
 HEADERS  += \
     inc/mainwindow.hpp \
@@ -48,7 +49,9 @@ HEADERS  += \
     inc/Singleton.hpp \
     inc/RefereeManager.hpp \
     inc/Coord.hpp \
-    inc/Array.hpp
+    inc/Array.hpp \
+    inc/ISearchCase.hpp \
+    inc/BasicSearchCase.hpp
 
 FORMS    += \
     forms/mainwindow.ui \

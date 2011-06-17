@@ -10,7 +10,7 @@
 
 #include <vector>
 
-#include "ISearchFile.hpp"
+#include "ISearchCase.hpp"
 #include "Coord.hpp"
 
 class BasicSearchCase : public ISearchCase< std::vector<Coord> >
