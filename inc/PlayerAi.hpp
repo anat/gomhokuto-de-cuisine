@@ -42,9 +42,12 @@ public:
         typename CoordContainer::iterator ite = possibleCase.end();
         FinalContainer finalContainer;
 
+        Board copy;
+
         while (it != ite) {
-            Board copy(gameboard);
+            copy = gameboard;
             Referee refcopy(ref, copy);
+
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
                 HeuristicValue heucopy = _heuristic(copy, this->getPlayerNum());
                 std::cout << "heu copy " << heucopy << std::endl;
@@ -67,6 +70,7 @@ public:
     }
 
     HeuristicValue min(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
+        std::cout << "min" << std::endl;
         if (depth > _maxDepth || reforigin.checkWin() != 0)
             return boardHeuristic;
 
@@ -100,6 +104,8 @@ public:
     }
 
     HeuristicValue max(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
+        std::cout << "max" << std::endl;
+
         if (depth > _maxDepth || reforigin.checkWin() != 0)
             return boardHeuristic;
 
