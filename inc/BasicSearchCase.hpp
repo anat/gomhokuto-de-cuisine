@@ -17,6 +17,9 @@ class BasicSearchCase : public ISearchCase< std::vector<Coord> >
 {
 public:
     void operator()(Board& game, CoordContainer& possibleCase);
+    void Dump(const CoordContainer&) const;
+private:
+    bool hasPlayerAround(Board& game, unsigned int x, unsigned int y);
 };
 
 #endif	/* BASICSEARCHCASE_HPP */

@@ -39,23 +39,24 @@ public:
         return *this;
     }
 
-    T& operator[](unsigned int i)
-    {
+    T& operator[](unsigned int i) {
         if (i >= SIZE)
             throw ArrayException();
         return _array[i];
     }
 
-    const T& operator[](unsigned int i) const
-    {
+    const T& operator[](unsigned int i) const {
         if (i >= SIZE)
             throw ArrayException();
         return _array[i];
     }
 
-    std::size_t size() const
-    {
+    std::size_t size() const {
         return SIZE;
+    }
+
+    const T* data() const {
+        return _array;
     }
 
 private:

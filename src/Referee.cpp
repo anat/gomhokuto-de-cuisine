@@ -121,7 +121,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
         setScore(player, value * 2);
         checkIsTakable(x, y, player);
         checkWin(x, y, player);
-        dumpPropagation(x, y);
+        //dumpPropagation(x, y);
     }
     return value;
 }
