@@ -203,13 +203,13 @@ void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector d
     unsigned int xtmp, ytmp;
 
     goTo(x, y, dir);
-    std::cout << "## x " << x << " ## y " << y << std::endl;
+    //std::cout << "## x " << x << " ## y " << y << std::endl;
     _board(x, y).setRawData(0);
     xtmp = x;
     ytmp = y;
 
     goTo(x, y, dir);
-    std::cout << "## x " << x << " ## y " << y << std::endl;
+    //std::cout << "## x " << x << " ## y " << y << std::endl;
     _board(x, y).setRawData(0);
 
     fpropagation_inverse(xtmp, ytmp, opponant(player));

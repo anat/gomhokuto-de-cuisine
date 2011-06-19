@@ -11,35 +11,31 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
             if (value.player == player) {
                 result += good(value);
             } else if (value.player != 0) {
-                result += bad(value);
+                result -= good(value);
             }
         }
     }
+
     return result;
 }
 
 int BasicHeuristic::good(Square::Data& square) {
     int result = 0;
-    
-    if (!square.is_takable)
-        result += 2;
-    else
-        result -= 2;
-    result += square.diagl;
-    result += square.diagr;
-    result += square.horz;
-    result += square.vert;
+
+    if (!square.is_takable) {
+        result += square.diagl * square.diagl;
+        result += square.diagr * square.diagl;
+        result += square.horz * square.diagl;
+        result += square.vert * square.diagl;
+    }
 
     return result;
 }
 
 int BasicHeuristic::bad(Square::Data& square) {
     int result = 0;
-    
-    if (square.is_takable)
-        result += 1;
-    else
-        result -= 1;
+
+
 
     result -= square.diagl;
     result -= square.diagr;
