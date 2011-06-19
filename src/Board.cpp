@@ -19,6 +19,13 @@ Board::Board(const Board& orig) : _tab(orig._tab)
 Board::~Board()
 { }
 
+Board& Board::operator =(const Board& orig) {
+    if (this != &orig) {
+        _tab = orig._tab;
+    }
+    return *this;
+}
+
 const Square& Board::getCase(unsigned int x, unsigned int y) const {
     if (checkSize(x, y))
         return _tab[y][x];
@@ -50,10 +57,6 @@ void Board::setCase(unsigned int x, unsigned int y, const Square& value) {
 
 std::size_t Board::getSize() const {
     return _tab.size();
-}
-
-bool Board::checkSize(unsigned int x, unsigned int y) const {
-    return ((x < _tab.size()) && (y < _tab.size()));
 }
 
 void Board::DumpBoard()

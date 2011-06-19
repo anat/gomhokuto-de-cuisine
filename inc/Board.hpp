@@ -24,6 +24,7 @@ public:
     Board();
     Board(const Board& orig);
     ~Board();
+    Board& operator=(const Board& orig);
 
     const Square& getCase(unsigned int x = 0, unsigned int y = 0) const;
     Square& getCase(unsigned int x = 0, unsigned int y = 0);
@@ -33,11 +34,12 @@ public:
     std::size_t getSize() const;
     void DumpBoard();
     void reset();
+    inline bool checkSize(unsigned int x, unsigned int y) const {
+        return ((x < _tab.size()) && (y < _tab.size()));
+    }
 
 private:
     SquareTab _tab;
-
-    bool checkSize(unsigned int x, unsigned int y) const;
 };
 
 #endif	/* BOARD_HPP */

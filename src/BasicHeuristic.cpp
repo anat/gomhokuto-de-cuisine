@@ -10,8 +10,7 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
             Square::Data& value = gameBoard(x, y).getData();
             if (value.player == player) {
                 result += good(value);
-            }
-            if (value.player != 0 && value.player != player) {
+            } else if (value.player != 0) {
                 result += bad(value);
             }
         }
@@ -24,6 +23,8 @@ int BasicHeuristic::good(Square::Data& square) {
     
     if (!square.is_takable)
         result += 2;
+    else
+        result -= 2;
     result += square.diagl;
     result += square.diagr;
     result += square.horz;
@@ -35,9 +36,10 @@ int BasicHeuristic::good(Square::Data& square) {
 int BasicHeuristic::bad(Square::Data& square) {
     int result = 0;
     
-    if (square.is_takable) {
+    if (square.is_takable)
         result += 1;
-    }
+    else
+        result -= 1;
 
     result -= square.diagl;
     result -= square.diagr;

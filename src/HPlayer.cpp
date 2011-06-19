@@ -22,7 +22,7 @@ bool HPlayer::doAction(Board& gameboard, Referee& referee, int x, int y)
     {
         do 
         {
-            gameboard.DumpBoard();
+            //gameboard.DumpBoard();
             std::cout << "Player " << this->getPlayerNum();
             std::cout << " you want play on x :";
             std::cin >> x;

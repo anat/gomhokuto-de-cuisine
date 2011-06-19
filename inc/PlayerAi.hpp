@@ -47,8 +47,11 @@ public:
             Referee refcopy(ref, copy);
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
                 HeuristicValue heucopy = _heuristic(copy, this->getPlayerNum());
+                std::cout << "heu copy " << heucopy << std::endl;
                 if (heucopy > originValue) {
-                    finalContainer[min(1, copy, refcopy, heucopy)] = *it;
+                    HeuristicValue heufinal = min(1, copy, refcopy, heucopy);
+                    std::cout << "heu " << heufinal << std::endl;
+                    finalContainer[heufinal] = *it;
                 }
             }
             ++it;
@@ -71,29 +74,26 @@ public:
 
         _searchCase(origin, possibleCase);
 
-        typename CoordContainer::iterator it = possibleCase.begin();
-        typename CoordContainer::iterator ite = possibleCase.end();
-        FinalContainer finalCoord;
+        typename CoordContainer::const_iterator it = possibleCase.begin();
+        typename CoordContainer::const_iterator ite = possibleCase.end();
 
+        HeuristicValue heucopy = HeuristicValue();
+        HeuristicValue heuResult = HeuristicValue();
         HeuristicValue result = HeuristicValue();
-
         Board copy;
+
         while (it != ite) {
             copy = origin;
             Referee refcopy(reforigin, copy);
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
-                HeuristicValue heucopy = _heuristic(copy, this->getPlayerNum());
+                heucopy = _heuristic(copy, this->getPlayerNum());
                 if (heucopy < boardHeuristic) {
-                    finalCoord[max(depth + 1, copy, refcopy, heucopy)] = *it;
+                    heuResult = max(depth + 1, copy, refcopy, heucopy);
+                    if (heuResult > result)
+                        result = heuResult;
                 }
             }
             ++it;
-        }
-
-        typename FinalContainer::reverse_iterator final = finalCoord.rbegin();
-
-        if (final != finalCoord.rend()) {
-            result = final->first;
         }
 
         return result;
@@ -107,28 +107,26 @@ public:
 
         _searchCase(origin, possibleCase);
 
-        typename CoordContainer::iterator it = possibleCase.begin();
-        typename CoordContainer::iterator ite = possibleCase.end();
-        FinalContainer finalCoord;
+        typename CoordContainer::const_iterator it = possibleCase.begin();
+        typename CoordContainer::const_iterator ite = possibleCase.end();
 
+        HeuristicValue heucopy = HeuristicValue();
+        HeuristicValue heuResult = HeuristicValue();
         HeuristicValue result = HeuristicValue();
+        Board copy;
 
         while (it != ite) {
-            Board copy(origin);
+            copy = origin;
             Referee refcopy(reforigin);
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
-                HeuristicValue heucopy = _heuristic(copy, this->getPlayerNum());
+                heucopy = _heuristic(copy, this->getPlayerNum());
                 if (heucopy > boardHeuristic) {
-                    finalCoord[max(depth + 1, copy, refcopy, heucopy)] = *it;
+                     heuResult = min(depth + 1, copy, refcopy, heucopy);
+                     if (heuResult > result)
+                         result = heuResult;
                 }
             }
             ++it;
-        }
-
-        typename FinalContainer::reverse_iterator final = finalCoord.rbegin();
-
-        if (final != finalCoord.rend()) {
-            result = final->first;
         }
 
         return result;
