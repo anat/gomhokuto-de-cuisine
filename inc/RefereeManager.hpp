@@ -57,6 +57,9 @@ public:
     void setFivePrize(bool value);
     void setDoubleThree(bool value);
     DirMap& map();
+    bool goTo(unsigned int boardSize, unsigned int& x, unsigned int& y, Vector dir);
+    unsigned int getDirAlign(const Square& square, Vector dir) const;
+    void setDirAlign(Square& square, Vector dir, unsigned int lineSize) const;
 
 private:
     DirMap _directionMap;
@@ -66,6 +69,10 @@ private:
 
     RefereeManager();
     RefereeManager(const RefereeManager& orig);
+
+    inline bool checkPosition(unsigned int x, unsigned int y, unsigned int size) {
+        return (x < size && y < size);
+    }
 };
 
 #endif // REFEREEMANAGER_HPP

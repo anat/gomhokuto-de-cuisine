@@ -92,6 +92,8 @@ private:
      */
     bool checkDoubleThree(unsigned int x, unsigned int y, unsigned int player);
     unsigned int isPartOfFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
+    unsigned int classicCenterFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
+    unsigned int unClassicCenterFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
     unsigned int classicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
     unsigned int unClassicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
     unsigned int isPartOfAlign3InOther(unsigned x, unsigned int y, RefereeManager::Vector dir, unsigned int player);

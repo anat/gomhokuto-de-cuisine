@@ -9,7 +9,7 @@ class Board;
 class BasicHeuristic : public IHeuristic<int>
 {
 public:
-    HeuristicValue operator()(Board& gameBoard, unsigned int player);
+    HeuristicValue operator()(Board& gameBoard, unsigned int player, unsigned int x, unsigned int y);
 
 private:
     int good(Square::Data& square);
