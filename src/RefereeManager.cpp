@@ -60,3 +60,33 @@ RefereeManager::DirMap& RefereeManager::map()
 {
     return _directionMap;
 }
+
+bool RefereeManager::goTo(unsigned int boardSize, unsigned int& x, unsigned int& y, Vector dir) {
+    if (dir != RefereeManager::NONE) {
+        DirMap::const_iterator it = _directionMap.find(dir);
+
+        if (it != _directionMap.end() && checkPosition(x + it->second.direction.x, y + it->second.direction.y, boardSize)) {
+            x += it->second.direction.x;
+            y += it->second.direction.y;
+            return true;
+        }
+    }
+    return false;
+}
+
+unsigned int RefereeManager::getDirAlign(const Square& square, Vector dir) const {
+    DirMap::const_iterator it = _directionMap.find(dir);
+
+    if (dir && it != _directionMap.end() && it->second.getter) {
+        return (square.*(it->second.getter))();
+    }
+    return 0;
+}
+
+void RefereeManager::setDirAlign(Square& square, Vector dir, unsigned int lineSize) const {
+    DirMap::const_iterator it = _directionMap.find(dir);
+
+    if (dir && it != _directionMap.end() && it->second.getter) {
+        (square.*(it->second.setter))(lineSize);
+    }
+}

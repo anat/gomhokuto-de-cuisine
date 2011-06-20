@@ -353,6 +353,12 @@ bool Referee::checkDoubleThree(unsigned int x, unsigned int y, unsigned int play
         num += isPartOfFree3Align(x, y, static_cast<RefereeManager::Vector> (i), player);
     }
 
+    //symetrique, donc si on fait toute les direction on compte deux fois.
+    num += classicCenterFreeAlign(x, y, RefereeManager::LEFT, player);
+    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN, player);
+    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN_LEFT, player);
+    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN_RIGHT, player);
+
     if (num >= 2)
         return false;
     return true;
@@ -362,8 +368,54 @@ unsigned int Referee::isPartOfFree3Align(unsigned int x, unsigned int y, Referee
     unsigned int xnear = x;
     unsigned int ynear = y;
 
+    unsigned int result = 0;
+
     if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player)) {
-        return classicFree3Align(x, y, dir, player) + unClassicFree3Align(x, y, dir, player);
+        result = classicFree3Align(x, y, dir, player) + unClassicFree3Align(x, y, dir, player);
+    }
+
+    result += unClassicCenterFreeAlign(x, y, dir, player);
+    return result;
+}
+
+unsigned int Referee::classicCenterFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
+    unsigned int xtmp = x;
+    unsigned int ytmp = y;
+    unsigned int result = 0;
+
+    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+        result += isPartOfAlign3InOther(x, y, dir, player);
+
+        if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player) &&
+            goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player)
+        {
+            result += isPartOfAlign3InOther(xtmp, ytmp, invert(dir), player);
+            if (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) != opponant(player))
+                return result + 1;
+        }
+    }
+    return 0;
+}
+
+unsigned int Referee::unClassicCenterFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
+    unsigned int xtmp = x;
+    unsigned int ytmp = y;
+
+    unsigned int result = 0;
+
+    if (goTo(x, y, dir) &&  GET_PLAYER(_board(x, y).getRawData()) == player) {
+        result += isPartOfAlign3InOther(x, y, dir, player);
+
+        if (goTo(x, y, dir) &&  GET_PLAYER(_board(x, y).getRawData()) != opponant(player) &&
+                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(x, y).getRawData()) == 0 &&
+                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+
+            result += isPartOfAlign3InOther(xtmp, ytmp, invert(dir), player);
+
+            if (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player)) {
+                return result + 1;
+            }
+        }
     }
     return 0;
 }
@@ -384,6 +436,8 @@ unsigned int Referee::classicFree3Align(unsigned int x, unsigned int y, RefereeM
 }
 
 unsigned int Referee::unClassicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
+    unsigned int xtmp = x;
+    unsigned int ytmp = y;
     unsigned int value = 0;
 
     if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == 0 &&
@@ -397,6 +451,18 @@ unsigned int Referee::unClassicFree3Align(unsigned int x, unsigned int y, Refere
                 return value + 1;
         }
     }
+
+    value = 0;
+    if (goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
+        value += isPartOfAlign3InOther(xtmp, ytmp, dir, player);
+
+        if (goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0 && goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
+            value += isPartOfAlign3InOther(xtmp, ytmp, dir, player);
+            if (goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) != opponant(player))
+                return value + 1;
+        }
+    }
+
     return 0;
 }
 

@@ -14,7 +14,7 @@ public:
     typedef typename ISearchCase::CoordContainer CoordContainer;
     typedef typename std::map< HeuristicValue, Coord > FinalContainer;
 
-    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _maxDepth(3) {
+    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _maxDepth(3), _alpha(), _beta() {
     }
 
     PlayerAi(const PlayerAi& orig) {
@@ -32,7 +32,9 @@ public:
     }
 
     bool doAction(Board& gameboard, Referee& ref, int , int ) {
-        HeuristicValue originValue = _heuristic(gameboard, this->getPlayerNum());
+        //HeuristicValue originValue = _heuristic(gameboard, this->getPlayerNum());
+        _alpha = HeuristicValue();
+        _beta = HeuristicValue();
 
         CoordContainer possibleCase;
 
@@ -43,26 +45,25 @@ public:
         FinalContainer finalContainer;
 
         Board copy;
+        //HeuristicValue heufinal;
 
         while (it != ite) {
             copy = gameboard;
             Referee refcopy(ref, copy);
-
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
-                HeuristicValue heucopy = _heuristic(copy, this->getPlayerNum());
-                std::cout << "heu copy " << heucopy << std::endl;
-                if (heucopy > originValue) {
-                    HeuristicValue heufinal = min(1, copy, refcopy, heucopy);
-                    std::cout << "heu " << heufinal << std::endl;
-                    finalContainer[heufinal] = *it;
-                }
+
+                //heufinal = min(1, copy, refcopy, );
+                //std::cout << "heu " << heufinal << std::endl;
+                finalContainer[_heuristic(copy, this->getPlayerNum(), it->x, it->y)] = *it;
             }
             ++it;
         }
 
         typename FinalContainer::reverse_iterator final = finalContainer.rbegin();
 
+
         if (final != finalContainer.rend()) {
+            std::cout << "final heu " << final->first << std::endl;
             ref.tryPlaceRock(final->second.x, final->second.y, this->getPlayerNum());
         }
 
@@ -70,9 +71,9 @@ public:
     }
 
     HeuristicValue min(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
-        std::cout << "min" << std::endl;
-        if (depth > _maxDepth || reforigin.checkWin() != 0)
-            return boardHeuristic;
+        //std::cout << "min" << std::endl;
+        //if (depth > _maxDepth || reforigin.checkWin() != 0)
+        //  return boardHeuristic;
 
         CoordContainer possibleCase;
 
@@ -90,12 +91,10 @@ public:
             copy = origin;
             Referee refcopy(reforigin, copy);
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
-                heucopy = _heuristic(copy, this->getPlayerNum());
-                if (heucopy < boardHeuristic) {
-                    heuResult = max(depth + 1, copy, refcopy, heucopy);
-                    if (heuResult > result)
-                        result = heuResult;
-                }
+                heucopy = _heuristic(copy, this->getPlayerNum(), it->x, it->y);
+                heuResult = max(depth + 1, copy, refcopy, heucopy);
+                if (heuResult > result)
+                    result = heuResult;
             }
             ++it;
         }
@@ -104,10 +103,11 @@ public:
     }
 
     HeuristicValue max(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
-        std::cout << "max" << std::endl;
+        //std::cout << "max" << std::endl;
 
-        if (depth > _maxDepth || reforigin.checkWin() != 0)
+        if (depth > _maxDepth || reforigin.checkWin() != 0) {
             return boardHeuristic;
+        }
 
         CoordContainer possibleCase;
 
@@ -125,12 +125,10 @@ public:
             copy = origin;
             Referee refcopy(reforigin);
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
-                heucopy = _heuristic(copy, this->getPlayerNum());
-                if (heucopy > boardHeuristic) {
-                     heuResult = min(depth + 1, copy, refcopy, heucopy);
-                     if (heuResult > result)
-                         result = heuResult;
-                }
+                heucopy = _heuristic(copy, this->getPlayerNum(), it->x, it->y);
+                heuResult = min(depth + 1, copy, refcopy, heucopy);
+                if (heuResult > result)
+                    result = heuResult;
             }
             ++it;
         }
@@ -141,6 +139,8 @@ private:
     IHeuristic _heuristic;
     ISearchCase _searchCase;
     unsigned int _maxDepth;
+    HeuristicValue _alpha;
+    HeuristicValue _beta;
 };
 
 #endif // PLAYERAI_HPP
