@@ -407,12 +407,12 @@ unsigned int Referee::unClassicCenterFreeAlign(unsigned int x, unsigned int y, R
         result += isPartOfAlign3InOther(x, y, dir, player);
 
         if (goTo(x, y, dir) &&  GET_PLAYER(_board(x, y).getRawData()) != opponant(player) &&
-                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(x, y).getRawData()) == 0 &&
-                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0 &&
+                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
 
             result += isPartOfAlign3InOther(xtmp, ytmp, invert(dir), player);
 
-            if (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player)) {
+            if (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) != opponant(player)) {
                 return result + 1;
             }
         }
