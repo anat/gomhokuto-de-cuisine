@@ -5,6 +5,8 @@
 
 #ifdef __WIN32__
 #define MENU_SIZE       (21)
+#elif __linux__
+#define MENU_SIZE       (21)
 #else
 #define MENU_SIZE       (0)
 #endif
