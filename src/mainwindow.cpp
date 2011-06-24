@@ -3,12 +3,10 @@
 
 #include <iostream>
 
-#ifdef __WIN32__
-#define MENU_SIZE       (21)
-#elif __linux__
-#define MENU_SIZE       (21)
-#else
+#ifdef __APPLE__
 #define MENU_SIZE       (0)
+#else
+#define MENU_SIZE       (21)
 #endif
 
 
