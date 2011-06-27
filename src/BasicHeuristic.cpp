@@ -4,7 +4,7 @@
 #include "BasicHeuristic.hpp"
 #include "Board.hpp"
 
-BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsigned int player, unsigned int x, unsigned int y) {
+BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsigned int player, unsigned int /*x*/, unsigned int /*y*/) {
     int result = 0;
     int playerPiece = 0;
     int opponantPiece = 0;

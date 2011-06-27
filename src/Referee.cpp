@@ -38,13 +38,7 @@ unsigned int Referee::getScore(unsigned int player) {
  */
 bool Referee::goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir) const {
     if (dir != RefereeManager::NONE) {
-        RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
-        
-        if (it != Singleton<RefereeManager>::Instance().map().end() && checkPosition(x + it->second.direction.x, y + it->second.direction.y)) {
-            x += it->second.direction.x;
-            y += it->second.direction.y;
-            return true;
-        }
+        return Singleton<RefereeManager>::Instance().goTo(_board.getSize(), x, y, dir);
     }
     return false;
 }
@@ -294,6 +288,7 @@ bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
     if (GET_DIAGL(_board(x, y).getRawData()) > 4) {
         unsigned int size = checkFivePrize(x, y, RefereeManager::UP_LEFT, player);
         size += checkFivePrize(x, y, RefereeManager::DOWN_RIGHT, player);
+        size++;
         if (size > 4)
             return true;
     }
@@ -301,6 +296,7 @@ bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
     if (GET_DIAGR(_board(x, y).getRawData()) > 4) {
         unsigned int size = checkFivePrize(x, y, RefereeManager::UP_RIGHT, player);
         size += checkFivePrize(x, y, RefereeManager::DOWN_LEFT, player);
+        size++;
         if (size > 4)
             return true;
     }
@@ -308,6 +304,7 @@ bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
     if (GET_HORZ(_board(x, y).getRawData()) > 4) {
         unsigned int size = checkFivePrize(x, y, RefereeManager::RIGHT, player);
         size += checkFivePrize(x, y, RefereeManager::LEFT, player);
+        size++;
         if (size > 4)
             return true;
     }
@@ -315,6 +312,7 @@ bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
     if (GET_VERT(_board(x, y).getRawData()) > 4) {
         unsigned int size = checkFivePrize(x, y, RefereeManager::UP, player);
         size += checkFivePrize(x, y, RefereeManager::DOWN, player);
+        size++;
         if (size > 4)
             return true;
     }
@@ -437,8 +435,6 @@ unsigned int Referee::unClassicCenterFreeAlign(unsigned int x, unsigned int y, R
 
 unsigned int Referee::classicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
     int value = 0;
-    if (dir == RefereeManager::DOWN)
-        std::cout << "CACA" << std::endl;
     if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && getDirAlign(_board(x, y), dir) > 2 ) {
 
         value += isPartOfAlign3InOther(x, y, dir, player);
