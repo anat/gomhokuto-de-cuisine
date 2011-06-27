@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/Background">
+        <file>gazon.jpg</file>
+        <file>parquet.jpg</file>
+    </qresource>
+    <qresource prefix="/Finish">
+        <file>WhiteWin.png</file>
+        <file>BlackWin.png</file>
+    </qresource>
+</RCC>
