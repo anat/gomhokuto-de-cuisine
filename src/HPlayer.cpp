@@ -15,7 +15,7 @@ HPlayer::~HPlayer() {
 }
 
 
-bool HPlayer::doAction(Board& gameboard, Referee& referee, int x, int y)
+bool HPlayer::doAction(Board&, Referee& referee, int x, int y)
 {
     int res = 0;
     if (x < 0 && y < 0)

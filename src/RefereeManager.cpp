@@ -4,7 +4,6 @@
 
 RefereeManager::RefereeManager() : _directionMap(), _mapSize(), _fivePrize(false), _doubleThree(false)
 {
-    //std::cout << "CACA" << std::endl;
     _directionMap[NONE] = DirInfo();
     _directionMap[RIGHT] = DirInfo(LEFT, Coord(1, 0), &Square::setHorz, &Square::getHorz, &Square::getHorzBlock, &Square::setHorzBlock);
     _directionMap[UP_RIGHT] = DirInfo(DOWN_LEFT, Coord(1, -1), &Square::setDiagr, &Square::getDiagr, &Square::getDiagrBlock, &Square::setDiagrBlock);
@@ -16,15 +15,6 @@ RefereeManager::RefereeManager() : _directionMap(), _mapSize(), _fivePrize(false
     _directionMap[DOWN_RIGHT] = DirInfo(UP_LEFT, Coord(1, 1), &Square::setDiagl, &Square::getDiagl, &Square::getDiaglBlock, &Square::setDiaglBlock);
 
     _mapSize = _directionMap.size();
-
-    DirMap::iterator it = _directionMap.begin();
-    DirMap::iterator ite = _directionMap.end();
-
-//    while (it != ite) {
-//        std::cout << "x " << it->second.direction.x << " y " << it->second.direction.y << std::endl;
-//        ++it;
-//    }
-    //std::cout << "CACA" << std::endl;
 }
 
 RefereeManager::RefereeManager(const RefereeManager &orig)
@@ -57,6 +47,11 @@ void RefereeManager::setFivePrize(bool value)
 }
 
 RefereeManager::DirMap& RefereeManager::map()
+{
+    return _directionMap;
+}
+
+const RefereeManager::DirMap& RefereeManager::map() const
 {
     return _directionMap;
 }
