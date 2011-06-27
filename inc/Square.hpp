@@ -23,6 +23,10 @@
 #define GET_VERT(x)        ((x & 0x0000F000) >> 12)
 #define GET_DIAGL(x)       ((x & 0x000F0000) >> 16)
 #define GET_DIAGR(x)       ((x & 0x00F00000) >> 20)
+#define GET_HORZ_BLOCK(x) ((x & 0x03000000) >> 24)
+#define GET_VERT_BLOCK(x) ((x & 0x0C000000) >> 26)
+#define GET_DIAGL_BLOCK(x) ((x & 0x30000000) >> 28)
+#define GET_DIAGR_BLOCK(x) ((x & 0xC0000000) >> 30)
 
 class Square {
 
@@ -34,6 +38,10 @@ public:
         unsigned short vert : 4;
         unsigned short diagl : 4;
         unsigned short diagr : 4;
+        unsigned short horz_block : 2;
+        unsigned short vert_block : 2;
+        unsigned short diagl_block : 2;
+        unsigned short diagr_block : 2;
     };
     
 public:
@@ -42,6 +50,7 @@ public:
 
     int32_t             getRawData() const;
     void                setRawData(int32_t mask);
+    const Square::Data &      getData() const;
     Square::Data &      getData();
     void                setData(Square::Data & data);
     void                dumpData();
@@ -50,10 +59,20 @@ public:
     void setVert(unsigned int lineSize);
     void setDiagl(unsigned int lineSize);
     void setDiagr(unsigned int lineSize);
+    void setPlayer(unsigned int player);
+    void setIsTackable(bool value);
+    void setHorzBlock(unsigned int endBlock);
+    void setVertBlock(unsigned int endBlock);
+    void setDiagrBlock(unsigned int endBlock);
+    void setDiaglBlock(unsigned int endBlock);
     unsigned int getHorz() const;
     unsigned int getVert() const;
     unsigned int getDiagl() const;
     unsigned int getDiagr() const;
+    unsigned int getHorzBlock() const;
+    unsigned int getVertBlock() const;
+    unsigned int getDiagrBlock() const;
+    unsigned int getDiaglBlock() const;
     
 private:
      int32_t _data;

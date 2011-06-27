@@ -66,6 +66,14 @@ void Referee::setDirAlign(Square& square, RefereeManager::Vector dir, unsigned i
     }
 }
 
+unsigned int Referee::getDirEnd(const Square& square, RefereeManager::Vector dir) const {
+    return Singleton<RefereeManager>::Instance().getDirEnd(square, dir);
+}
+
+void Referee::setDirEnd(Square& square, RefereeManager::Vector dir, unsigned int endValue) {
+    Singleton<RefereeManager>::Instance().setDirEnd(square, dir, endValue);
+}
+
 /*
  * Teste si la case fait partie d'au moins un alignement superieur ou egale a 'size'
  */
@@ -660,13 +668,15 @@ void Referee::fpropagation(unsigned int x, unsigned int y, const unsigned int pl
 }
 
 void Referee::fpropagation(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player) {
-    unsigned int lineSize = 0;
+    PropagationInfo info;
 
-    lineSize = flineSize(x, y, dir, player) + flineSize(x, y, invert(dir), player) + 1;
-    setDirAlign(_board(x, y), dir, lineSize);
+    info = flineSize(x, y, dir, player) + flineSize(x, y, invert(dir), player);
+    info.lineSize += 1;
+    setDirAlign(_board(x, y), dir, info.lineSize);
+    setDirEnd(_board(x, y), dir, info.endBlock);
 
-    fsetline(x, y, dir, player, lineSize);
-    fsetline(x, y, invert(dir), player, lineSize);
+    fsetline(x, y, dir, player, info);
+    fsetline(x, y, invert(dir), player, info);
 }
 
 void Referee::fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player) {
@@ -686,18 +696,21 @@ void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, RefereeManager:
     }
 }
 
-std::size_t Referee::flineSize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
-    std::size_t i = 0;
+Referee::PropagationInfo Referee::flineSize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
+    PropagationInfo info;
 
     while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
-        i++;
+        info.lineSize++;
+    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player))
+        info.endBlock++;
 
-    return i;
+    return info;
 }
 
-void Referee::fsetline(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, unsigned int value) {
+void Referee::fsetline(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, const PropagationInfo& value) {
     while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
-        setDirAlign(_board(x, y), dir, value);
+        setDirAlign(_board(x, y), dir, value.lineSize);
+        setDirEnd(_board(x, y), dir, value.endBlock);
         if (!ispartOfExactAlign(_board(x, y), 2))
             setTakable(_board(x, y), false);
     }

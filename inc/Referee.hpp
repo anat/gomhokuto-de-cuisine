@@ -44,6 +44,19 @@ public:
     unsigned int getScore(unsigned int player);
 
 private:
+    struct PropagationInfo {
+        std::size_t lineSize;
+        unsigned int endBlock;
+
+        PropagationInfo() : lineSize(0), endBlock(0) {}
+
+        PropagationInfo& operator+(const PropagationInfo& buddy) {
+            lineSize += buddy.lineSize;
+            endBlock += buddy.endBlock;
+            return *this;
+        }
+    };
+
     typedef std::list<Coord> WinList;
 
     WinList _winLineList;
@@ -83,6 +96,8 @@ private:
     bool goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir) const;
     unsigned int getDirAlign(const Square& value, RefereeManager::Vector dir) const;
     void setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int value);
+    unsigned int getDirEnd(const Square& square, RefereeManager::Vector dir) const;
+    void setDirEnd(Square& square, RefereeManager::Vector dir, unsigned int endValue);
     bool ispartOfAlign(const Square& value, int size);
     bool ispartOfExactAlign(const Square& value, int size);
     void setTakable(Square& square, bool value);
@@ -137,8 +152,8 @@ private:
     void fpropagation(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player);
     void fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player);
     void fpropag_inverse_to(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player);
-    std::size_t flineSize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
-    void fsetline(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, unsigned int value);
+    PropagationInfo flineSize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
+    void fsetline(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, const PropagationInfo& value);
     void resetTakable(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, bool takable);
 
     /**

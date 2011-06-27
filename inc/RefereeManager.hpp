@@ -33,20 +33,22 @@ public:
 
     struct DirInfo {
 
-        DirInfo(const Vector& inv, const Coord& dir, setDirFunc set, getDirFunc get)
-        : invert(inv), direction(dir), setter(set), getter(get)
+        DirInfo(const Vector& inv, const Coord& dir, setDirFunc set, getDirFunc get, getDirFunc getEnd, setDirFunc setEnd)
+            : invert(inv), direction(dir), setter(set), getter(get), getEndBlock(getEnd), setEndBlock(setEnd)
         {
             //std::cout << "DirInfo x " << direction.x << " y " << direction.y << std::endl;
         }
 
         DirInfo()
-        : invert(NONE), direction(Coord(0, 0)), setter(0), getter(0)
+            : invert(NONE), direction(Coord(0, 0)), setter(0), getter(0), getEndBlock(0), setEndBlock(0)
         {}
 
         Vector invert;
         Coord direction;
         setDirFunc setter;
         getDirFunc getter;
+        getDirFunc getEndBlock;
+        setDirFunc setEndBlock;
     };
 
     typedef std::map<Vector, DirInfo> DirMap;
@@ -59,7 +61,9 @@ public:
     DirMap& map();
     bool goTo(unsigned int boardSize, unsigned int& x, unsigned int& y, Vector dir);
     unsigned int getDirAlign(const Square& square, Vector dir) const;
+    unsigned int getDirEnd(const Square& square, Vector dir) const;
     void setDirAlign(Square& square, Vector dir, unsigned int lineSize) const;
+    void setDirEnd(Square& square, Vector dir, unsigned int endBlockValue) const;
 
 private:
     DirMap _directionMap;

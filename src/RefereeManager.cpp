@@ -5,15 +5,15 @@
 RefereeManager::RefereeManager() : _directionMap(), _mapSize(), _fivePrize(false), _doubleThree(false)
 {
     //std::cout << "CACA" << std::endl;
-    _directionMap[NONE] = DirInfo(NONE, Coord(0, 0), 0, 0);
-    _directionMap[RIGHT] = DirInfo(LEFT, Coord(1, 0), &Square::setHorz, &Square::getHorz);
-    _directionMap[UP_RIGHT] = DirInfo(DOWN_LEFT, Coord(1, -1), &Square::setDiagr, &Square::getDiagr);
-    _directionMap[UP] = DirInfo(DOWN, Coord(0, -1), &Square::setVert, &Square::getVert);
-    _directionMap[UP_LEFT] = DirInfo(DOWN_RIGHT, Coord(-1, -1), &Square::setDiagl, &Square::getDiagl);
-    _directionMap[LEFT] = DirInfo(RIGHT, Coord(-1, 0), &Square::setHorz, &Square::getHorz);
-    _directionMap[DOWN_LEFT] = DirInfo(UP_RIGHT, Coord(-1, 1), &Square::setDiagr, &Square::getDiagr);
-    _directionMap[DOWN] = DirInfo(UP, Coord(0, 1), &Square::setVert, &Square::getVert);
-    _directionMap[DOWN_RIGHT] = DirInfo(UP_LEFT, Coord(1, 1), &Square::setDiagl, &Square::getDiagl);
+    _directionMap[NONE] = DirInfo();
+    _directionMap[RIGHT] = DirInfo(LEFT, Coord(1, 0), &Square::setHorz, &Square::getHorz, &Square::getHorzBlock, &Square::setHorzBlock);
+    _directionMap[UP_RIGHT] = DirInfo(DOWN_LEFT, Coord(1, -1), &Square::setDiagr, &Square::getDiagr, &Square::getDiagrBlock, &Square::setDiagrBlock);
+    _directionMap[UP] = DirInfo(DOWN, Coord(0, -1), &Square::setVert, &Square::getVert, &Square::getVertBlock, &Square::setVertBlock);
+    _directionMap[UP_LEFT] = DirInfo(DOWN_RIGHT, Coord(-1, -1), &Square::setDiagl, &Square::getDiagl, &Square::getDiaglBlock, &Square::setDiaglBlock);
+    _directionMap[LEFT] = DirInfo(RIGHT, Coord(-1, 0), &Square::setHorz, &Square::getHorz, &Square::getHorzBlock, &Square::setHorzBlock);
+    _directionMap[DOWN_LEFT] = DirInfo(UP_RIGHT, Coord(-1, 1), &Square::setDiagr, &Square::getDiagr, &Square::getDiagrBlock, &Square::setDiagrBlock);
+    _directionMap[DOWN] = DirInfo(UP, Coord(0, 1), &Square::setVert, &Square::getVert, &Square::getVertBlock, &Square::setVertBlock);
+    _directionMap[DOWN_RIGHT] = DirInfo(UP_LEFT, Coord(1, 1), &Square::setDiagl, &Square::getDiagl, &Square::getDiaglBlock, &Square::setDiaglBlock);
 
     _mapSize = _directionMap.size();
 
@@ -75,18 +75,44 @@ bool RefereeManager::goTo(unsigned int boardSize, unsigned int& x, unsigned int&
 }
 
 unsigned int RefereeManager::getDirAlign(const Square& square, Vector dir) const {
-    DirMap::const_iterator it = _directionMap.find(dir);
+    if (dir != RefereeManager::NONE) {
+        DirMap::const_iterator it = _directionMap.find(dir);
 
-    if (dir && it != _directionMap.end() && it->second.getter) {
-        return (square.*(it->second.getter))();
+        if (it != _directionMap.end() && it->second.getter) {
+            return (square.*(it->second.getter))();
+        }
     }
     return 0;
 }
 
 void RefereeManager::setDirAlign(Square& square, Vector dir, unsigned int lineSize) const {
-    DirMap::const_iterator it = _directionMap.find(dir);
+    if (dir != RefereeManager::NONE) {
+        DirMap::const_iterator it = _directionMap.find(dir);
 
-    if (dir && it != _directionMap.end() && it->second.getter) {
-        (square.*(it->second.setter))(lineSize);
+        if (it != _directionMap.end() && it->second.setter) {
+            (square.*(it->second.setter))(lineSize);
+        }
+    }
+}
+
+unsigned int RefereeManager::getDirEnd(const Square &square, Vector dir) const {
+    if (dir != RefereeManager::NONE) {
+        DirMap::const_iterator it = _directionMap.find(dir);
+
+        if (it != _directionMap.end() && it->second.getEndBlock) {
+            return (square.*(it->second.getEndBlock))();
+        }
+    }
+
+    return 0;
+}
+
+void RefereeManager::setDirEnd(Square &square, Vector dir, unsigned int endBlockValue) const {
+    if (dir != RefereeManager::NONE) {
+        DirMap::const_iterator it = _directionMap.find(dir);
+
+        if (it != _directionMap.end() && it->second.setEndBlock) {
+            (square.*(it->second.setEndBlock))(endBlockValue);
+        }
     }
 }

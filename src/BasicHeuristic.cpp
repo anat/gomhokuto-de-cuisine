@@ -13,24 +13,20 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
         for (unsigned int y = 0; y < gameBoard.getSize(); ++y) {
             Square::Data& value = gameBoard(x, y).getData();
             if (value.player == player) {
+                result += good(value);
                 playerPiece++;
-                if (value.is_takable)
-                       result--;
             } else if (value.player != 0) {
+                result -= good(value);
                 opponantPiece++;
-                if (value.is_takable)
-                    result++;
             }
         }
     }
 
-    int diffPiece = playerPiece - opponantPiece;
-    if (diffPiece < 0)
-        diffPiece = diffPiece * diffPiece * -1;
-    else
-        diffPiece = diffPiece * diffPiece;
+    if (playerPiece && opponantPiece) {
+        float div = playerPiece / opponantPiece;
+        result = result * div;
+    }
 
-    result += diffPiece;
     //std::cout << "heu " << result << std::endl;
     return result;
 }
@@ -38,10 +34,10 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
 int BasicHeuristic::good(Square::Data& square) {
     int result = 0;
 
-    result += square.diagl * square.diagl;
-    result += square.diagr * square.diagl;
-    result += square.horz * square.diagl;
-    result += square.vert * square.diagl;
+    result += square.diagl * square.diagl * square.diagl_block;
+    result += square.diagr * square.diagr * square.diagr_block;
+    result += square.horz * square.horz * square.horz_block;
+    result += square.vert * square.vert * square.vert_block;
 
     if (square.is_takable) {
         result *= -1;
