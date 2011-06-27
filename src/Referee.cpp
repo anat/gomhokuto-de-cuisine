@@ -373,17 +373,24 @@ bool Referee::checkDoubleThree(unsigned int x, unsigned int y, unsigned int play
 }
 
 unsigned int Referee::isPartOfFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
-    unsigned int xnear = x;
-    unsigned int ynear = y;
+    if (dir) {
 
-    unsigned int result = 0;
 
-    if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player)) {
-        result = classicFree3Align(x, y, dir, player) + unClassicFree3Align(x, y, dir, player);
+        unsigned int xnear = x;
+        unsigned int ynear = y;
+
+        unsigned int result = 0;
+
+        if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player)) {
+            result += classicFree3Align(x, y, dir, player);
+            result += unClassicFree3Align(x, y, dir, player);
+        }
+
+        result += unClassicCenterFreeAlign(x, y, dir, player);
+
+        return result;
     }
-
-    result += unClassicCenterFreeAlign(x, y, dir, player);
-    return result;
+    return 0;
 }
 
 unsigned int Referee::classicCenterFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
@@ -430,14 +437,14 @@ unsigned int Referee::unClassicCenterFreeAlign(unsigned int x, unsigned int y, R
 
 unsigned int Referee::classicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
     int value = 0;
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+    if (dir == RefereeManager::DOWN)
+        std::cout << "CACA" << std::endl;
+    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && getDirAlign(_board(x, y), dir) > 2 ) {
+
         value += isPartOfAlign3InOther(x, y, dir, player);
 
-        if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+        while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
             value += isPartOfAlign3InOther(x, y, dir, player);
-
-            if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player))
-                return value + 1;
         }
     }
     return 0;

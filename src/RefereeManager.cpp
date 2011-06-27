@@ -61,6 +61,17 @@ RefereeManager::DirMap& RefereeManager::map()
     return _directionMap;
 }
 
+RefereeManager::Vector RefereeManager::invert(const Vector &dir) const {
+    if (dir != NONE) {
+        DirMap::const_iterator it = _directionMap.find(dir);
+
+        if (it != _directionMap.end()) {
+            return it->second.invert;
+        }
+    }
+    return NONE;
+}
+
 bool RefereeManager::goTo(unsigned int boardSize, unsigned int& x, unsigned int& y, Vector dir) {
     if (dir != RefereeManager::NONE) {
         DirMap::const_iterator it = _directionMap.find(dir);

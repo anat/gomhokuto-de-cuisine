@@ -59,11 +59,13 @@ public:
     void setFivePrize(bool value);
     void setDoubleThree(bool value);
     DirMap& map();
+    Vector invert(const Vector& dir) const;
     bool goTo(unsigned int boardSize, unsigned int& x, unsigned int& y, Vector dir);
     unsigned int getDirAlign(const Square& square, Vector dir) const;
     unsigned int getDirEnd(const Square& square, Vector dir) const;
     void setDirAlign(Square& square, Vector dir, unsigned int lineSize) const;
     void setDirEnd(Square& square, Vector dir, unsigned int endBlockValue) const;
+
 
 private:
     DirMap _directionMap;

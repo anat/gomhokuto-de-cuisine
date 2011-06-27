@@ -84,11 +84,9 @@ private:
     }
 
     inline RefereeManager::Vector invert(RefereeManager::Vector dir) const {
-        RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
+        RefereeManager::Vector result = Singleton<RefereeManager>::Instance().invert(dir);
 
-        if (it != Singleton<RefereeManager>::Instance().map().end())
-            return it->second.invert;
-        return RefereeManager::NONE;
+        return result;
     }
 
     void setScore(unsigned int player, unsigned int value);
