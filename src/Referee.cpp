@@ -704,8 +704,17 @@ Referee::PropagationInfo Referee::flineSize(unsigned int x, unsigned int y, Refe
 
     while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
         info.lineSize++;
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player))
+    if (GET_PLAYER(_board(x, y).getRawData()) != opponant(player)) {
         info.endBlock++;
+    }
+
+    if (info.lineSize == 0 && GET_PLAYER(_board(x, y).getRawData()) == opponant(player)) {
+        unsigned int opponant_end = getDirEnd(_board(x, y), dir);
+        opponant_end--;
+        setDirEnd(_board(x, y), dir, opponant_end);
+        while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == opponant(player))
+            setDirEnd(_board(x, y), dir, opponant_end);
+    }
 
     return info;
 }
