@@ -12,7 +12,9 @@
 
 Referee::Referee(Board& board)
 : _winLineList(), _board(board), _score(), _winner(0)
-{ }
+{
+  _score[0] = _score[1] = 0;
+}
 
 Referee::Referee(const Referee& orig)
 : _winLineList(orig._winLineList), _board(orig._board), _score(orig._score), _winner(orig._winner)
@@ -120,7 +122,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
         _board(x, y).getData().player = player;
         fpropagation(x, y, player);
         value = checkPrize(x, y, player);
-        setScore(player, value * 2);
+        setScore(player, getScore(player) + value * 2);
         checkIsTakable(x, y, player);
         checkWin(x, y, player);
         //dumpPropagation(x, y);
