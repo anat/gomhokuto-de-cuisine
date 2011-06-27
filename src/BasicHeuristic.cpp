@@ -16,7 +16,7 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
                 result += good(value);
                 playerPiece++;
             } else if (value.player != 0) {
-                result -= good(value);
+                result += bad(value);
                 opponantPiece++;
             }
         }
@@ -24,7 +24,7 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
 
     if (playerPiece && opponantPiece) {
         float div = playerPiece / opponantPiece;
-        result = result * div;
+        result = result * div * div;
     }
 
     //std::cout << "heu " << result << std::endl;
@@ -34,13 +34,13 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
 int BasicHeuristic::good(Square::Data& square) {
     int result = 0;
 
-    result += square.diagl * square.diagl * square.diagl_block;
-    result += square.diagr * square.diagr * square.diagr_block;
-    result += square.horz * square.horz * square.horz_block;
-    result += square.vert * square.vert * square.vert_block;
+    result += square.diagl * square.diagl / 2 * square.diagl_block;
+    result += square.diagr * square.diagr / 2 * square.diagr_block;
+    result += square.horz * square.horz / 2 * square.horz_block;
+    result += square.vert * square.vert / 2 * square.vert_block;
 
     if (square.is_takable) {
-        result *= -1;
+        result /= 2;
     }
 
     return result;
@@ -49,10 +49,14 @@ int BasicHeuristic::good(Square::Data& square) {
 int BasicHeuristic::bad(Square::Data& square) {
     int result = 0;
 
-    result -= square.diagl;
-    result -= square.diagr;
-    result -= square.horz;
-    result -= square.vert;
+    result -= square.diagl * square.diagl * square.diagl_block * square.diagl_block * square.diagl_block;
+    result -= square.diagr * square.diagr * square.diagr_block * square.diagr_block * square.diagr_block;
+    result -= square.horz * square.horz * square.horz_block * square.horz_block * square.horz_block;
+    result -= square.vert * square.vert * square.vert_block * square.vert_block * square.vert_block;
+
+    if (square.is_takable) {
+        result /= 2;
+    }
 
     return result;
 }

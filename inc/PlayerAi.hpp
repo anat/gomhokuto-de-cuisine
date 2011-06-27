@@ -45,16 +45,18 @@ public:
         FinalContainer finalContainer;
 
         Board copy;
-        //HeuristicValue heufinal;
+        HeuristicValue heufinal;
 
         while (it != ite) {
             copy = gameboard;
             Referee refcopy(ref, copy);
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
 
-                //heufinal = min(1, copy, refcopy, );
+                heufinal = min(1, copy, refcopy, _heuristic(copy, this->getPlayerNum(), it->x, it->y));
                 //std::cout << "heu " << heufinal << std::endl;
-                finalContainer[_heuristic(copy, this->getPlayerNum(), it->x, it->y)] = *it;
+                finalContainer[heufinal] = *it;
+                //std::cout << "x= " << it->x << " y= " << it->y << " heu " << _heuristic(copy, this->getPlayerNum(), it->x, it->y) << std::endl;
+                //finalContainer[_heuristic(copy, this->getPlayerNum(), it->x, it->y)] = *it;
             }
             ++it;
         }
@@ -70,7 +72,7 @@ public:
         return true;
     }
 
-    HeuristicValue min(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
+    HeuristicValue min(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue ) {
         //std::cout << "min" << std::endl;
         //if (depth > _maxDepth || reforigin.checkWin() != 0)
         //  return boardHeuristic;
