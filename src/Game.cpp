@@ -45,18 +45,17 @@ bool Game::doGameGui(int x, int y) {
     if (!(mWinner = checkWin()) && doActionIsOk) {
         if (_vs_computer)
         {
-            _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
-            (PLAYER1);
-            getCurrentPlayer()->doAction(_gameboard, _referee);
+            _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) : (PLAYER1);
+            doActionIsOk = getCurrentPlayer()->doAction(_gameboard, _referee);
+            mWinner = checkWin();
         }
-        _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) :
-        (PLAYER1);
     }
     emit clear();
     if (mWinner) {
         emit winner(_playerTurn);
     }
-    //_gameboard.DumpBoard();
+    if (doActionIsOk)
+        _playerTurn = (_playerTurn == PLAYER1) ? (PLAYER2) : (PLAYER1);
     return (mWinner);
 }
 
