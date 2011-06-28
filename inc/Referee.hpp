@@ -43,6 +43,15 @@ public:
     void reset();
     unsigned int getScore(unsigned int player);
 
+    inline unsigned int opponant(const unsigned int pla) const {
+        unsigned int result = 0;
+        if (pla == 1)
+            result = 2;
+        else if (pla == 2)
+            result = 1;
+        return result;
+    }
+
 private:
     struct PropagationInfo {
         std::size_t lineSize;
@@ -63,15 +72,6 @@ private:
     Board& _board;
     Array< unsigned int, 2 > _score;
     unsigned int _winner;
-
-    inline unsigned int opponant(const unsigned int pla) const {
-        unsigned int result = 0;
-        if (pla == 1)
-            result = 2;
-        else if (pla == 2)
-            result = 1;
-        return result;
-    }
 
     inline bool checkPosition(unsigned int x, unsigned int y) const {
         return (x < _board.getSize() && y < _board.getSize());
