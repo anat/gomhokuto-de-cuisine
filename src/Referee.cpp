@@ -11,19 +11,19 @@
 #include "Game.hpp"
 
 Referee::Referee(Board& board)
-: _winLineList(), _board(board), _score(), _winner(0)
-{ }
+: _winLineList(), _board(board), _score(), _winner(0) {
+}
 
 Referee::Referee(const Referee& orig)
-: _winLineList(orig._winLineList), _board(orig._board), _score(orig._score), _winner(orig._winner)
-{ }
+: _winLineList(orig._winLineList), _board(orig._board), _score(orig._score), _winner(orig._winner) {
+}
 
 Referee::Referee(const Referee& orig, Board& board)
-: _winLineList(orig._winLineList), _board(board), _score(orig._score), _winner(orig._winner)
-{ }
+: _winLineList(orig._winLineList), _board(board), _score(orig._score), _winner(orig._winner) {
+}
 
-Referee::~Referee()
-{ }
+Referee::~Referee() {
+}
 
 void Referee::setScore(unsigned int player, unsigned int value) {
     _score[player & 1] = value;
@@ -44,20 +44,11 @@ bool Referee::goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir)
 }
 
 unsigned int Referee::getDirAlign(const Square& square, RefereeManager::Vector dir) const {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
-
-    if (dir && it != Singleton<RefereeManager>::Instance().map().end() && it->second.getter) {
-        return (square.*(it->second.getter))();
-    }
-    return 0;
+    return Singleton<RefereeManager>::Instance().getDirAlign(square, dir);
 }
 
 void Referee::setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int lineSize) {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
-
-    if (dir && it != Singleton<RefereeManager>::Instance().map().end() && it->second.getter) {
-        (square.*(it->second.setter))(lineSize);
-    }
+    Singleton<RefereeManager>::Instance().setDirAlign(square, dir, lineSize);
 }
 
 unsigned int Referee::getDirEnd(const Square& square, RefereeManager::Vector dir) const {
@@ -71,29 +62,17 @@ void Referee::setDirEnd(Square& square, RefereeManager::Vector dir, unsigned int
 /*
  * Teste si la case fait partie d'au moins un alignement superieur ou egale a 'size'
  */
-bool Referee::ispartOfAlign(const Square& value, int size) {
-    return (
-            GET_DIAGL(value.getRawData()) >= size ||
-            GET_DIAGR(value.getRawData()) >= size ||
-            GET_HORZ(value.getRawData()) >= size ||
-            GET_VERT(value.getRawData()) >= size
-            );
+bool Referee::ispartOfAlign(const Square& value, unsigned int size) {
+    return (value.getDiagl() >= size || value.getDiagr() >= size ||
+            value.getHorz() >= size || value.getVert() >= size);
 }
 
 /*
  * Teste si la case fait partie d'au moins un alignement de 'size'
  */
-bool Referee::ispartOfExactAlign(const Square& value, int size) {
-    return (
-            GET_DIAGL(value.getRawData()) == size ||
-            GET_DIAGR(value.getRawData()) == size ||
-            GET_HORZ(value.getRawData()) == size ||
-            GET_VERT(value.getRawData()) == size
-            );
-}
-
-void Referee::setTakable(Square& square, bool value) {
-    square.getData().is_takable = value;
+bool Referee::ispartOfExactAlign(const Square& value, unsigned int size) {
+    return (value.getDiagl() == size || value.getDiagr() == size ||
+            value.getHorz() == size || value.getVert() == size);
 }
 
 /**
@@ -123,7 +102,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
         setScore(player, value * 2);
         checkIsTakable(x, y, player);
         checkWin(x, y, player);
-        //dumpPropagation(x, y);
+        dumpPropagation(x, y);
     }
     return value;
 }
@@ -134,7 +113,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
 bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) {
     bool value = false;
 
-    if (checkPosition(x, y) && GET_PLAYER(_board(x, y).getRawData()) == 0) { //rajouter les tests de pattern ici
+    if (checkPosition(x, y) && _board(x, y).getPlayer() == 0) { //rajouter les tests de pattern ici
 
         value = true;
         if (Singleton<RefereeManager>::Instance().doubleThree())
@@ -173,7 +152,7 @@ bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector 
         goTo(x, y, dir);
         _board(x, y).getData().is_takable = 1;
 
-        if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
+        if (goTo(x, y, dir) && _board(x, y).getPlayer() == player)
             return true;
     }
     return false;
@@ -186,7 +165,7 @@ bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector 
 bool Referee::checkCanTake(unsigned x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
 #ifdef DEBUG
     if (goTo(x, y, dir)) {
-        unsigned int playertmp = GET_PLAYER(_board(x, y).getRawData());
+        unsigned int playertmp = _board(x, y).getPlayer();
         unsigned int align = getDirAlign(_board(x, y), dir);
         return (playertmp == opponant(player) && align == 2 && goTo(x, y, dir) && goTo(x, y, dir));
     }
@@ -219,7 +198,7 @@ void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector d
 }
 
 void Referee::checkIsTakable(unsigned int x, unsigned int y, unsigned int player) {
-    setTakable(_board(x, y), false);
+    _board(x, y).setIsTackable(false);
     if (ispartOfExactAlign(_board(x, y), 2)) {
         RefereeManager::DirMap::iterator it = Singleton<RefereeManager>::Instance().map().begin();
         RefereeManager::DirMap::iterator ite = Singleton<RefereeManager>::Instance().map().end();
@@ -229,9 +208,9 @@ void Referee::checkIsTakable(unsigned int x, unsigned int y, unsigned int player
                 unsigned int xtmp = x;
                 unsigned int ytmp = y;
 
-                setTakable(_board(x, y), true);
+                _board(x, y).setIsTackable(true);
                 goTo(xtmp, ytmp, it->first);
-                setTakable(_board(xtmp, ytmp), true);
+                _board(xtmp, ytmp).setIsTackable(true);
             }
             ++it;
         }
@@ -243,7 +222,7 @@ bool Referee::checkIsTakable(unsigned int x, unsigned int y, RefereeManager::Vec
     unsigned int yinv = y;
 
     return (getDirAlign(_board(x, y), dir) == 2 && goTo(xinv, yinv, invert(dir)) && goTo(x, y, dir) && goTo(x, y, dir) &&
-            ((GET_PLAYER(_board(xinv, yinv).getRawData()) == opponant(player) || GET_PLAYER(_board(x, y).getRawData()) == opponant(player)) && !(GET_PLAYER(_board(xinv, yinv).getRawData()) == opponant(player) && GET_PLAYER(_board(x, y).getRawData()) == opponant(player))));
+            ((_board(xinv, yinv).getPlayer() == opponant(player) || _board(x, y).getPlayer() == opponant(player)) && !(_board(xinv, yinv).getPlayer() == opponant(player) && _board(x, y).getPlayer() == opponant(player))));
 }
 
 /**
@@ -266,9 +245,9 @@ void Referee::checkWinList() {
     while (it != ite && ispartOfAlign(_board(it->x, it->y), 5)) {
         if (Singleton<RefereeManager>::Instance().fivePrize()) {
             if (checkFivePrize(it->x, it->y))
-                _winner = GET_PLAYER(_board(it->x, it->y).getRawData());
+                _winner = _board(it->x, it->y).getPlayer();
         } else {
-            _winner = GET_PLAYER(_board(it->x, it->y).getRawData());
+            _winner = _board(it->x, it->y).getPlayer();
         }
         ++it;
     }
@@ -283,9 +262,9 @@ void Referee::checkWinList() {
  * Fonction de test de la regle speciale des 5 pions lors d'une tentative de victoire
  */
 bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
-    unsigned int player = GET_PLAYER(_board(x, y).getRawData());
+    unsigned int player = _board(x, y).getPlayer();
 
-    if (GET_DIAGL(_board(x, y).getRawData()) > 4) {
+    if (_board(x, y).getDiagl() > 4) {
         unsigned int size = checkFivePrize(x, y, RefereeManager::UP_LEFT, player);
         size += checkFivePrize(x, y, RefereeManager::DOWN_RIGHT, player);
         size++;
@@ -293,7 +272,7 @@ bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
             return true;
     }
 
-    if (GET_DIAGR(_board(x, y).getRawData()) > 4) {
+    if (_board(x, y).getDiagr() > 4) {
         unsigned int size = checkFivePrize(x, y, RefereeManager::UP_RIGHT, player);
         size += checkFivePrize(x, y, RefereeManager::DOWN_LEFT, player);
         size++;
@@ -301,7 +280,7 @@ bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
             return true;
     }
 
-    if (GET_HORZ(_board(x, y).getRawData()) > 4) {
+    if (_board(x, y).getHorz() > 4) {
         unsigned int size = checkFivePrize(x, y, RefereeManager::RIGHT, player);
         size += checkFivePrize(x, y, RefereeManager::LEFT, player);
         size++;
@@ -309,7 +288,7 @@ bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
             return true;
     }
 
-    if (GET_VERT(_board(x, y).getRawData()) > 4) {
+    if (_board(x, y).getVert() > 4) {
         unsigned int size = checkFivePrize(x, y, RefereeManager::UP, player);
         size += checkFivePrize(x, y, RefereeManager::DOWN, player);
         size++;
@@ -323,7 +302,7 @@ bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
 unsigned int Referee::checkFivePrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
     int cleanRock = 0;
 
-    while (goTo(x, y, dir) && (GET_PLAYER(_board(x, y).getRawData()) == player) && (GET_TAKABLE(_board(x, y).getRawData()) == 0)) {
+    while (goTo(x, y, dir) && (_board(x, y).getPlayer() == player) && (!_board(x, y).getIsTackable())) {
         cleanRock++;
     }
     return cleanRock;
@@ -372,14 +351,12 @@ bool Referee::checkDoubleThree(unsigned int x, unsigned int y, unsigned int play
 
 unsigned int Referee::isPartOfFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
     if (dir) {
-
-
         unsigned int xnear = x;
         unsigned int ynear = y;
 
         unsigned int result = 0;
 
-        if (goTo(xnear, ynear, invert(dir)) && GET_PLAYER(_board(xnear, ynear).getRawData()) != opponant(player)) {
+        if (goTo(xnear, ynear, invert(dir)) && _board(xnear, ynear).getPlayer() != opponant(player)) {
             result += classicFree3Align(x, y, dir, player);
             result += unClassicFree3Align(x, y, dir, player);
         }
@@ -396,14 +373,13 @@ unsigned int Referee::classicCenterFreeAlign(unsigned int x, unsigned int y, Ref
     unsigned int ytmp = y;
     unsigned int result = 0;
 
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+    if (goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
         result += isPartOfAlign3InOther(x, y, dir, player);
 
-        if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player) &&
-            goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player)
-        {
+        if (goTo(x, y, dir) && _board(x, y).getPlayer() != opponant(player) &&
+                goTo(xtmp, ytmp, invert(dir)) && _board(xtmp, ytmp).getPlayer() == player) {
             result += isPartOfAlign3InOther(xtmp, ytmp, invert(dir), player);
-            if (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) != opponant(player))
+            if (goTo(xtmp, ytmp, invert(dir)) && _board(xtmp, ytmp).getPlayer() != opponant(player))
                 return result + 1;
         }
     }
@@ -416,16 +392,16 @@ unsigned int Referee::unClassicCenterFreeAlign(unsigned int x, unsigned int y, R
 
     unsigned int result = 0;
 
-    if (goTo(x, y, dir) &&  GET_PLAYER(_board(x, y).getRawData()) == player) {
+    if (goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
         result += isPartOfAlign3InOther(x, y, dir, player);
 
-        if (goTo(x, y, dir) &&  GET_PLAYER(_board(x, y).getRawData()) != opponant(player) &&
-                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0 &&
-                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
+        if (goTo(x, y, dir) && _board(x, y).getPlayer() != opponant(player) &&
+                goTo(xtmp, ytmp, invert(dir)) && _board(xtmp, ytmp).getPlayer() == 0 &&
+                goTo(xtmp, ytmp, invert(dir)) && _board(xtmp, ytmp).getPlayer() == player) {
 
             result += isPartOfAlign3InOther(xtmp, ytmp, invert(dir), player);
 
-            if (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) != opponant(player)) {
+            if (goTo(xtmp, ytmp, invert(dir)) && _board(xtmp, ytmp).getPlayer() != opponant(player)) {
                 return result + 1;
             }
         }
@@ -435,13 +411,14 @@ unsigned int Referee::unClassicCenterFreeAlign(unsigned int x, unsigned int y, R
 
 unsigned int Referee::classicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
     int value = 0;
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && getDirAlign(_board(x, y), dir) > 2 ) {
+    if (goTo(x, y, dir) && _board(x, y).getPlayer() == player && getDirAlign(_board(x, y), dir) >= 2 && getDirEnd(_board(x, y), dir) == 2) {
 
         value += isPartOfAlign3InOther(x, y, dir, player);
 
-        while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+        while (goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
             value += isPartOfAlign3InOther(x, y, dir, player);
         }
+        return value + 1;
     }
     return 0;
 }
@@ -451,25 +428,25 @@ unsigned int Referee::unClassicFree3Align(unsigned int x, unsigned int y, Refere
     unsigned int ytmp = y;
     unsigned int value = 0;
 
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == 0 &&
-            goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+    if (goTo(x, y, dir) && _board(x, y).getPlayer() == 0 &&
+            goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
         value += isPartOfAlign3InOther(x, y, dir, player);
 
-        if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+        if (goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
             value += isPartOfAlign3InOther(x, y, dir, player);
 
-            if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player))
+            if (goTo(x, y, dir) && _board(x, y).getPlayer() != opponant(player))
                 return value + 1;
         }
     }
 
     value = 0;
-    if (goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
+    if (goTo(xtmp, ytmp, dir) && _board(xtmp, ytmp).getPlayer() == player) {
         value += isPartOfAlign3InOther(xtmp, ytmp, dir, player);
 
-        if (goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0 && goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
+        if (goTo(xtmp, ytmp, dir) && _board(xtmp, ytmp).getPlayer() == 0 && goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
             value += isPartOfAlign3InOther(xtmp, ytmp, dir, player);
-            if (goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) != opponant(player))
+            if (goTo(xtmp, ytmp, dir) && _board(xtmp, ytmp).getPlayer() != opponant(player))
                 return value + 1;
         }
     }
@@ -504,17 +481,17 @@ bool Referee::isFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector
         unsigned int ytmp = y;
         unsigned int size = 1;
 
-        while (goTo(xtmp, ytmp, dir) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player)
+        while (goTo(xtmp, ytmp, dir) && _board(xtmp, ytmp).getPlayer() == player)
             size++;
 
-        if (GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0) {
+        if (_board(xtmp, ytmp).getPlayer() == 0) {
             xtmp = x;
             ytmp = y;
 
-            while (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player)
+            while (goTo(xtmp, ytmp, invert(dir)) && _board(xtmp, ytmp).getPlayer() == player)
                 size++;
 
-            if (size > 2 && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0)
+            if (size > 2 && _board(xtmp, ytmp).getPlayer() == 0)
                 return true;
         }
     }
@@ -675,8 +652,9 @@ void Referee::fpropagation(unsigned int x, unsigned int y, RefereeManager::Vecto
 
     info = flineSize(x, y, dir, player) + flineSize(x, y, invert(dir), player);
     info.lineSize += 1;
-    setDirAlign(_board(x, y), dir, info.lineSize);
-    setDirEnd(_board(x, y), dir, info.endBlock);
+
+    Singleton<RefereeManager>::Instance().setDirAlign(_board(x, y), dir, info.lineSize);
+    Singleton<RefereeManager>::Instance().setDirEnd(_board(x, y), dir, info.endBlock);
 
     fsetline(x, y, dir, player, info);
     fsetline(x, y, invert(dir), player, info);
@@ -693,7 +671,7 @@ void Referee::fpropagation_inverse(unsigned int x, unsigned int y, const unsigne
 }
 
 void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player) {
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+    if (goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
         fpropagation(x, y, player);
         checkIsTakable(x, y, player);
     }
@@ -702,44 +680,44 @@ void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, RefereeManager:
 Referee::PropagationInfo Referee::flineSize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
     PropagationInfo info;
 
-    while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
+    while (goTo(x, y, dir) && _board(x, y).getPlayer() == player)
         info.lineSize++;
-    if (GET_PLAYER(_board(x, y).getRawData()) != opponant(player)) {
+    if (_board(x, y).getPlayer() != opponant(player)) {
         info.endBlock++;
     }
 
-    if (info.lineSize == 0 && GET_PLAYER(_board(x, y).getRawData()) == opponant(player)) {
+    if (info.lineSize == 0 && _board(x, y).getPlayer() == opponant(player)) {
         unsigned int opponant_end = getDirEnd(_board(x, y), dir);
         opponant_end--;
-        setDirEnd(_board(x, y), dir, opponant_end);
-        while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == opponant(player))
-            setDirEnd(_board(x, y), dir, opponant_end);
+        Singleton<RefereeManager>::Instance().setDirEnd(_board(x, y), dir, opponant_end);
+        while (goTo(x, y, dir) && _board(x, y).getPlayer() == opponant(player))
+            Singleton<RefereeManager>::Instance().setDirEnd(_board(x, y), dir, opponant_end);
     }
 
     return info;
 }
 
 void Referee::fsetline(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, const PropagationInfo& value) {
-    while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+    while (goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
         setDirAlign(_board(x, y), dir, value.lineSize);
         setDirEnd(_board(x, y), dir, value.endBlock);
         if (!ispartOfExactAlign(_board(x, y), 2))
-            setTakable(_board(x, y), false);
+            _board(x, y).setIsTackable(false);
     }
 }
 
 void Referee::resetTakable(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, bool takable) {
-    while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
-        setTakable(_board(x, y), takable);
+    while (goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
+        _board(x, y).setIsTackable(takable);
     }
 }
 
 void Referee::dumpSquare(unsigned int x, unsigned int y) const {
     std::cout << "###########" << std::endl;
     std::cout << "x = " << x << " y= " << y << std::endl;
-    std::cout << "player " << GET_PLAYER(_board(x, y).getRawData()) << std::endl;
+    std::cout << "player " << _board(x, y).getPlayer() << std::endl;
     std::cout << "takable ";
-    if (GET_TAKABLE(_board(x, y).getRawData()))
+    if (_board(x, y).getIsTackable())
         std::cout << "true" << std::endl;
     else
         std::cout << "false" << std::endl;
@@ -747,11 +725,15 @@ void Referee::dumpSquare(unsigned int x, unsigned int y) const {
     std::cout << "align vert " << _board(x, y).getVert() << std::endl;
     std::cout << "align DiagL " << _board(x, y).getDiagl() << std::endl;
     std::cout << "align DiagR " << _board(x, y).getDiagr() << std::endl;
+    std::cout << "end align horz " << _board(x, y).getHorzBlock() << std::endl;
+    std::cout << "end align vert " << _board(x, y).getVertBlock() << std::endl;
+    std::cout << "end align diagL " << _board(x, y).getDiaglBlock() << std::endl;
+    std::cout << "end align diagR " << _board(x, y).getDiagrBlock() << std::endl;
     std::cout << "###########" << std::endl;
 }
 
 void Referee::dumpDirection(unsigned int x, unsigned int y, RefereeManager::Vector dir) const {
-    while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != 0)
+    while (goTo(x, y, dir) && _board(x, y).getPlayer() != 0)
         dumpSquare(x, y);
 }
 
@@ -759,9 +741,11 @@ void Referee::dumpPropagation(unsigned int x, unsigned int y) const {
     RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().begin();
     RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().map().end();
 
+    std::cout << "-----------" << std::endl;
     dumpSquare(x, y);
     while (it != ite) {
         dumpDirection(x, y, it->first);
         ++it;
     }
+    std::cout << "-----------" << std::endl;
 }

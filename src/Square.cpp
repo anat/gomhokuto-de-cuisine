@@ -2,43 +2,33 @@
 #include <iostream>
 #include "Square.hpp"
 
-Square::Square() : _data(0) {
-    
-}
+Square::Square() : _data(0)
+{ }
 
 Square::~Square()
-{
-    
-}
+{ }
 
-int32_t Square::getRawData() const
-{
+int32_t Square::getRawData() const {
     return (_data);
 }
 
-void Square::setRawData(int32_t mask)
-{
+void Square::setRawData(int32_t mask) {
     _data = mask;
 }
 
-const Square::Data & Square::getData() const
-{
+const Square::Data & Square::getData() const {
   return (*reinterpret_cast<Square::Data const*>(&_data));
 }
 
-Square::Data & Square::getData()
-{
+Square::Data & Square::getData() {
   return (*reinterpret_cast<Square::Data *>(&_data));
 }
 
-
-void Square::setData(Square::Data & data)
-{
+void Square::setData(Square::Data & data) {
     _data = (int32_t)(*reinterpret_cast<int32_t*>(&data));
 }
 
-void Square::dumpData()
-{
+void Square::dumpData() {
     const Square::Data & data = this->getData();
     std::cout << "Bit field dump" << std::endl;
     std::cout << "player : " << data.player << std::endl;
@@ -63,92 +53,82 @@ void Square::dumpData()
     std::cout << this->getRawData() << std::endl;
 }
 
-void Square::setVert(unsigned int lineSize)
-{
+void Square::setVert(unsigned int lineSize) {
     getData().vert = lineSize;
 }
 
-void Square::setHorz(unsigned int lineSize)
-{
+void Square::setHorz(unsigned int lineSize) {
     getData().horz = lineSize;
 }
 
-void Square::setDiagl(unsigned int lineSize)
-{
+void Square::setDiagl(unsigned int lineSize) {
     getData().diagl = lineSize;
 }
 
-void Square::setDiagr(unsigned int lineSize)
-{
+void Square::setDiagr(unsigned int lineSize) {
     getData().diagr = lineSize;
 }
 
-void Square::setIsTackable(bool value)
-{
+void Square::setIsTackable(bool value) {
     getData().is_takable = value;
 }
 
-void Square::setPlayer(unsigned int player)
-{
+void Square::setPlayer(unsigned int player) {
     getData().player = player;
 }
 
-void Square::setHorzBlock(unsigned int endBlock)
-{
+void Square::setHorzBlock(unsigned int endBlock) {
     getData().horz_block = endBlock;
 }
 
-void Square::setVertBlock(unsigned int endBlock)
-{
+void Square::setVertBlock(unsigned int endBlock) {
     getData().vert_block = endBlock;
 }
 
-void Square::setDiaglBlock(unsigned int endBlock)
-{
+void Square::setDiaglBlock(unsigned int endBlock) {
     getData().diagl_block = endBlock;
 }
 
-void Square::setDiagrBlock(unsigned int endBlock)
-{
+void Square::setDiagrBlock(unsigned int endBlock) {
     getData().diagr_block = endBlock;
 }
 
-unsigned int Square::getHorz() const
-{
-    return GET_HORZ(_data);
+bool Square::getIsTackable() const {
+    return getData().is_takable;
 }
 
-unsigned int Square::getVert() const
-{
-    return GET_VERT(_data);
+unsigned int Square::getPlayer() const {
+    return getData().player;
 }
 
-unsigned int Square::getDiagl() const
-{
-    return GET_DIAGL(_data);
+unsigned int Square::getHorz() const {
+    return getData().horz;
 }
 
-unsigned int Square::getDiagr() const
-{
-    return GET_DIAGR(_data);
+unsigned int Square::getVert() const {
+    return getData().vert;
 }
 
-unsigned int Square::getHorzBlock() const
-{
+unsigned int Square::getDiagl() const {
+    return getData().diagl;
+}
+
+unsigned int Square::getDiagr() const {
+    return getData().diagr;
+}
+
+unsigned int Square::getHorzBlock() const {
     return getData().horz_block;
 }
 
-unsigned int Square::getVertBlock() const
-{
+unsigned int Square::getVertBlock() const {
     return getData().vert_block;
 }
 
-unsigned int Square::getDiaglBlock() const
-{
+unsigned int Square::getDiaglBlock() const {
     return getData().diagl_block;
 }
 
-unsigned int Square::getDiagrBlock() const
-{
+unsigned int Square::getDiagrBlock() const {
     return getData().diagr_block;
 }

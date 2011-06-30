@@ -65,6 +65,8 @@ public:
     void setVertBlock(unsigned int endBlock);
     void setDiagrBlock(unsigned int endBlock);
     void setDiaglBlock(unsigned int endBlock);
+    bool getIsTackable() const;
+    unsigned int getPlayer() const;
     unsigned int getHorz() const;
     unsigned int getVert() const;
     unsigned int getDiagl() const;
