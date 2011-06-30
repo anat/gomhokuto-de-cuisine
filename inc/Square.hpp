@@ -53,7 +53,7 @@ public:
     const Square::Data &      getData() const;
     Square::Data &      getData();
     void                setData(Square::Data & data);
-    void                dumpData();
+    void                dumpData() const;
 
     void setHorz(unsigned int lineSize);
     void setVert(unsigned int lineSize);

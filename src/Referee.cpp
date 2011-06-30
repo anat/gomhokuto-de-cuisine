@@ -11,21 +11,20 @@
 #include "Game.hpp"
 
 Referee::Referee(Board& board)
-: _winLineList(), _board(board), _score(), _winner(0)
-{
-  _score[0] = _score[1] = 0;
+: _winLineList(), _board(board), _score(), _winner(0) {
+    _score[0] = _score[1] = 0;
 }
 
 Referee::Referee(const Referee& orig)
-: _winLineList(orig._winLineList), _board(orig._board), _score(orig._score), _winner(orig._winner)
-{ }
+: _winLineList(orig._winLineList), _board(orig._board), _score(orig._score), _winner(orig._winner) {
+}
 
 Referee::Referee(const Referee& orig, Board& board)
-: _winLineList(orig._winLineList), _board(board), _score(orig._score), _winner(orig._winner)
-{ }
+: _winLineList(orig._winLineList), _board(board), _score(orig._score), _winner(orig._winner) {
+}
 
-Referee::~Referee()
-{ }
+Referee::~Referee() {
+}
 
 void Referee::setScore(unsigned int player, unsigned int value) {
     _score[player & 1] = value;
@@ -73,13 +72,18 @@ void Referee::setDirEnd(Square& square, RefereeManager::Vector dir, unsigned int
 /*
  * Teste si la case fait partie d'au moins un alignement superieur ou egale a 'size'
  */
-bool Referee::ispartOfAlign(const Square& value, int size) {
-    return (
-            GET_DIAGL(value.getRawData()) >= size ||
-            GET_DIAGR(value.getRawData()) >= size ||
-            GET_HORZ(value.getRawData()) >= size ||
-            GET_VERT(value.getRawData()) >= size
-            );
+bool Referee::ispartOfAlign(const Square& value, unsigned int size) {
+    //value.dumpData();
+    unsigned int diagl = value.getDiagl();
+    unsigned int diagr = value.getDiagr();
+    unsigned int horz = value.getHorz();
+    unsigned int vert = value.getVert();
+
+    if (diagl >= size || diagr >= size || horz >= size || vert >= size ) {
+        std::cout << "what ??" << std::endl;
+        return true;
+    }
+    return false;
 }
 
 /*
@@ -402,8 +406,7 @@ unsigned int Referee::classicCenterFreeAlign(unsigned int x, unsigned int y, Ref
         result += isPartOfAlign3InOther(x, y, dir, player);
 
         if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player) &&
-            goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player)
-        {
+                goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
             result += isPartOfAlign3InOther(xtmp, ytmp, invert(dir), player);
             if (goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) != opponant(player))
                 return result + 1;
@@ -418,10 +421,10 @@ unsigned int Referee::unClassicCenterFreeAlign(unsigned int x, unsigned int y, R
 
     unsigned int result = 0;
 
-    if (goTo(x, y, dir) &&  GET_PLAYER(_board(x, y).getRawData()) == player) {
+    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
         result += isPartOfAlign3InOther(x, y, dir, player);
 
-        if (goTo(x, y, dir) &&  GET_PLAYER(_board(x, y).getRawData()) != opponant(player) &&
+        if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) != opponant(player) &&
                 goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == 0 &&
                 goTo(xtmp, ytmp, invert(dir)) && GET_PLAYER(_board(xtmp, ytmp).getRawData()) == player) {
 
@@ -437,7 +440,7 @@ unsigned int Referee::unClassicCenterFreeAlign(unsigned int x, unsigned int y, R
 
 unsigned int Referee::classicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
     int value = 0;
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && getDirAlign(_board(x, y), dir) > 2 ) {
+    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player && getDirAlign(_board(x, y), dir) > 2) {
 
         value += isPartOfAlign3InOther(x, y, dir, player);
 

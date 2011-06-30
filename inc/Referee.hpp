@@ -96,7 +96,7 @@ private:
     void setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int value);
     unsigned int getDirEnd(const Square& square, RefereeManager::Vector dir) const;
     void setDirEnd(Square& square, RefereeManager::Vector dir, unsigned int endValue);
-    bool ispartOfAlign(const Square& value, int size);
+    bool ispartOfAlign(const Square& value, unsigned int size);
     bool ispartOfExactAlign(const Square& value, int size);
     void setTakable(Square& square, bool value);
 

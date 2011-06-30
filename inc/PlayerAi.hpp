@@ -46,7 +46,7 @@ public:
 
         Board copy;
 
-        HeuristicValue BestHeu = HeuristicValue();
+        HeuristicValue BestHeu = _heuristic.defeat();
         Coord bestMove;
 
         while (it != ite) {
@@ -55,6 +55,8 @@ public:
             if (refcopy.tryPlaceRock(it->x, it->y, this->getPlayerNum()) > -1) {
                 HeuristicValue heu = min(1, copy, refcopy, _heuristic(copy, this->getPlayerNum(), it->x, it->y));
 
+                std::cout << "heu " << heu << std::endl;
+                //HeuristicValue heu = _heuristic(copy, this->getPlayerNum(), it->x, it->y);
                 if (heu >= BestHeu) {
                     heu = BestHeu;
                     bestMove = *it;
@@ -68,8 +70,14 @@ public:
     }
 
     HeuristicValue min(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
-        if (depth > _maxDepth || reforigin.checkWin() != 0)
+        if (depth > _maxDepth || reforigin.checkWin() != 0) {
+            unsigned int winner = reforigin.checkWin();
+            if (winner == this->getPlayerNum())
+                return _heuristic.victory();
+            else if (winner)
+                return _heuristic.defeat();
             return boardHeuristic;
+        }
 
         CoordContainer possibleCase;
 
@@ -79,7 +87,7 @@ public:
         typename CoordContainer::const_iterator ite = possibleCase.end();
 
         HeuristicValue heuResult = HeuristicValue();
-        HeuristicValue result = HeuristicValue();
+        HeuristicValue result = _heuristic.victory();
         Board copy;
 
         while (it != ite) {
@@ -99,6 +107,11 @@ public:
 
     HeuristicValue max(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
         if (depth > _maxDepth || reforigin.checkWin() != 0) {
+            unsigned int winner = reforigin.checkWin();
+            if (winner == this->getPlayerNum())
+                return _heuristic.victory();
+            else if (winner)
+                return _heuristic.defeat();
             return boardHeuristic;
         }
 
@@ -110,7 +123,7 @@ public:
         typename CoordContainer::const_iterator ite = possibleCase.end();
 
         HeuristicValue heuResult = HeuristicValue();
-        HeuristicValue result = HeuristicValue();
+        HeuristicValue result = _heuristic.defeat();
         Board copy;
 
         while (it != ite) {

@@ -16,7 +16,7 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
                 result += good(value);
                 playerPiece++;
             } else if (value.player != 0) {
-                result += bad(value);
+                result -= good(value);
                 opponantPiece++;
             }
         }
@@ -59,4 +59,12 @@ int BasicHeuristic::bad(Square::Data& square) {
     }
 
     return result;
+}
+
+BasicHeuristic::HeuristicValue BasicHeuristic::victory() const {
+    return 4000000;
+}
+
+BasicHeuristic::HeuristicValue BasicHeuristic::defeat() const {
+    return -4000000;
 }

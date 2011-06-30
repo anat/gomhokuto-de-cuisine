@@ -37,7 +37,7 @@ void Square::setData(Square::Data & data)
     _data = (int32_t)(*reinterpret_cast<int32_t*>(&data));
 }
 
-void Square::dumpData()
+void Square::dumpData() const
 {
     const Square::Data & data = this->getData();
     std::cout << "Bit field dump" << std::endl;
