@@ -63,7 +63,6 @@ public:
             ++it;
         }
 
-        std::cout << "bestHeu " << BestHeu << std::endl;
         ref.tryPlaceRock(bestMove.x, bestMove.y, this->getPlayerNum());
         return true;
     }
