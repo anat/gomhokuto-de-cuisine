@@ -13,11 +13,10 @@
 #include "mainwindow.hpp"
 
 
-/* Proto test/debug (Zinkiete pas, je nettoierai toutes mes saletes bientot) */
-//void cleanBoard(Board &plateau);
+void cleanBoard(Board &plateau);
 void dbgDumpBoard(Board &plateau, int limit);
-//void testCheck(Board &plateau, Referee &arbitre);
-//void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump);
+void testDoubleThree(Board &plateau, Referee &arbitre, int dump_lvl);
+void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump);
 
 #include "Square.hpp"
 
@@ -29,33 +28,26 @@ int main(int ac, char **av) {
         w.show();
         return a.exec();
     }
-    else if (ac == 2 && QString(av[1]) == "papa") 
+    // Usage: ./Gomoku test [dump | all]
+    else if (ac >= 2 && QString(av[1]) == "test") 
     {
       Board plateau;
       Referee arbitre(plateau);
 
-      arbitre.tryPlaceRock(1, 2, PLAYER1);
-      arbitre.tryPlaceRock(3, 2, PLAYER1);
-      arbitre.tryPlaceRock(4, 2, PLAYER1);
-      arbitre.tryPlaceRock(5, 2, PLAYER1);
-      arbitre.tryPlaceRock(2, 3, PLAYER1);
-      arbitre.tryPlaceRock(3, 3, PLAYER1);
-      arbitre.tryPlaceRock(2, 5, PLAYER1);
-      arbitre.tryPlaceRock(3, 5, PLAYER1);
-      arbitre.tryPlaceRock(3, 4, PLAYER1);
+      std::cout << "=== REFEREE TEST ===" << std::endl;
+      arbitre.doubleThree(true);
+      arbitre.fivePrize(true);
 
-      //arbitre.propagation_inverse(3, 4, PLAYER1);
-      dbgDumpBoard(plateau, 10);
+      if (ac == 3 && QString(av[2]) == "dump")
+	testDoubleThree(plateau, arbitre, 1);
+      else if (ac == 3 && QString(av[2]) == "all")
+	testDoubleThree(plateau, arbitre, 2);
+      else
+	testDoubleThree(plateau, arbitre, 0);
+      std::cout << "====================" << std::endl;
     }
     return 1;
 }
-
-/*
-int main(void) {
-    Game game;
-    game.doGameTerminal();
-}
- * */
 
 /* *****  FONCTIONS DE TEST / DEBUG  ***** */
 
@@ -64,98 +56,99 @@ int main(void) {
  ** Tout ces tests place une piece a un endroit vide mais non accessible,
  ** si le test FAIL c'est qu'on a reussi a placer la piece (pas normal).
  */
-//void testCheck(Board &plateau, Referee &arbitre)
-//{
-//  Square::Player toto;
-//  toto = Square::PLAYER1;
-//
-//  arbitre.tryPlaceRock(1, 1, toto); /* Cas 1 */
-//  arbitre.tryPlaceRock(2, 1, toto);
-//  arbitre.tryPlaceRock(3, 1, toto);
-//  arbitre.tryPlaceRock(1, 2, toto);
-//  check(arbitre, plateau, 1, 1, 3, 0);
-//
-//  arbitre.tryPlaceRock(3, 1, toto); /* Cas 2 */
-//  arbitre.tryPlaceRock(1, 2, toto);
-//  arbitre.tryPlaceRock(3, 2, toto);
-//  arbitre.tryPlaceRock(1, 3, toto);
-//  check(arbitre, plateau, 2, 2, 2, 0);
-//
-//  arbitre.tryPlaceRock(3, 1, toto);
-//  arbitre.tryPlaceRock(3, 2, toto);
-//  arbitre.tryPlaceRock(4, 2, toto);
-//  arbitre.tryPlaceRock(1, 3, toto);
-//  check(arbitre, plateau, 3, 2, 2, 0);
-//
-//  arbitre.tryPlaceRock(3, 1, toto);
-//  arbitre.tryPlaceRock(2, 2, toto);
-//  arbitre.tryPlaceRock(2, 3, toto);
-//  arbitre.tryPlaceRock(3, 3, toto);
-//  check(arbitre, plateau, 4, 1, 3, 0);
-//
-//  arbitre.tryPlaceRock(4, 1, toto); /* Cas 3 */
-//  arbitre.tryPlaceRock(3, 2, toto);
-//  arbitre.tryPlaceRock(2, 4, toto);
-//  arbitre.tryPlaceRock(3, 4, toto);
-//  check(arbitre, plateau, 5, 1, 4, 0);
-//
-//  arbitre.tryPlaceRock(4, 1, toto);
-//  arbitre.tryPlaceRock(2, 3, toto);
-//  arbitre.tryPlaceRock(2, 4, toto);
-//  arbitre.tryPlaceRock(3, 4, toto);
-//  check(arbitre, plateau, 6, 1, 4, 0);
-//
-//  arbitre.tryPlaceRock(4, 1, toto);
-//  arbitre.tryPlaceRock(4, 2, toto);
-//  arbitre.tryPlaceRock(5, 2, toto);
-//  arbitre.tryPlaceRock(1, 4, toto);
-//  check(arbitre, plateau, 7, 3, 2, 0);
-//
-//  arbitre.tryPlaceRock(4, 1, toto);
-//  arbitre.tryPlaceRock(2, 2, toto);
-//  arbitre.tryPlaceRock(4, 2, toto);
-//  arbitre.tryPlaceRock(1, 4, toto);
-//  check(arbitre, plateau, 8, 3, 2, 0);
-//
-//  arbitre.tryPlaceRock(2, 1, toto); /* Cas 4 */
-//  arbitre.tryPlaceRock(1, 2, toto);
-//  arbitre.tryPlaceRock(4, 2, toto);
-//  arbitre.tryPlaceRock(2, 4, toto);
-//  check(arbitre, plateau, 9, 2, 2, 0);
-//}
-//
-//void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump)
-//{
-//  Square::Player toto;
-//  toto = Square::PLAYER1;
-//
-//  arbitre.tryPlaceRock(x, y, toto);
-//  std::cout << "Test ";
-//  std::cout.width(2);
-//  std::cout.fill('0');
-//  std::cout << n;
-//  std::cout << ": "
-//	    << ((plateau(x, y).getPlayer() == Square::NOPLAYER) ? "OK" : "FAIL")
-//	    << std::endl;
-//  if (dump)
-//    dbgDumpBoard(plateau, 10);
-//  cleanBoard(plateau);
-//}
-//
-//void cleanBoard(Board &plateau)
-//{
-//  int i, j;
-//
-//  for (i = 0; i < 19; i++)
-//    for (j = 0; j < 19; j++)
-//      {
-//	plateau(i, j).setPlayer(Square::NOPLAYER);
-//	plateau(i, j)._horz  = 0;
-//	plateau(i, j)._vert  = 0;
-//	plateau(i, j)._diagl = 0;
-//	plateau(i, j)._diagr = 0;
-//      }
-//}
+void testDoubleThree(Board &plateau, Referee &arbitre, int dump_lvl)
+{
+  //Square::Player toto;
+  int toto = PLAYER1;
+
+  arbitre.tryPlaceRock(1, 1, toto); /* Cas 1 */
+  arbitre.tryPlaceRock(2, 1, toto);
+  arbitre.tryPlaceRock(3, 1, toto);
+  arbitre.tryPlaceRock(1, 2, toto);
+  check(arbitre, plateau, 1, 1, 3, dump_lvl);
+
+  arbitre.tryPlaceRock(3, 1, toto); /* Cas 2 */
+  arbitre.tryPlaceRock(1, 2, toto);
+  arbitre.tryPlaceRock(3, 2, toto);
+  arbitre.tryPlaceRock(1, 3, toto);
+  check(arbitre, plateau, 2, 2, 2, dump_lvl);
+#if 1
+  arbitre.tryPlaceRock(3, 1, toto);
+  arbitre.tryPlaceRock(3, 2, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(1, 3, toto);
+  check(arbitre, plateau, 3, 2, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(3, 1, toto);
+  arbitre.tryPlaceRock(2, 2, toto);
+  arbitre.tryPlaceRock(2, 3, toto);
+  arbitre.tryPlaceRock(3, 3, toto);
+  check(arbitre, plateau, 4, 1, 3, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 1, toto); /* Cas 3 */
+  arbitre.tryPlaceRock(3, 2, toto);
+  arbitre.tryPlaceRock(2, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 5, 1, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 1, toto);
+  arbitre.tryPlaceRock(2, 3, toto);
+  arbitre.tryPlaceRock(2, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 6, 1, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 1, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(5, 2, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  check(arbitre, plateau, 7, 3, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 1, toto);
+  arbitre.tryPlaceRock(2, 2, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  check(arbitre, plateau, 8, 3, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 1, toto); /* Cas 4 */
+  arbitre.tryPlaceRock(1, 2, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(2, 4, toto);
+  check(arbitre, plateau, 9, 2, 2, dump_lvl);
+#endif
+}
+
+void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump)
+{
+  //Square::Player toto;
+  int toto = PLAYER1;
+
+  arbitre.tryPlaceRock(x, y, toto);
+  std::cout << "  Test ";
+  std::cout.width(2);
+  std::cout.fill('0');
+  std::cout << n;
+  std::cout << ": "
+	    << ((PLAYER(plateau(x, y).getRawData()) == NOPLAYER) ? "OK" : "FAIL")
+	    << std::endl;
+  if (dump == 2 || (dump == 1 && (!(PLAYER(plateau(x, y).getRawData()) == NOPLAYER))))
+    dbgDumpBoard(plateau, 10);
+  cleanBoard(plateau);
+}
+
+void cleanBoard(Board &plateau)
+{
+  int i, j;
+
+  for (i = 0; i < 19; i++)
+    for (j = 0; j < 19; j++)
+      {
+	plateau(i, j).setRawData(0);//plateau(i, j).getRawData() & 0xfffffff0);
+	//plateau(i, j)._horz  = 0;
+	//plateau(i, j)._vert  = 0;
+	//plateau(i, j)._diagl = 0;
+	//plateau(i, j)._diagr = 0;
+      }
+}
 
 void dbgDumpBoard(Board &plateau, int limit = 19) {
     int i, j;
