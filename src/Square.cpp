@@ -148,6 +148,10 @@ unsigned int Square::getDiaglBlock() const
     return getData().diagl_block;
 }
 
+unsigned int Square::getPlayer() const {
+    return getData().player;
+}
+
 unsigned int Square::getDiagrBlock() const
 {
     return getData().diagr_block;
