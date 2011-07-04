@@ -27,7 +27,8 @@ SOURCES += \
     src/open.cpp \
     src/BasicHeuristic.cpp \
     src/RefereeManager.cpp \
-    src/BasicSearchCase.cpp
+    src/BasicSearchCase.cpp \
+    src/ThreeAlignChecker.cpp
 
 HEADERS  += \
     inc/mainwindow.hpp \
@@ -51,7 +52,8 @@ HEADERS  += \
     inc/Coord.hpp \
     inc/Array.hpp \
     inc/ISearchCase.hpp \
-    inc/BasicSearchCase.hpp
+    inc/BasicSearchCase.hpp \
+    inc/ThreeAlignChecker.hpp
 
 FORMS    += \
     forms/mainwindow.ui \
