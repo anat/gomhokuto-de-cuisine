@@ -73,6 +73,7 @@ public:
     unsigned int getVertBlock() const;
     unsigned int getDiagrBlock() const;
     unsigned int getDiaglBlock() const;
+    unsigned int getPlayer() const;
     
 private:
      int32_t _data;

@@ -103,6 +103,7 @@ private:
     /*
      * Fonction de check pour les double alignement de trois
      */
+
     bool checkDoubleThree(unsigned int x, unsigned int y, unsigned int player);
     unsigned int isPartOfFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
     unsigned int classicCenterFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
