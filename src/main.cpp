@@ -139,101 +139,95 @@ void testDoubleThree(Board &plateau, Referee &arbitre, int dump_lvl)
   arbitre.tryPlaceRock(4, 2, toto);
   check(arbitre, plateau, 13, 2, 2, dump_lvl);
 
-  arbitre.tryPlaceRock(1, 3, toto);
-  arbitre.tryPlaceRock(3, 1, toto);
-  arbitre.tryPlaceRock(3, 2, toto);
-  arbitre.tryPlaceRock(4, 2, toto);
-  check(arbitre, plateau, 14, 2, 2, dump_lvl);
-
   arbitre.tryPlaceRock(2, 1, toto); /* Cas 5.3 */
   arbitre.tryPlaceRock(2, 2, toto);
   arbitre.tryPlaceRock(1, 3, toto);
   arbitre.tryPlaceRock(3, 3, toto);
-  check(arbitre, plateau, 15, 2, 3, dump_lvl);
+  check(arbitre, plateau, 14, 2, 3, dump_lvl);
 
   arbitre.tryPlaceRock(4, 1, toto);
   arbitre.tryPlaceRock(3, 2, toto);
   arbitre.tryPlaceRock(1, 3, toto);
   arbitre.tryPlaceRock(3, 3, toto);
-  check(arbitre, plateau, 16, 2, 3, dump_lvl);
+  check(arbitre, plateau, 15, 2, 3, dump_lvl);
 
   arbitre.tryPlaceRock(2, 1, toto); /* Cas 5.4 */
   arbitre.tryPlaceRock(2, 3, toto);
   arbitre.tryPlaceRock(1, 2, toto);
   arbitre.tryPlaceRock(3, 2, toto);
-  check(arbitre, plateau, 17, 2, 2, dump_lvl);
+  check(arbitre, plateau, 16, 2, 2, dump_lvl);
 
   arbitre.tryPlaceRock(1, 1, toto);
   arbitre.tryPlaceRock(2, 2, toto);
   arbitre.tryPlaceRock(5, 4, toto);
   arbitre.tryPlaceRock(6, 4, toto);
-  check(arbitre, plateau, 18, 4, 4, dump_lvl); /* Cas 6.1 */
+  check(arbitre, plateau, 17, 4, 4, dump_lvl); /* Cas 6.1 */
 
   arbitre.tryPlaceRock(4, 1, toto);
   arbitre.tryPlaceRock(4, 2, toto);
   arbitre.tryPlaceRock(5, 4, toto);
   arbitre.tryPlaceRock(6, 4, toto);
-  check(arbitre, plateau, 19, 4, 4, dump_lvl);
+  check(arbitre, plateau, 18, 4, 4, dump_lvl);
 
   arbitre.tryPlaceRock(1, 1, toto);
   arbitre.tryPlaceRock(3, 3, toto);
   arbitre.tryPlaceRock(5, 4, toto);
   arbitre.tryPlaceRock(6, 4, toto);
-  check(arbitre, plateau, 20, 4, 4, dump_lvl);
+  check(arbitre, plateau, 19, 4, 4, dump_lvl);
 
   arbitre.tryPlaceRock(4, 1, toto);
   arbitre.tryPlaceRock(4, 3, toto);
   arbitre.tryPlaceRock(5, 4, toto);
   arbitre.tryPlaceRock(6, 4, toto);
-  check(arbitre, plateau, 21, 4, 4, dump_lvl);
+  check(arbitre, plateau, 20, 4, 4, dump_lvl);
 
   arbitre.tryPlaceRock(2, 1, toto); /* Cas 6.2 */
   arbitre.tryPlaceRock(5, 4, toto);
   arbitre.tryPlaceRock(4, 2, toto);
   arbitre.tryPlaceRock(5, 2, toto);
-  check(arbitre, plateau, 22, 3, 2, dump_lvl);
+  check(arbitre, plateau, 21, 3, 2, dump_lvl);
 
   arbitre.tryPlaceRock(3, 1, toto);
   arbitre.tryPlaceRock(3, 4, toto);
   arbitre.tryPlaceRock(4, 2, toto);
   arbitre.tryPlaceRock(5, 2, toto);
-  check(arbitre, plateau, 23, 3, 2, dump_lvl);
+  check(arbitre, plateau, 22, 3, 2, dump_lvl);
 
   arbitre.tryPlaceRock(2, 1, toto); /* Cas 6.3 */
   arbitre.tryPlaceRock(2, 2, toto);
   arbitre.tryPlaceRock(1, 4, toto);
   arbitre.tryPlaceRock(3, 4, toto);
-  check(arbitre, plateau, 24, 2, 4, dump_lvl);
+  check(arbitre, plateau, 23, 2, 4, dump_lvl);
 
   arbitre.tryPlaceRock(4, 2, toto);
   arbitre.tryPlaceRock(5, 1, toto);
   arbitre.tryPlaceRock(1, 4, toto);
   arbitre.tryPlaceRock(3, 4, toto);
-  check(arbitre, plateau, 25, 2, 4, dump_lvl);
+  check(arbitre, plateau, 24, 2, 4, dump_lvl);
 
   arbitre.tryPlaceRock(2, 1, toto);
   arbitre.tryPlaceRock(2, 3, toto);
   arbitre.tryPlaceRock(1, 4, toto);
   arbitre.tryPlaceRock(3, 4, toto);
-  check(arbitre, plateau, 26, 2, 4, dump_lvl);
+  check(arbitre, plateau, 25, 2, 4, dump_lvl);
 
   arbitre.tryPlaceRock(3, 3, toto);
   arbitre.tryPlaceRock(5, 1, toto);
   arbitre.tryPlaceRock(1, 4, toto);
   arbitre.tryPlaceRock(3, 4, toto);
-  check(arbitre, plateau, 27, 2, 4, dump_lvl);
+  check(arbitre, plateau, 26, 2, 4, dump_lvl);
 
   arbitre.tryPlaceRock(3, 1, toto); /* Cas 6.4 */
   arbitre.tryPlaceRock(3, 4, toto);
   arbitre.tryPlaceRock(2, 2, toto);
   arbitre.tryPlaceRock(4, 2, toto);
-  check(arbitre, plateau, 28, 3, 2, dump_lvl);
+  check(arbitre, plateau, 27, 3, 2, dump_lvl);
 
   arbitre.tryPlaceRock(1, 4, toto);
   arbitre.tryPlaceRock(4, 1, toto);
   arbitre.tryPlaceRock(2, 2, toto);
   arbitre.tryPlaceRock(4, 2, toto);
-  check(arbitre, plateau, 29, 3, 2, dump_lvl);
+  check(arbitre, plateau, 28, 3, 2, dump_lvl);
 #endif
 }
 
