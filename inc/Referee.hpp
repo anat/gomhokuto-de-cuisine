@@ -28,6 +28,8 @@
 
 class Referee {
 public:
+    typedef RefereeManager::Vector Vector;
+
     Referee(Board& board);
     Referee(const Referee& orig);
     Referee(const Referee& orig, Board& board);
@@ -83,19 +85,17 @@ private:
         return value;
     }
 
-    inline RefereeManager::Vector invert(RefereeManager::Vector dir) const {
-        RefereeManager::Vector result = Singleton<RefereeManager>::Instance().invert(dir);
-
-        return result;
+    inline Vector invert(Vector dir) const {
+        return RefereeManager::Instance().invert(dir);
     }
 
     void setScore(unsigned int player, unsigned int value);
 
-    bool goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir) const;
-    unsigned int getDirAlign(const Square& value, RefereeManager::Vector dir) const;
-    void setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int value);
-    unsigned int getDirEnd(const Square& square, RefereeManager::Vector dir) const;
-    void setDirEnd(Square& square, RefereeManager::Vector dir, unsigned int endValue);
+    bool goTo(unsigned int& x, unsigned int& y, Vector dir) const;
+    unsigned int getDirAlign(const Square& value, Vector dir) const;
+    void setDirAlign(Square& square, Vector dir, unsigned int value);
+    unsigned int getDirEnd(const Square& square, Vector dir) const;
+    void setDirEnd(Square& square, Vector dir, unsigned int endValue);
     bool ispartOfAlign(const Square& value, unsigned int size);
     bool ispartOfExactAlign(const Square& value, int size);
     void setTakable(Square& square, bool value);
@@ -105,13 +105,13 @@ private:
      */
 
     bool checkDoubleThree(unsigned int x, unsigned int y, unsigned int player);
-    unsigned int isPartOfFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
-    unsigned int classicCenterFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
-    unsigned int unClassicCenterFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
-    unsigned int classicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
-    unsigned int unClassicFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
-    unsigned int isPartOfAlign3InOther(unsigned x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
-    bool isFreeAlign(unsigned int x, unsigned int y, RefereeManager::Vector dirorig, RefereeManager::Vector dir, unsigned int player);
+    unsigned int isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    unsigned int classicCenterFreeAlign(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    unsigned int unClassicCenterFreeAlign(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    unsigned int classicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    unsigned int unClassicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    unsigned int isPartOfAlign3InOther(unsigned x, unsigned int y, Vector dir, unsigned int player);
+    bool isFreeAlign(unsigned int x, unsigned int y, Vector dirorig, Vector dir, unsigned int player);
 
     /*
      * Fonction pour la victoire par alignement de 5
@@ -119,19 +119,19 @@ private:
     void checkWin(unsigned int x, unsigned int y, unsigned int player);
     void checkWinList();
     void checkIsTakable(unsigned int x, unsigned int y, unsigned int player);
-    bool checkIsTakable(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const;
-    bool checkIsTakableInvert(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
+    bool checkIsTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
+    bool checkIsTakableInvert(unsigned int x, unsigned int y, Vector dir, unsigned int player);
     bool checkfiveWin(unsigned int x, unsigned int y);
     bool checkFivePrize(unsigned int x, unsigned int y);
-    unsigned int checkFivePrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
+    unsigned int checkFivePrize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
 
     /*
      * Fonction pour la prise de pierre
      */
     unsigned int checkPrize(unsigned int x, unsigned int y, const unsigned int player);
-    bool checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const;
-    bool checkCanTake(unsigned x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const;
-    void cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
+    bool checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
+    bool checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player) const;
+    void cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int player);
 
     /*
      * Fonction pour la propagation
@@ -148,19 +148,19 @@ private:
      */
 
     void fpropagation(unsigned int x, unsigned int y, const unsigned int player);
-    void fpropagation(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player);
+    void fpropagation(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
     void fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player);
-    void fpropag_inverse_to(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player);
-    PropagationInfo flineSize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player);
-    void fsetline(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, const PropagationInfo& value);
-    void resetTakable(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, bool takable);
+    void fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
+    PropagationInfo flineSize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    void fsetline(unsigned int x, unsigned int y, Vector dir, unsigned int player, const PropagationInfo& value);
+    void resetTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player, bool takable);
 
     /**
      * Fonction de Debug
      */
 
     void dumpSquare(unsigned int x, unsigned int y) const;
-    void dumpDirection(unsigned int x, unsigned int y, RefereeManager::Vector dir) const;
+    void dumpDirection(unsigned int x, unsigned int y, Vector dir) const;
     void dumpPropagation(unsigned int x, unsigned int y) const;
 
 };

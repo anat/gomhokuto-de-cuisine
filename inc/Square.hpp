@@ -50,30 +50,99 @@ public:
 
     int32_t             getRawData() const;
     void                setRawData(int32_t mask);
-    const Square::Data &      getData() const;
-    Square::Data &      getData();
-    void                setData(Square::Data & data);
     void                dumpData() const;
 
-    void setHorz(unsigned int lineSize);
-    void setVert(unsigned int lineSize);
-    void setDiagl(unsigned int lineSize);
-    void setDiagr(unsigned int lineSize);
-    void setPlayer(unsigned int player);
-    void setIsTackable(bool value);
-    void setHorzBlock(unsigned int endBlock);
-    void setVertBlock(unsigned int endBlock);
-    void setDiagrBlock(unsigned int endBlock);
-    void setDiaglBlock(unsigned int endBlock);
-    unsigned int getHorz() const;
-    unsigned int getVert() const;
-    unsigned int getDiagl() const;
-    unsigned int getDiagr() const;
-    unsigned int getHorzBlock() const;
-    unsigned int getVertBlock() const;
-    unsigned int getDiagrBlock() const;
-    unsigned int getDiaglBlock() const;
-    unsigned int getPlayer() const;
+    Data & getData() {
+      return (*reinterpret_cast<Square::Data *>(&_data));
+    }
+
+    const Data & getData() const {
+      return (*reinterpret_cast<const Square::Data *>(&_data));
+    }
+
+    void setData(Data & data) {
+        _data = (int32_t)(*reinterpret_cast<int32_t*>(&data));
+    }
+
+    void setVert(unsigned int lineSize) {
+        getData().vert = lineSize;
+    }
+
+    void setHorz(unsigned int lineSize) {
+        getData().horz = lineSize;
+    }
+
+    void setDiagl(unsigned int lineSize) {
+        getData().diagl = lineSize;
+    }
+
+    void setDiagr(unsigned int lineSize) {
+        getData().diagr = lineSize;
+    }
+
+    void setIsTackable(bool value) {
+        getData().is_takable = value;
+    }
+
+    void setPlayer(unsigned int player) {
+        getData().player = player;
+    }
+
+    void setHorzBlock(unsigned int endBlock) {
+        getData().horz_block = endBlock;
+    }
+
+    void setVertBlock(unsigned int endBlock) {
+        getData().vert_block = endBlock;
+    }
+
+    void setDiaglBlock(unsigned int endBlock) {
+        getData().diagl_block = endBlock;
+    }
+
+    void setDiagrBlock(unsigned int endBlock) {
+        getData().diagr_block = endBlock;
+    }
+
+    unsigned int getHorz() const {
+        return GET_HORZ(_data);
+    }
+
+    unsigned int getVert() const {
+        return GET_VERT(_data);
+    }
+
+    unsigned int getDiagl() const {
+        return GET_DIAGL(_data);
+    }
+
+    unsigned int getDiagr() const {
+        return GET_DIAGR(_data);
+    }
+
+    unsigned int getHorzBlock() const {
+        return getData().horz_block;
+    }
+
+    unsigned int getVertBlock() const {
+        return getData().vert_block;
+    }
+
+    unsigned int getDiaglBlock() const {
+        return getData().diagl_block;
+    }
+
+    unsigned int getPlayer() const {
+        return getData().player;
+    }
+
+    unsigned int getDiagrBlock() const {
+        return getData().diagr_block;
+    }
+
+    bool getIsTakable() const {
+        return getData().is_takable;
+    }
     
 private:
      int32_t _data;
