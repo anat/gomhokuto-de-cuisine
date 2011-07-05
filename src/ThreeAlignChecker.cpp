@@ -19,7 +19,7 @@ ThreeAlignChecker& ThreeAlignChecker::operator=(const ThreeAlignChecker& orig) {
 }
 
 bool ThreeAlignChecker::CheckDoubleThree(unsigned int x, unsigned int y, unsigned int player) {
-    return ThreeAlignValue(x, y, player) >= 2;
+    return ThreeAlignValue(x, y, player) < 2;
 }
 
 unsigned int ThreeAlignChecker::ThreeAlignValue(unsigned int x, unsigned int y, unsigned int player) {
@@ -39,14 +39,17 @@ unsigned int ThreeAlignChecker::ThreeAlignValue(unsigned int x, unsigned int y, 
             result += getAlignOf(_coord, player, dir[i]) + 1;
     }
 
-    if (result < 2) {
-        if (ClassicCenter(x, y, RefereeManager::DOWN, player))
-            result += getAlignOf(_coord, player, RefereeManager::DOWN);
+        if (result < 2 && ClassicCenter(x, y, RefereeManager::DOWN, player))
+            result += getAlignOf(_coord, player, RefereeManager::DOWN) + 1;
 
-        result += ClassicCenter(x, y, RefereeManager::LEFT, player);
-        result += ClassicCenter(x, y, RefereeManager::UP_RIGHT, player);
-        result += ClassicCenter(x, y, RefereeManager::UP_LEFT, player);
-    }
+        if (result < 2 && ClassicCenter(x, y, RefereeManager::LEFT, player))
+            result += getAlignOf(_coord, player, RefereeManager::LEFT) + 1;
+
+        if (result < 2 && ClassicCenter(x, y, RefereeManager::UP_RIGHT, player))
+            result += getAlignOf(_coord, player, RefereeManager::UP_RIGHT);
+
+        if (result < 2 && ClassicCenter(x, y, RefereeManager::UP_LEFT, player))
+            result += getAlignOf(_coord, player, RefereeManager::UP_RIGHT);
 
     return result;
 }

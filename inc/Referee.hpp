@@ -16,6 +16,7 @@
 #include "Board.hpp"
 #include "Coord.hpp"
 #include "RefereeManager.hpp"
+#include "ThreeAlignChecker.hpp"
 
 #define DIR_UP    0x1
 #define DIR_DOWN  0x2
@@ -72,6 +73,7 @@ private:
 
     WinList _winLineList;
     Board& _board;
+    ThreeAlignChecker _threeChecker;
     Array< unsigned int, 2 > _score;
     unsigned int _winner;
 
