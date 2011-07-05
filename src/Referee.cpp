@@ -11,16 +11,16 @@
 #include "Game.hpp"
 
 Referee::Referee(Board& board)
-: _winLineList(), _board(board), _score(), _winner(0) {
+    : _winLineList(), _board(board),_threeChecker(_board), _score(), _winner(0) {
     _score[0] = _score[1] = 0;
 }
 
 Referee::Referee(const Referee& orig)
-: _winLineList(orig._winLineList), _board(orig._board), _score(orig._score), _winner(orig._winner) {
+: _winLineList(orig._winLineList), _board(orig._board), _threeChecker(_board), _score(orig._score), _winner(orig._winner) {
 }
 
 Referee::Referee(const Referee& orig, Board& board)
-: _winLineList(orig._winLineList), _board(board), _score(orig._score), _winner(orig._winner) {
+: _winLineList(orig._winLineList), _board(board), _threeChecker(_board), _score(orig._score), _winner(orig._winner) {
 }
 
 Referee::~Referee() {
@@ -343,20 +343,21 @@ bool Referee::fivePrize(bool value) {
  * Fonction de test de la regle speciale des double 3 pions align
  */
 bool Referee::checkDoubleThree(unsigned int x, unsigned int y, unsigned int player) {
-    unsigned int num = 0;
-    for (unsigned int i = 0; i < Singleton<RefereeManager>::Instance().size() && num < 2; i++) {
-        num += isPartOfFree3Align(x, y, static_cast<RefereeManager::Vector> (i), player);
-    }
+//    unsigned int num = 0;
+//    for (unsigned int i = 0; i < Singleton<RefereeManager>::Instance().size() && num < 2; i++) {
+//        num += isPartOfFree3Align(x, y, static_cast<RefereeManager::Vector> (i), player);
+//    }
 
-    //symetrique, donc si on fait toute les direction on compte deux fois.
-    num += classicCenterFreeAlign(x, y, RefereeManager::LEFT, player);
-    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN, player);
-    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN_LEFT, player);
-    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN_RIGHT, player);
+//    //symetrique, donc si on fait toute les direction on compte deux fois.
+//    num += classicCenterFreeAlign(x, y, RefereeManager::LEFT, player);
+//    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN, player);
+//    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN_LEFT, player);
+//    num += classicCenterFreeAlign(x, y, RefereeManager::DOWN_RIGHT, player);
 
-    if (num >= 2)
-        return false;
-    return true;
+//    if (num >= 2)
+//        return false;
+//    return true;
+    return _threeChecker.CheckDoubleThree(x, y, player);
 }
 
 unsigned int Referee::isPartOfFree3Align(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
