@@ -12,7 +12,7 @@
 #include "Game.hpp"
 #include "mainwindow.hpp"
 
-#define TEST_COLOR 1 /* (less -R gere les codes couleurs) */
+#define TEST_COLOR 0 /* (less -R gere les codes couleurs) */
 
 void cleanBoard(Board &plateau);
 void dbgDumpBoard(Board &plateau, int x, int y, int limit);

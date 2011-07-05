@@ -46,10 +46,10 @@ unsigned int ThreeAlignChecker::ThreeAlignValue(unsigned int x, unsigned int y, 
             result += getAlignOf(_coord, player, RefereeManager::LEFT) + 1;
 
         if (result < 2 && ClassicCenter(x, y, RefereeManager::UP_RIGHT, player))
-            result += getAlignOf(_coord, player, RefereeManager::UP_RIGHT);
+            result += getAlignOf(_coord, player, RefereeManager::UP_RIGHT) + 1;
 
         if (result < 2 && ClassicCenter(x, y, RefereeManager::UP_LEFT, player))
-            result += getAlignOf(_coord, player, RefereeManager::UP_RIGHT);
+            result += getAlignOf(_coord, player, RefereeManager::UP_RIGHT) + 1;
 
     return result;
 }
