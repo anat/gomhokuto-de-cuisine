@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "Array.hpp"
 #include "Coord.hpp"
 #include "Singleton.hpp"
 #include "Square.hpp"
@@ -52,14 +53,16 @@ public:
     };
 
     typedef std::map<Vector, DirInfo> DirMap;
+    typedef Array<Vector, 9> VectorArray;
+    typedef Array<DirInfo, 9> InfoArray;
 
     unsigned int size() const;
     bool fivePrize() const;
     bool doubleThree() const;
     void setFivePrize(bool value);
     void setDoubleThree(bool value);
-    DirMap& map();
-    const DirMap& map() const;
+    const VectorArray& getVectorArray() const;
+    const DirInfo& getInfo(const Vector& dir) const;
     Vector invert(const Vector& dir) const;
     bool goTo(unsigned int boardSize, unsigned int& x, unsigned int& y, Vector dir);
     unsigned int getDirAlign(const Square& square, Vector dir) const;
@@ -70,6 +73,8 @@ public:
 
 private:
     DirMap _directionMap;
+    VectorArray _vectorArray;
+    InfoArray _directionArray;
     unsigned int _mapSize;
     bool _fivePrize;
     bool _doubleThree;

@@ -38,27 +38,15 @@ unsigned int Referee::getScore(unsigned int player) {
  * deplace x et y dans la direction choisie
  */
 bool Referee::goTo(unsigned int& x, unsigned int& y, RefereeManager::Vector dir) const {
-    if (dir != RefereeManager::NONE) {
-        return Singleton<RefereeManager>::Instance().goTo(_board.getSize(), x, y, dir);
-    }
-    return false;
+    return RefereeManager::Instance().goTo(_board.getSize(), x, y, dir);
 }
 
 unsigned int Referee::getDirAlign(const Square& square, RefereeManager::Vector dir) const {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
-
-    if (dir && it != Singleton<RefereeManager>::Instance().map().end() && it->second.getter) {
-        return (square.*(it->second.getter))();
-    }
-    return 0;
+    return RefereeManager::Instance().getDirAlign(square, dir);
 }
 
 void Referee::setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int lineSize) {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().find(dir);
-
-    if (dir && it != Singleton<RefereeManager>::Instance().map().end() && it->second.getter) {
-        (square.*(it->second.setter))(lineSize);
-    }
+        RefereeManager::Instance().setDirAlign(square, dir, lineSize);
 }
 
 unsigned int Referee::getDirEnd(const Square& square, RefereeManager::Vector dir) const {
@@ -80,7 +68,6 @@ bool Referee::ispartOfAlign(const Square& value, unsigned int size) {
     unsigned int vert = value.getVert();
 
     if (diagl >= size || diagr >= size || horz >= size || vert >= size ) {
-        std::cout << "what ??" << std::endl;
         return true;
     }
     return false;
@@ -99,7 +86,7 @@ bool Referee::ispartOfExactAlign(const Square& value, int size) {
 }
 
 void Referee::setTakable(Square& square, bool value) {
-    square.getData().is_takable = value;
+    square.setIsTackable(value);
 }
 
 /**
@@ -154,16 +141,13 @@ bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) 
  */
 unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int player) {
     unsigned int result = 0;
+    const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().begin();
-    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().map().end();
-
-    while (it != ite) {
-        if (checkPrize(x, y, it->first, player)) {
-            cleanRock(x, y, it->first, player);
+    for (unsigned int i = 1; i < dir.size(); i++) {
+        if (checkPrize(x, y, dir[i], player)) {
+            cleanRock(x, y, dir[i], player);
             result++;
         }
-        ++it;
     }
     return result;
 }
@@ -227,19 +211,18 @@ void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector d
 void Referee::checkIsTakable(unsigned int x, unsigned int y, unsigned int player) {
     setTakable(_board(x, y), false);
     if (ispartOfExactAlign(_board(x, y), 2)) {
-        RefereeManager::DirMap::iterator it = Singleton<RefereeManager>::Instance().map().begin();
-        RefereeManager::DirMap::iterator ite = Singleton<RefereeManager>::Instance().map().end();
 
-        while (it != ite) {
-            if (checkIsTakable(x, y, it->first, player)) {
+        const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
+
+        for (unsigned int i = 1; i < dir.size(); ++i) {
+            if (checkIsTakable(x, y, dir[i], player)) {
                 unsigned int xtmp = x;
                 unsigned int ytmp = y;
 
                 setTakable(_board(x, y), true);
-                goTo(xtmp, ytmp, it->first);
+                goTo(xtmp, ytmp, dir[i]);
                 setTakable(_board(xtmp, ytmp), true);
             }
-            ++it;
         }
     }
 }
@@ -688,23 +671,21 @@ void Referee::fpropagation(unsigned int x, unsigned int y, RefereeManager::Vecto
 }
 
 void Referee::fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player) {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().begin();
-    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().map().end();
+    const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
-    while (it != ite) {
-        fpropag_inverse_to(x, y, it->first, player);
-        ++it;
+    for (unsigned int i = 1; i < dir.size(); i++){
+        fpropag_inverse_to(x, y, dir[i], player);
     }
 }
 
-void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player) {
+void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir, const unsigned int player) {
     if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
         fpropagation(x, y, player);
         checkIsTakable(x, y, player);
     }
 }
 
-Referee::PropagationInfo Referee::flineSize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
+Referee::PropagationInfo Referee::flineSize(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
     PropagationInfo info;
 
     while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
@@ -761,12 +742,10 @@ void Referee::dumpDirection(unsigned int x, unsigned int y, RefereeManager::Vect
 }
 
 void Referee::dumpPropagation(unsigned int x, unsigned int y) const {
-    RefereeManager::DirMap::const_iterator it = Singleton<RefereeManager>::Instance().map().begin();
-    RefereeManager::DirMap::const_iterator ite = Singleton<RefereeManager>::Instance().map().end();
+    const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
     dumpSquare(x, y);
-    while (it != ite) {
-        dumpDirection(x, y, it->first);
-        ++it;
+    for (unsigned int i = 1; i < dir.size(); i++){
+        dumpDirection(x, y, dir[i]);
     }
 }

@@ -4,6 +4,7 @@
 class Board;
 
 #include "RefereeManager.hpp"
+#include "Array.hpp"
 
 class ThreeAlignChecker {
 public:
@@ -20,7 +21,10 @@ public:
 
 private:
     Board& _board;
+    Array<Coord, 2> _coord;
     std::size_t _size;
+
+    unsigned int getAlignOf(Array<Coord, 2> square, unsigned int player, Vector dir);
 
     inline unsigned int ClassicEdge(unsigned int x, unsigned int y, Vector dir, unsigned int player);
     inline unsigned int ClassicCenter(unsigned int x, unsigned int y, Vector dir, unsigned int player);
@@ -51,12 +55,19 @@ private:
     inline bool edgeTest(unsigned int x, unsigned int y, unsigned int player, Vector dir) {
         return goTo(x, y, dir) && getPlayer(x, y) == 0;
     }
+    inline bool setCoord(unsigned int index, unsigned int x, unsigned int y) {
+        _coord[index] = Coord(x, y);
+        return true;
+    }
+
+
 };
 
 unsigned int ThreeAlignChecker::ClassicEdge(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
 
     if (edgeTest(x, y, player, invert(dir)) &&
-            goTo(x, y, dir) && getPlayer(x, y) == player && goTo(x, y, dir) && getPlayer(x, y) == player &&
+            goTo(x, y, dir) && getPlayer(x, y) == player && setCoord(0, x, y) &&
+            goTo(x, y, dir) && getPlayer(x, y) == player && setCoord(1, x, y) &&
             edgeTest(x, y, player, dir)) {
         return 1;
     }
@@ -67,8 +78,10 @@ unsigned int ThreeAlignChecker::ClassicCenter(unsigned int x, unsigned int y, Ve
     unsigned int xtmp = x;
     unsigned int ytmp = y;
 
-    if (goTo(xtmp, ytmp, invert(dir)) && getPlayer(xtmp, ytmp) == player && edgeTest(xtmp, ytmp, player, invert(dir)) &&
-        goTo(x, y, dir) && getPlayer(x, y) == player && edgeTest(x, y, player, dir)) {
+    if (goTo(xtmp, ytmp, invert(dir)) && getPlayer(xtmp, ytmp) == player && setCoord(0, xtmp, ytmp) &&
+            edgeTest(xtmp, ytmp, player, invert(dir)) &&
+            goTo(x, y, dir) && getPlayer(x, y) == player && setCoord(1, x, y) &&
+            edgeTest(x, y, player, dir)) {
         return 1;
     }
     return 0;
@@ -76,9 +89,9 @@ unsigned int ThreeAlignChecker::ClassicCenter(unsigned int x, unsigned int y, Ve
 
 unsigned int ThreeAlignChecker::unClassicEdge_1(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
     if (edgeTest(x, y, player, invert(dir)) &&
-            goTo(x, y, dir) && getPlayer(x, y) == player &&
+            goTo(x, y, dir) && getPlayer(x, y) == player && setCoord(0, x, y) &&
             goTo(x, y, dir) && getPlayer(x, y) == 0 &&
-            goTo(x, y, dir) && getPlayer(x, y) == player &&
+            goTo(x, y, dir) && getPlayer(x, y) == player && setCoord(1, x, y) &&
             edgeTest(x, y, player, dir)) {
         return 1;
     }
@@ -88,8 +101,8 @@ unsigned int ThreeAlignChecker::unClassicEdge_1(unsigned int x, unsigned int y, 
 unsigned int ThreeAlignChecker::unClassicEdge_2(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
     if (edgeTest(x, y, player, invert(dir)) &&
             goTo(x , y, dir) && getPlayer(x, y) == 0 &&
-            goTo(x, y, dir) && getPlayer(x, y) == player &&
-            goTo(x, y, dir) && getPlayer(x, y) == player &&
+            goTo(x, y, dir) && getPlayer(x, y) == player && setCoord(0, x, y) &&
+            goTo(x, y, dir) && getPlayer(x, y) == player && setCoord(1, x, y) &&
             edgeTest(x, y, player, dir)) {
         return 1;
     }
@@ -100,10 +113,10 @@ unsigned int ThreeAlignChecker::unClassicCenter(unsigned int x, unsigned int y, 
     unsigned int xtmp = x;
     unsigned int ytmp = y;
 
-    if (goTo(xtmp, ytmp, invert(dir)) && getPlayer(xtmp, ytmp) == player &&
+    if (goTo(xtmp, ytmp, invert(dir)) && getPlayer(xtmp, ytmp) == player && setCoord(0, xtmp, ytmp) &&
             edgeTest(xtmp, ytmp, player, invert(dir)) &&
             goTo(x, y, dir) && getPlayer(x, y) == 0 &&
-            goTo(x, y, dir) && getPlayer(x, y) == player &&
+            goTo(x, y, dir) && getPlayer(x, y) == player && setCoord(1, x, y) &&
             edgeTest(x, y, player, dir)) {
         return 1;
     }

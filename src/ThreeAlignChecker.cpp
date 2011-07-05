@@ -25,19 +25,28 @@ bool ThreeAlignChecker::CheckDoubleThree(unsigned int x, unsigned int y, unsigne
 unsigned int ThreeAlignChecker::ThreeAlignValue(unsigned int x, unsigned int y, unsigned int player) {
     unsigned int result = 0;
     unsigned int size = RefereeManager::Instance().size();
+    const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
-    for (unsigned int i = 1; i < size; ++i)
+    for (unsigned int i = 1; i < size && result < 2; ++i)
     {
-        result += ClassicEdge(x, y, static_cast<Vector>(i), player);
-        result += unClassicEdge_1(x, y, static_cast<Vector>(i), player);
-        result += unClassicEdge_2(x, y, static_cast<Vector>(i), player);
-        result += unClassicCenter(x, y, static_cast<Vector>(i), player);
+        if (ClassicEdge(x, y, dir[i], player))
+            result += getAlignOf(_coord, player, dir[i]) + 1;
+        if (unClassicEdge_1(x, y, dir[i], player))
+            result += getAlignOf(_coord, player, dir[i]) + 1;
+        if (unClassicEdge_2(x, y, dir[i], player))
+            result += getAlignOf(_coord, player, dir[i]) + 1;
+        if (unClassicCenter(x, y, dir[i], player))
+            result += getAlignOf(_coord, player, dir[i]) + 1;
     }
 
-    result += ClassicCenter(x, y, RefereeManager::DOWN, player);
-    result += ClassicCenter(x, y, RefereeManager::LEFT, player);
-    result += ClassicCenter(x, y, RefereeManager::UP_RIGHT, player);
-    result += ClassicCenter(x, y, RefereeManager::UP_LEFT, player);
+    if (result < 2) {
+        if (ClassicCenter(x, y, RefereeManager::DOWN, player))
+            result += getAlignOf(_coord, player, RefereeManager::DOWN);
+
+        result += ClassicCenter(x, y, RefereeManager::LEFT, player);
+        result += ClassicCenter(x, y, RefereeManager::UP_RIGHT, player);
+        result += ClassicCenter(x, y, RefereeManager::UP_LEFT, player);
+    }
 
     return result;
 }
@@ -69,6 +78,13 @@ unsigned int ThreeAlignChecker::ThreeAlignValue(unsigned int x, unsigned int y, 
     if (RefereeManager::UP_LEFT != ignoreDir && RefereeManager::UP_LEFT != invert_)
         result += ClassicCenter(x, y, RefereeManager::UP_LEFT, player);
 
+    return result;
+}
+
+unsigned int ThreeAlignChecker::getAlignOf(Array<Coord, 2> square, unsigned int player, Vector dir) {
+    unsigned int result = ThreeAlignValue(square[0].x, square[0].y, player, dir);
+
+    result += ThreeAlignValue(square[1].x, square[1].y, player, dir);
     return result;
 }
 
