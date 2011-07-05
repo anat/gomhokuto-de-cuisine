@@ -12,9 +12,10 @@
 #include "Game.hpp"
 #include "mainwindow.hpp"
 
+#define TEST_COLOR 1 /* (less -R gere les codes couleurs) */
 
 void cleanBoard(Board &plateau);
-void dbgDumpBoard(Board &plateau, int limit);
+void dbgDumpBoard(Board &plateau, int x, int y, int limit);
 void testDoubleThree(Board &plateau, Referee &arbitre, int dump_lvl);
 void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump);
 
@@ -58,9 +59,8 @@ int main(int ac, char **av) {
  */
 void testDoubleThree(Board &plateau, Referee &arbitre, int dump_lvl)
 {
-  //Square::Player toto;
   int toto = PLAYER1;
-
+#if 1
   arbitre.tryPlaceRock(1, 1, toto); /* Cas 1 */
   arbitre.tryPlaceRock(2, 1, toto);
   arbitre.tryPlaceRock(3, 1, toto);
@@ -72,7 +72,7 @@ void testDoubleThree(Board &plateau, Referee &arbitre, int dump_lvl)
   arbitre.tryPlaceRock(3, 2, toto);
   arbitre.tryPlaceRock(1, 3, toto);
   check(arbitre, plateau, 2, 2, 2, dump_lvl);
-#if 1
+
   arbitre.tryPlaceRock(3, 1, toto);
   arbitre.tryPlaceRock(3, 2, toto);
   arbitre.tryPlaceRock(4, 2, toto);
@@ -114,12 +114,131 @@ void testDoubleThree(Board &plateau, Referee &arbitre, int dump_lvl)
   arbitre.tryPlaceRock(4, 2, toto);
   arbitre.tryPlaceRock(2, 4, toto);
   check(arbitre, plateau, 9, 2, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 3, toto); /* Cas 5.1 */
+  arbitre.tryPlaceRock(5, 3, toto);
+  arbitre.tryPlaceRock(1, 1, toto);
+  arbitre.tryPlaceRock(2, 2, toto);
+  check(arbitre, plateau, 10, 3, 3, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 3, toto);
+  arbitre.tryPlaceRock(5, 3, toto);
+  arbitre.tryPlaceRock(3, 1, toto);
+  arbitre.tryPlaceRock(3, 2, toto);
+  check(arbitre, plateau, 11, 3, 3, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 3, toto);
+  arbitre.tryPlaceRock(5, 3, toto);
+  arbitre.tryPlaceRock(5, 1, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  check(arbitre, plateau, 12, 3, 3, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 1, toto); /* Cas 5.2 */
+  arbitre.tryPlaceRock(2, 3, toto);
+  arbitre.tryPlaceRock(3, 2, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  check(arbitre, plateau, 13, 2, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(1, 3, toto);
+  arbitre.tryPlaceRock(3, 1, toto);
+  arbitre.tryPlaceRock(3, 2, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  check(arbitre, plateau, 14, 2, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 1, toto); /* Cas 5.3 */
+  arbitre.tryPlaceRock(2, 2, toto);
+  arbitre.tryPlaceRock(1, 3, toto);
+  arbitre.tryPlaceRock(3, 3, toto);
+  check(arbitre, plateau, 15, 2, 3, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 1, toto);
+  arbitre.tryPlaceRock(3, 2, toto);
+  arbitre.tryPlaceRock(1, 3, toto);
+  arbitre.tryPlaceRock(3, 3, toto);
+  check(arbitre, plateau, 16, 2, 3, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 1, toto); /* Cas 5.4 */
+  arbitre.tryPlaceRock(2, 3, toto);
+  arbitre.tryPlaceRock(1, 2, toto);
+  arbitre.tryPlaceRock(3, 2, toto);
+  check(arbitre, plateau, 17, 2, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(1, 1, toto);
+  arbitre.tryPlaceRock(2, 2, toto);
+  arbitre.tryPlaceRock(5, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 18, 4, 4, dump_lvl); /* Cas 6.1 */
+
+  arbitre.tryPlaceRock(4, 1, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(5, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 19, 4, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(1, 1, toto);
+  arbitre.tryPlaceRock(3, 3, toto);
+  arbitre.tryPlaceRock(5, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 20, 4, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 1, toto);
+  arbitre.tryPlaceRock(4, 3, toto);
+  arbitre.tryPlaceRock(5, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 21, 4, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 1, toto); /* Cas 6.2 */
+  arbitre.tryPlaceRock(5, 4, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(5, 2, toto);
+  check(arbitre, plateau, 22, 3, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(3, 1, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(5, 2, toto);
+  check(arbitre, plateau, 23, 3, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 1, toto); /* Cas 6.3 */
+  arbitre.tryPlaceRock(2, 2, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 24, 2, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(5, 1, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 25, 2, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 1, toto);
+  arbitre.tryPlaceRock(2, 3, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 26, 2, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(3, 3, toto);
+  arbitre.tryPlaceRock(5, 1, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 27, 2, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(3, 1, toto); /* Cas 6.4 */
+  arbitre.tryPlaceRock(3, 4, toto);
+  arbitre.tryPlaceRock(2, 2, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  check(arbitre, plateau, 28, 3, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(4, 1, toto);
+  arbitre.tryPlaceRock(2, 2, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  check(arbitre, plateau, 29, 3, 2, dump_lvl);
 #endif
 }
 
 void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump)
 {
-  //Square::Player toto;
   int toto = PLAYER1;
 
   arbitre.tryPlaceRock(x, y, toto);
@@ -131,7 +250,7 @@ void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump)
 	    << ((PLAYER(plateau(x, y).getRawData()) == NOPLAYER) ? "OK" : "FAIL")
 	    << std::endl;
   if (dump == 2 || (dump == 1 && (!(PLAYER(plateau(x, y).getRawData()) == NOPLAYER))))
-    dbgDumpBoard(plateau, 10);
+    dbgDumpBoard(plateau, x, y, 10);
   cleanBoard(plateau);
 }
 
@@ -141,16 +260,10 @@ void cleanBoard(Board &plateau)
 
   for (i = 0; i < 19; i++)
     for (j = 0; j < 19; j++)
-      {
-	plateau(i, j).setRawData(0);//plateau(i, j).getRawData() & 0xfffffff0);
-	//plateau(i, j)._horz  = 0;
-	//plateau(i, j)._vert  = 0;
-	//plateau(i, j)._diagl = 0;
-	//plateau(i, j)._diagr = 0;
-      }
+      plateau(i, j).setRawData(0);
 }
 
-void dbgDumpBoard(Board &plateau, int limit = 19) {
+void dbgDumpBoard(Board &plateau, int x, int y, int limit = 19) {
     int i, j;
     char c;
 
@@ -171,7 +284,15 @@ void dbgDumpBoard(Board &plateau, int limit = 19) {
                     break;
             }
             std::cout << " ";
+#if TEST_COLOR == 1
+	    if (x==j && y==i)
+	      std::cout << "\033[31m";
+#endif
             std::cout << c;
+#if TEST_COLOR == 1
+	    if (x==j && y==i)
+	      std::cout << "\033[0m";
+#endif
             std::cout << " ";
         }
         std::cout << std::endl;
