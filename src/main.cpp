@@ -228,7 +228,90 @@ void testDoubleThree(Board &plateau, Referee &arbitre, int dump_lvl)
   arbitre.tryPlaceRock(2, 2, toto);
   arbitre.tryPlaceRock(4, 2, toto);
   check(arbitre, plateau, 28, 3, 2, dump_lvl);
+
+  /* Ces cas sont les meme que 6.3, mais placement de pions pas dans le meme ordre. */
+  arbitre.tryPlaceRock(2, 1, toto); /* Cas 6.5 */
+  arbitre.tryPlaceRock(2, 4, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 29, 2, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(2, 4, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 30, 5, 1, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 4, toto);
+  arbitre.tryPlaceRock(2, 3, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 31, 2, 1, dump_lvl);
+
+  arbitre.tryPlaceRock(2, 4, toto);
+  arbitre.tryPlaceRock(5, 1, toto);
+  arbitre.tryPlaceRock(1, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  check(arbitre, plateau, 32, 3, 3, dump_lvl);
 #endif
+  arbitre.tryPlaceRock(2, 1, toto); /* Cas 7.1 */
+  arbitre.tryPlaceRock(4, 3, toto);
+  arbitre.tryPlaceRock(1, 3, toto);
+  arbitre.tryPlaceRock(2, 3, toto);
+  check(arbitre, plateau, 33, 5, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 3, toto);
+  arbitre.tryPlaceRock(4, 4, toto);
+  arbitre.tryPlaceRock(1, 3, toto);
+  arbitre.tryPlaceRock(2, 3, toto);
+  check(arbitre, plateau, 34, 4, 1, dump_lvl);
+
+  arbitre.tryPlaceRock(6, 1, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  arbitre.tryPlaceRock(4, 3, toto);
+  arbitre.tryPlaceRock(2, 3, toto);
+  check(arbitre, plateau, 35, 1, 3, dump_lvl);
+
+  arbitre.tryPlaceRock(1, 1, toto); /* Cas 7.1 */
+  arbitre.tryPlaceRock(4, 4, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 36, 2, 2, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 4, toto);
+  arbitre.tryPlaceRock(4, 2, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 37, 4, 1, dump_lvl);
+
+  arbitre.tryPlaceRock(6, 2, toto);
+  arbitre.tryPlaceRock(7, 1, toto);
+  arbitre.tryPlaceRock(4, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 38, 3, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 4, toto);
+  arbitre.tryPlaceRock(3, 3, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 39, 1, 1, dump_lvl);
+
+  arbitre.tryPlaceRock(4, 1, toto);
+  arbitre.tryPlaceRock(4, 3, toto);
+  arbitre.tryPlaceRock(4, 4, toto);
+  arbitre.tryPlaceRock(6, 4, toto);
+  check(arbitre, plateau, 40, 3, 4, dump_lvl);
+
+  arbitre.tryPlaceRock(5, 3, toto);
+  arbitre.tryPlaceRock(7, 1, toto);
+  arbitre.tryPlaceRock(3, 4, toto);
+  arbitre.tryPlaceRock(4, 4, toto);
+  check(arbitre, plateau, 41, 6, 4, dump_lvl);
+
+  /*
+    arbitre.tryPlaceRock(, , toto);
+    check(arbitre, plateau, , , , dump_lvl);
+  */
 }
 
 void check(Referee &arbitre, Board &plateau, int n, int x, int y, int dump)
