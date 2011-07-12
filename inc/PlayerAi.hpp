@@ -97,7 +97,7 @@ public:
                     _beta = heuResult;
                 if (heuResult < result)
                     result = heuResult;
-                if (_beta >= _alpha)
+                if (_beta < _alpha)
                     bad = true;
             }
             ++it;
@@ -138,7 +138,7 @@ public:
                     _alpha = heuResult;
                 if (heuResult > result)
                     result = heuResult;
-                if (_beta >= _alpha)
+                if (_beta > _alpha)
                     bad = true;
             }
             ++it;
