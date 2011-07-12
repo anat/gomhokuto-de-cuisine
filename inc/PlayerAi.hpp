@@ -53,7 +53,7 @@ public:
 
             if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
                 heu = min(1, refcopy, _heuristic(copy, _player));
-                if (heu > BestHeu) {
+                if (heu >= BestHeu) {
                     BestHeu = heu;
                     bestMove = *it;
                 }
@@ -97,6 +97,8 @@ public:
                     _beta = heuResult;
                 if (heuResult < result)
                     result = heuResult;
+                if (_beta >= _alpha)
+                    bad = true;
             }
             ++it;
         }
@@ -134,8 +136,12 @@ public:
                 heuResult = min(depth + 1, refcopy, _heuristic(copy, _player));
                 if (heuResult > _alpha)
                     _alpha = heuResult;
+                else
+                    bad = true;
                 if (heuResult > result)
                     result = heuResult;
+                if (_beta >= _alpha)
+                    bad = true;
             }
             ++it;
         }
