@@ -13,7 +13,7 @@ public:
     typedef typename IHeuristic::HeuristicValue HeuristicValue;
     typedef typename ISearchCase::CoordContainer CoordContainer;
 
-    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _maxDepth(3), _alpha(), _beta() {
+    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _maxDepth(3), _alpha(_heuristic.defeat()), _beta(_heuristic.victory()) {
     }
 
     PlayerAi(const PlayerAi& orig) : APlayer(orig) {
@@ -34,9 +34,6 @@ public:
     }
 
     bool doAction(Board& gameboard, Referee& ref, int , int ) {
-        _alpha = HeuristicValue();
-        _beta = HeuristicValue();
-
         CoordContainer possibleCase;
 
         _searchCase(gameboard, possibleCase);
@@ -48,16 +45,13 @@ public:
 
         HeuristicValue BestHeu = _heuristic.defeat();
         Coord bestMove;
-        //gameboard.DumpBoard();
 
         while (it != ite) {
             copy = gameboard;
             Referee refcopy(ref, copy);
 
-            //copy.DumpBoard();
             if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
-                //copy.DumpBoard();
-                HeuristicValue heu = min(1, copy, refcopy, _heuristic(copy, _player, it->x, it->y));
+                HeuristicValue heu = min(1, refcopy, _heuristic(copy, _player, it->x, it->y));
 
                 if (heu > BestHeu) {
                     heu = BestHeu;
@@ -72,7 +66,7 @@ public:
         return true;
     }
 
-    HeuristicValue min(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
+    HeuristicValue min(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
         if (depth > _maxDepth || reforigin.checkWin() != 0) {
             unsigned int winner = reforigin.checkWin();
             if (winner == this->getPlayerNum())
@@ -84,7 +78,7 @@ public:
 
         CoordContainer possibleCase;
 
-        _searchCase(origin, possibleCase);
+        _searchCase(reforigin.getBoard(), possibleCase);
 
         typename CoordContainer::const_iterator it = possibleCase.begin();
         typename CoordContainer::const_iterator ite = possibleCase.end();
@@ -93,14 +87,15 @@ public:
         HeuristicValue result = _heuristic.victory();
         Board copy;
 
-        while (it != ite) {
-            copy = origin;
+        bool bad = false;
+        while (it != ite && !bad) {
+            copy = reforigin.getBoard();
             Referee refcopy(reforigin, copy);
-            //copy.DumpBoard();
 
             if (refcopy.tryPlaceRock(it->x, it->y, Referee::opponant(_player)) > -1) {
-                //copy.DumpBoard();
-                heuResult = max(depth + 1, copy, refcopy, _heuristic(copy, _player, it->x, it->y));
+                heuResult = max(depth + 1, refcopy, _heuristic(copy, _player, it->x, it->y));
+                if (heuResult < _beta)
+                    _beta = heuResult;
                 if (heuResult < result)
                     result = heuResult;
 
@@ -111,7 +106,7 @@ public:
         return result;
     }
 
-    HeuristicValue max(unsigned int depth, Board& origin, Referee& reforigin, HeuristicValue boardHeuristic) {
+    HeuristicValue max(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
         if (depth > _maxDepth || reforigin.checkWin() != 0) {
             unsigned int winner = reforigin.checkWin();
             if (winner == this->getPlayerNum())
@@ -123,7 +118,7 @@ public:
 
         CoordContainer possibleCase;
 
-        _searchCase(origin, possibleCase);
+        _searchCase(reforigin.getBoard(), possibleCase);
 
         typename CoordContainer::const_iterator it = possibleCase.begin();
         typename CoordContainer::const_iterator ite = possibleCase.end();
@@ -131,15 +126,16 @@ public:
         HeuristicValue heuResult;
         HeuristicValue result = _heuristic.defeat();
         Board copy;
+        bool bad = false;
 
-        while (it != ite) {
-            copy = origin;
+        while (it != ite && !bad) {
+            copy = reforigin.getBoard();
             Referee refcopy(reforigin, copy);
 
-            //copy.DumpBoard();
             if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
-                //copy.DumpBoard();
-                heuResult = min(depth + 1, copy, refcopy, _heuristic(copy, _player, it->x, it->y));
+                heuResult = min(depth + 1, refcopy, _heuristic(copy, _player, it->x, it->y));
+                if (heuResult > _alpha)
+                    _alpha = heuResult;
                 if (heuResult > result)
                     result = heuResult;
             }
