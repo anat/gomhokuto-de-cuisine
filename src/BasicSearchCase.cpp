@@ -2,12 +2,12 @@
 #include <iostream>
 #include "BasicSearchCase.hpp"
 
-void BasicSearchCase::operator ()(Board& game, CoordContainer& possibleCase) {
+void BasicSearchCase::operator ()(const Board& game, CoordContainer& possibleCase) {
     unsigned int size = game.getSize();
 
     for (unsigned int x = 0; x < size; ++x) {
         for (unsigned int y = 0; y < size; ++y) {
-            if (game(x, y).getData().player == 0 && hasPlayerAround(game, x, y)) {
+            if (game(x, y).getPlayer() == 0 && hasPlayerAround(game, x, y)) {
                 possibleCase.push_back(Coord(x, y));
             }
         }
@@ -15,7 +15,7 @@ void BasicSearchCase::operator ()(Board& game, CoordContainer& possibleCase) {
     //Dump(possibleCase);
 }
 
-bool BasicSearchCase::hasPlayerAround(Board &game, unsigned int x, unsigned int y){
+bool BasicSearchCase::hasPlayerAround(const Board &game, unsigned int x, unsigned int y){
     unsigned int xtmp;
     unsigned int ytmp;
     bool ok = false;
@@ -29,7 +29,7 @@ bool BasicSearchCase::hasPlayerAround(Board &game, unsigned int x, unsigned int 
             xtmp += xv;
             ytmp += yv;
             if (game.checkSize(xtmp, ytmp))
-                ok = (game(xtmp, ytmp).getData().player != 0);
+                ok = (game(xtmp, ytmp).getPlayer() != 0);
         }
     }
     return ok;

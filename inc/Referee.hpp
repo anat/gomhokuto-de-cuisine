@@ -55,6 +55,10 @@ public:
         return result;
     }
 
+    inline const Board& getBoard() {
+        return _board;
+    }
+
 private:
     struct PropagationInfo {
         std::size_t lineSize;

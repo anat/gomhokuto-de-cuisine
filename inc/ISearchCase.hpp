@@ -16,7 +16,7 @@ public:
     typedef T CoordContainer;
     
     virtual ~ISearchCase() {}
-    virtual void operator()(Board& game, CoordContainer& possibleCase) = 0;
+    virtual void operator()(const Board& game, CoordContainer& possibleCase) = 0;
 };
 
 #endif	/* ISEARCHFILE_HPP */
