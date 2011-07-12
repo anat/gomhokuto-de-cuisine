@@ -4,7 +4,7 @@
 #include "BasicHeuristic.hpp"
 #include "Board.hpp"
 
-BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsigned int player, unsigned int /*x*/, unsigned int /*y*/) {
+BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsigned int player) {
     int result = 0;
     int playerPiece = 0;
     int opponantPiece = 0;
@@ -16,28 +16,29 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(Board& gameBoard, unsi
                 result += good(value);
                 playerPiece++;
             } else if (value.player != 0) {
-                result -= good(value);
+                result += bad(value);
                 opponantPiece++;
             }
         }
     }
 
+    int test;
     if (playerPiece && opponantPiece) {
-        float div = playerPiece / opponantPiece;
-        result = result * div * div;
+        float div = (float)playerPiece / (float)opponantPiece;
+        test = result * div;
     }
 
     //std::cout << "heu " << result << std::endl;
-    return result;
+    return test;
 }
 
 int BasicHeuristic::good(Square::Data& square) {
     int result = 0;
 
-    result += square.diagl * square.diagl / 2 * square.diagl_block;
-    result += square.diagr * square.diagr / 2 * square.diagr_block;
-    result += square.horz * square.horz / 2 * square.horz_block;
-    result += square.vert * square.vert / 2 * square.vert_block;
+    result += square.diagl_block * square.diagl;
+    result += square.diagr_block * square.diagr;
+    result += square.horz_block * square.horz;
+    result += square.vert_block * square.vert;
 
     if (square.is_takable) {
         result /= 2;
@@ -49,16 +50,16 @@ int BasicHeuristic::good(Square::Data& square) {
 int BasicHeuristic::bad(Square::Data& square) {
     int result = 0;
 
-    result -= square.diagl * square.diagl * square.diagl_block * square.diagl_block * square.diagl_block;
-    result -= square.diagr * square.diagr * square.diagr_block * square.diagr_block * square.diagr_block;
-    result -= square.horz * square.horz * square.horz_block * square.horz_block * square.horz_block;
-    result -= square.vert * square.vert * square.vert_block * square.vert_block * square.vert_block;
+    result += square.diagl_block * square.diagl;
+    result += square.diagr_block * square.diagr;
+    result += square.horz_block * square.horz;
+    result += square.vert_block * square.vert;
 
     if (square.is_takable) {
         result /= 2;
     }
 
-    return result;
+    return result * -1;
 }
 
 BasicHeuristic::HeuristicValue BasicHeuristic::victory() const {

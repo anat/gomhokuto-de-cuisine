@@ -13,7 +13,7 @@ public:
     typedef typename IHeuristic::HeuristicValue HeuristicValue;
     typedef typename ISearchCase::CoordContainer CoordContainer;
 
-    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _maxDepth(3), _alpha(_heuristic.defeat()), _beta(_heuristic.victory()) {
+    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _searchCase(), _maxDepth(3), _alpha(_heuristic.defeat()), _beta(_heuristic.victory()) {
     }
 
     PlayerAi(const PlayerAi& orig) : APlayer(orig) {
@@ -26,6 +26,7 @@ public:
     PlayerAi & operator=(const PlayerAi& orig) {
         if (this != &orig) {
             _heuristic = orig._heuristic;
+            _searchCase = orig._searchCase;
             _maxDepth = orig._maxDepth;
             _alpha = orig._alpha;
             _beta = orig._beta;
@@ -42,7 +43,7 @@ public:
         typename CoordContainer::iterator ite = possibleCase.end();
 
         Board copy;
-
+        HeuristicValue heu;
         HeuristicValue BestHeu = _heuristic.defeat();
         Coord bestMove;
 
@@ -51,13 +52,11 @@ public:
             Referee refcopy(ref, copy);
 
             if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
-                HeuristicValue heu = min(1, refcopy, _heuristic(copy, _player, it->x, it->y));
-
+                heu = min(1, refcopy, _heuristic(copy, _player));
                 if (heu > BestHeu) {
-                    heu = BestHeu;
+                    BestHeu = heu;
                     bestMove = *it;
                 }
-
             }
             ++it;
         }
@@ -69,7 +68,7 @@ public:
     HeuristicValue min(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
         if (depth > _maxDepth || reforigin.checkWin() != 0) {
             unsigned int winner = reforigin.checkWin();
-            if (winner == this->getPlayerNum())
+            if (winner == _player)
                 return _heuristic.victory();
             else if (winner)
                 return _heuristic.defeat();
@@ -93,12 +92,11 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(it->x, it->y, Referee::opponant(_player)) > -1) {
-                heuResult = max(depth + 1, refcopy, _heuristic(copy, _player, it->x, it->y));
+                heuResult = max(depth + 1, refcopy, _heuristic(copy, _player));
                 if (heuResult < _beta)
                     _beta = heuResult;
                 if (heuResult < result)
                     result = heuResult;
-
             }
             ++it;
         }
@@ -133,7 +131,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
-                heuResult = min(depth + 1, refcopy, _heuristic(copy, _player, it->x, it->y));
+                heuResult = min(depth + 1, refcopy, _heuristic(copy, _player));
                 if (heuResult > _alpha)
                     _alpha = heuResult;
                 if (heuResult > result)
