@@ -136,8 +136,6 @@ public:
                 heuResult = min(depth + 1, refcopy, _heuristic(copy, _player));
                 if (heuResult > _alpha)
                     _alpha = heuResult;
-                else
-                    bad = true;
                 if (heuResult > result)
                     result = heuResult;
                 if (_beta >= _alpha)
