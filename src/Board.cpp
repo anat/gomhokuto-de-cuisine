@@ -72,12 +72,12 @@ void Board::DumpBoard()
       std::cout << i;
       for (j = 0; j < _tab.size(); j++) /* X */
 	{
-	  switch (GET_PLAYER(_tab[i][j].getRawData()))
+            switch (_tab[i][j].getPlayer())
 	    {
-              case NOPLAYER: c = '.'; break;
-              case PLAYER1:  c = 'X'; break;
-              case PLAYER2:  c = 'O'; break;
-	    default:               c = '?'; break;
+                case NOPLAYER   : c = '.'; break;
+                case PLAYER1    : c = 'X'; break;
+                case PLAYER2    : c = 'O'; break;
+                default         : c = '?'; break;
 	    }
 	  std::cout << " ";
 	  std::cout << c;
@@ -85,6 +85,7 @@ void Board::DumpBoard()
 	}
       std::cout << std::endl;
   }
+  std::cout.flush();
 }
   
 void Board::reset()

@@ -46,7 +46,7 @@ public:
     void reset();
     unsigned int getScore(unsigned int player);
 
-    inline unsigned int opponant(const unsigned int pla) const {
+    static inline unsigned int opponant(const unsigned int pla) {
         unsigned int result = 0;
         if (pla == 1)
             result = 2;
@@ -79,16 +79,6 @@ private:
 
     inline bool checkPosition(unsigned int x, unsigned int y) const {
         return (x < _board.getSize() && y < _board.getSize());
-    }
-
-    inline unsigned int abs(int value) const {
-        if (value < 0)
-            return value * -1;
-        return value;
-    }
-
-    inline Vector invert(Vector dir) const {
-        return RefereeManager::Instance().invert(dir);
     }
 
     void setScore(unsigned int player, unsigned int value);
