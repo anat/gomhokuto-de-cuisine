@@ -107,13 +107,6 @@ private:
      */
 
     bool checkDoubleThree(unsigned int x, unsigned int y, unsigned int player);
-    unsigned int isPartOfFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
-    unsigned int classicCenterFreeAlign(unsigned int x, unsigned int y, Vector dir, unsigned int player);
-    unsigned int unClassicCenterFreeAlign(unsigned int x, unsigned int y, Vector dir, unsigned int player);
-    unsigned int classicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
-    unsigned int unClassicFree3Align(unsigned int x, unsigned int y, Vector dir, unsigned int player);
-    unsigned int isPartOfAlign3InOther(unsigned x, unsigned int y, Vector dir, unsigned int player);
-    bool isFreeAlign(unsigned int x, unsigned int y, Vector dirorig, Vector dir, unsigned int player);
 
     /*
      * Fonction pour la victoire par alignement de 5
@@ -136,17 +129,7 @@ private:
     void cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int player);
 
     /*
-     * Fonction pour la propagation
-     */
-
-    void propagation(unsigned int x, unsigned int y, const unsigned int player);
-    void propagation(unsigned int x, unsigned int y, const unsigned int player,
-            unsigned int dir, unsigned int usize);
-    void propagation_inverse(unsigned int x, unsigned int y, const unsigned int player);
-    int lineSize(unsigned int x, unsigned int y, const unsigned int player, int dir);
-
-    /*
-     * Fonction de propagation fait par fancel
+     * Fonction de propagation
      */
 
     void fpropagation(unsigned int x, unsigned int y, const unsigned int player);
