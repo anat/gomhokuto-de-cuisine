@@ -23,7 +23,7 @@ public :
     void addPawnTaken(int nb);
     virtual bool doAction(Board & gameboard, Referee & referee, int x = -1, int y = -1) = 0;
 
-private:
+protected:
     int _nbPawnTaken;
     unsigned int _player;
 };
