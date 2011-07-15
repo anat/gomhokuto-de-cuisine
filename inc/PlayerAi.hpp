@@ -13,7 +13,7 @@ public:
     typedef typename IHeuristic::HeuristicValue HeuristicValue;
     typedef typename ISearchCase::CoordContainer CoordContainer;
 
-    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _searchCase(), _maxDepth(3), _alpha(_heuristic.defeat()), _beta(_heuristic.victory()) {
+    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _searchCase(), _maxDepth(3), _alpha(), _beta() {
     }
 
     PlayerAi(const PlayerAi& orig) : APlayer(orig) {
@@ -52,6 +52,8 @@ public:
             Referee refcopy(ref, copy);
 
             if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
+                _alpha = _heuristic.defeat();
+                _beta = _heuristic.victory();
                 heu = min(1, refcopy, _heuristic(copy, _player));
                 if (heu >= BestHeu) {
                     BestHeu = heu;
