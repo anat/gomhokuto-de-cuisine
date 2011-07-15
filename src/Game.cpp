@@ -84,3 +84,7 @@ void Game::setFivePrize(bool value) {
 void Game::setDoubleThree(bool value) {
     _referee.doubleThree(value);
 }
+
+const Referee& Game::getReferee() const {
+    return _referee;
+}

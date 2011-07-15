@@ -340,7 +340,7 @@ void cleanBoard(Board &plateau)
       plateau(i, j).setRawData(0);
 }
 
-void dbgDumpBoard(Board &plateau, int x, int y, int limit = 19) {
+void dbgDumpBoard(Board &plateau, int /*x*/, int /*y*/, int limit = 19) {
     int i, j;
     char c;
 
@@ -350,7 +350,7 @@ void dbgDumpBoard(Board &plateau, int x, int y, int limit = 19) {
         std::cout.width(2);
         std::cout << i;
         for (j = 0; j < 19; j++) /* X */ {
-            switch (GET_PLAYER(plateau(j, i).getRawData())) {
+            switch (plateau(j, i).getPlayer()) {
                 case NOPLAYER: c = '.';
                     break;
                 case PLAYER1: c = 'X';

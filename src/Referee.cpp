@@ -7,11 +7,15 @@
 
 #include <iostream>
 
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/mutex.hpp>
+
 #include "Referee.hpp"
 #include "Game.hpp"
 
 Referee::Referee(Board& board)
-    : _winLineList(), _board(board),_threeChecker(_board), _score(), _winner(0) {
+: _winLineList(), _board(board), _threeChecker(_board), _score(), _winner(0) {
     _score[0] = _score[1] = 0;
 }
 
@@ -30,7 +34,7 @@ void Referee::setScore(unsigned int player, unsigned int value) {
     _score[player & 1] = value;
 }
 
-unsigned int Referee::getScore(unsigned int player) {
+unsigned int Referee::getScore(unsigned int player) const {
     return _score[player & 1];
 }
 
@@ -46,7 +50,7 @@ unsigned int Referee::getDirAlign(const Square& square, RefereeManager::Vector d
 }
 
 void Referee::setDirAlign(Square& square, RefereeManager::Vector dir, unsigned int lineSize) {
-        RefereeManager::Instance().setDirAlign(square, dir, lineSize);
+    RefereeManager::Instance().setDirAlign(square, dir, lineSize);
 }
 
 unsigned int Referee::getDirEnd(const Square& square, RefereeManager::Vector dir) const {
@@ -67,7 +71,7 @@ bool Referee::ispartOfAlign(const Square& value, unsigned int size) {
     unsigned int horz = value.getHorz();
     unsigned int vert = value.getVert();
 
-    if (diagl >= size || diagr >= size || horz >= size || vert >= size ) {
+    if (diagl >= size || diagr >= size || horz >= size || vert >= size) {
         return true;
     }
     return false;
@@ -85,7 +89,13 @@ bool Referee::ispartOfExactAlign(const Square& value, int size) {
             );
 }
 
+void Referee::setRaw(Square& value, unsigned int val) {
+    boost::lock_guard<boost::mutex> lock(_squareMutex);
+    value.setRawData(val);
+}
+
 void Referee::setTakable(Square& square, bool value) {
+    boost::lock_guard<boost::mutex> lock(_squareMutex);
     square.setIsTackable(value);
 }
 
@@ -110,13 +120,12 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
     int value = -1;
 
     if (testPosition(x, y, player)) {
-        _board(x, y).getData().player = player;
+        _board(x, y).setPlayer(player);
         fpropagation(x, y, player);
         value = checkPrize(x, y, player);
         setScore(player, getScore(player) + value * 2);
         checkIsTakable(x, y, player);
         checkWin(x, y, player);
-        //dumpPropagation(x, y);
     }
     return value;
 }
@@ -142,14 +151,31 @@ bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) 
 unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int player) {
     unsigned int result = 0;
     const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
+    Array<CheckPrizeInfo, RefereeManager::VectorArray::ARRAY_SIZE> info;
+    boost::thread_group threadGroup;
 
     for (unsigned int i = 1; i < dir.size(); i++) {
-        if (checkPrize(x, y, dir[i], player)) {
-            cleanRock(x, y, dir[i], player);
-            result++;
-        }
+        info[i].x = x;
+        info[i].y = y;
+        info[i].dir = dir[i];
+        info[i].player = player;
+        info[i].result = 0;
+        threadGroup.create_thread(
+                boost::bind(&Referee::checkPrizeRun, this, boost::ref(info[i]))
+                );
+    }
+    threadGroup.join_all();
+    for (unsigned int i = 1; i < dir.size(); i++) {
+        result += info[i].result;
     }
     return result;
+}
+
+void Referee::checkPrizeRun(CheckPrizeInfo& info) {
+    if (checkPrize(info.x, info.y, info.dir, info.player)) {
+        cleanRock(info.x, info.y, info.dir, info.player);
+        info.result++;
+    }
 }
 
 /**
@@ -158,10 +184,10 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
 bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
     if (checkCanTake(x, y, dir, player)) {
         goTo(x, y, dir);
-        _board(x, y).getData().is_takable = 1;
+        _board(x, y).setIsTackable(true);
 
         goTo(x, y, dir);
-        _board(x, y).getData().is_takable = 1;
+        _board(x, y).setIsTackable(true);
 
         if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
             return true;
@@ -196,13 +222,13 @@ void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector d
 
     goTo(x, y, dir);
     //std::cout << "## x " << x << " ## y " << y << std::endl;
-    _board(x, y).setRawData(0);
+    setRaw(_board(x, y), 0);
     xtmp = x;
     ytmp = y;
 
     goTo(x, y, dir);
     //std::cout << "## x " << x << " ## y " << y << std::endl;
-    _board(x, y).setRawData(0);
+    setRaw(_board(x, y), 0);
 
     fpropagation_inverse(xtmp, ytmp, Referee::opponant(player));
     fpropagation_inverse(x, y, Referee::opponant(player));
@@ -245,7 +271,7 @@ void Referee::checkWin(unsigned int x, unsigned int y, unsigned int player) {
         _winLineList.push_back(Coord(x, y));
         checkWinList();
         //if (_winner)
-          //  _board.DumpBoard();
+        //  _board.DumpBoard();
     }
 }
 
@@ -354,10 +380,25 @@ bool Referee::checkDoubleThree(unsigned int x, unsigned int y, unsigned int play
 /* Try to propagate in EVERY directions */
 
 void Referee::fpropagation(unsigned int x, unsigned int y, const unsigned int player) {
-    fpropagation(x, y, RefereeManager::UP, player);
-    fpropagation(x, y, RefereeManager::LEFT, player);
-    fpropagation(x, y, RefereeManager::UP_RIGHT, player);
-    fpropagation(x, y, RefereeManager::UP_LEFT, player);
+    boost::thread_group threadGroup;
+
+    threadGroup.create_thread(
+            boost::bind(&Referee::fpropagation, this, x, y, RefereeManager::UP, player)
+            );
+    threadGroup.create_thread(
+            boost::bind(&Referee::fpropagation, this, x, y, RefereeManager::LEFT, player)
+            );
+    threadGroup.create_thread(
+            boost::bind(&Referee::fpropagation, this, x, y, RefereeManager::UP_RIGHT, player)
+            );
+    threadGroup.create_thread(
+            boost::bind(&Referee::fpropagation, this, x, y, RefereeManager::UP_LEFT, player)
+            );
+    threadGroup.join_all();
+    //fpropagation(x, y, RefereeManager::UP, player);
+    //fpropagation(x, y, RefereeManager::LEFT, player);
+    //fpropagation(x, y, RefereeManager::UP_RIGHT, player);
+    //fpropagation(x, y, RefereeManager::UP_LEFT, player);
 }
 
 void Referee::fpropagation(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player) {
@@ -375,7 +416,7 @@ void Referee::fpropagation(unsigned int x, unsigned int y, RefereeManager::Vecto
 void Referee::fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player) {
     const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
-    for (unsigned int i = 1; i < dir.size(); i++){
+    for (unsigned int i = 1; i < dir.size(); i++) {
         fpropag_inverse_to(x, y, dir[i], player);
     }
 }
@@ -447,7 +488,7 @@ void Referee::dumpPropagation(unsigned int x, unsigned int y) const {
     const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
     dumpSquare(x, y);
-    for (unsigned int i = 1; i < dir.size(); i++){
+    for (unsigned int i = 1; i < dir.size(); i++) {
         dumpDirection(x, y, dir[i]);
     }
 }

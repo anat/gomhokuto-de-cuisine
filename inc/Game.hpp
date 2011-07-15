@@ -36,6 +36,7 @@ public:
     bool getFivePrize();
     void setDoubleThree(bool value);
     void setFivePrize(bool value);
+    const Referee& getReferee() const;
 
 signals:
     void clear();

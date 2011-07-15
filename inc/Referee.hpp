@@ -13,15 +13,12 @@
 #include <map>
 #include <iostream>
 
+#include <boost/thread.hpp>
+
 #include "Board.hpp"
 #include "Coord.hpp"
 #include "RefereeManager.hpp"
 #include "ThreeAlignChecker.hpp"
-
-#define DIR_UP    0x1
-#define DIR_DOWN  0x2
-#define DIR_LEFT  0x4
-#define DIR_RIGHT 0x8
 
 /**
  * L'arbitre
@@ -44,7 +41,7 @@ public:
     bool doubleThree(bool value);
     bool fivePrize(bool value);
     void reset();
-    unsigned int getScore(unsigned int player);
+    unsigned int getScore(unsigned int player) const;
 
     static inline unsigned int opponant(const unsigned int pla) {
         unsigned int result = 0;
@@ -73,6 +70,14 @@ private:
         }
     };
 
+    struct CheckPrizeInfo {
+        unsigned int x;
+        unsigned int y;
+        Vector dir;
+        unsigned int player;
+        unsigned int result;
+    };
+
     typedef std::list<Coord> WinList;
 
     WinList _winLineList;
@@ -80,6 +85,7 @@ private:
     ThreeAlignChecker _threeChecker;
     Array< unsigned int, 2 > _score;
     unsigned int _winner;
+    mutable boost::mutex _squareMutex;
 
     inline bool checkPosition(unsigned int x, unsigned int y) const {
         return (x < _board.getSize() && y < _board.getSize());
@@ -94,6 +100,7 @@ private:
     void setDirEnd(Square& square, Vector dir, unsigned int endValue);
     bool ispartOfAlign(const Square& value, unsigned int size);
     bool ispartOfExactAlign(const Square& value, int size);
+    void setRaw(Square& value, unsigned int val);
     void setTakable(Square& square, bool value);
 
     /*
@@ -118,6 +125,7 @@ private:
      * Fonction pour la prise de pierre
      */
     unsigned int checkPrize(unsigned int x, unsigned int y, const unsigned int player);
+    void checkPrizeRun(CheckPrizeInfo& info);
     bool checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
     bool checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player) const;
     void cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int player);

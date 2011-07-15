@@ -2,7 +2,7 @@
 #include <iostream>
 #include "Square.hpp"
 
-Square::Square() : _data(0) {
+Square::Square() : _mut(), _data(0) {
     
 }
 

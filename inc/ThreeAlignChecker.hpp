@@ -52,7 +52,7 @@ private:
         return _board(x, y).getPlayer();
     }
 
-    inline bool edgeTest(unsigned int x, unsigned int y, unsigned int player, Vector dir) {
+    inline bool edgeTest(unsigned int x, unsigned int y, unsigned int /*player*/, Vector dir) {
         return goTo(x, y, dir) && getPlayer(x, y) == 0;
     }
     inline bool setCoord(unsigned int index, unsigned int x, unsigned int y) {
