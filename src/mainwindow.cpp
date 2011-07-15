@@ -343,9 +343,8 @@ void MainWindow::checkFivePrize(int val)
 
 void MainWindow::SetTakens()
 {
-    _ui->TakeP1->display(this->_nGame->getGame()->getPlayers()[0]->getNBPawnTaken());
-    _ui->TakeP2->display(this->_nGame->getGame()->getPlayers()[1]->getNBPawnTaken());
-
+    _ui->TakeP1->display(static_cast<int>(_nGame->getGame()->getReferee().getScore(1)));
+    _ui->TakeP2->display(static_cast<int>(_nGame->getGame()->getReferee().getScore(2)));
 }
 
 void MainWindow::SetWhoPlay(int player)

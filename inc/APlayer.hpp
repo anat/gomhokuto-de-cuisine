@@ -18,13 +18,10 @@ public :
     APlayer(unsigned int player);
     virtual ~APlayer();
     
-    int getNBPawnTaken() const;
     unsigned int getPlayerNum();
-    void addPawnTaken(int nb);
     virtual bool doAction(Board & gameboard, Referee & referee, int x = -1, int y = -1) = 0;
 
 protected:
-    int _nbPawnTaken;
     unsigned int _player;
 };
 

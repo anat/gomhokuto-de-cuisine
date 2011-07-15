@@ -4,6 +4,8 @@
 #include <vector>
 #include <set>
 
+#include <boost/thread.hpp>
+
 #include "Board.hpp"
 #include "APlayer.hpp"
 
@@ -34,37 +36,76 @@ public:
         return *this;
     }
 
-    bool doAction(Board& gameboard, Referee& ref, int , int ) {
+    bool doAction(Board& gameboard, Referee& ref, int, int) {
         CoordContainer possibleCase;
+        std::vector< std::pair< HeuristicValue, Coord > > heuResult;
 
         _searchCase(gameboard, possibleCase);
 
         typename CoordContainer::iterator it = possibleCase.begin();
         typename CoordContainer::iterator ite = possibleCase.end();
 
+        heuResult.resize(possibleCase.size());
         Board copy;
-        HeuristicValue heu;
+        //HeuristicValue heu;
         HeuristicValue BestHeu = _heuristic.defeat();
         Coord bestMove;
 
-        while (it != ite) {
-            copy = gameboard;
-            Referee refcopy(ref, copy);
+        _alpha = _heuristic.defeat();
+        _beta = _heuristic.victory();
+        unsigned int i = 0;
+        boost::thread_group threadGroup;
 
-            if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
-                _alpha = _heuristic.defeat();
-                _beta = _heuristic.victory();
-                heu = min(1, refcopy, _heuristic(copy, _player));
-                if (heu >= BestHeu) {
-                    BestHeu = heu;
-                    bestMove = *it;
-                }
-            }
+        while (it != ite) {
+            heuResult[i].second = *it;
+            threadGroup.create_thread(
+                    boost::bind(
+                        &PlayerAi::explore, this,
+                        boost::ref(gameboard),
+                        boost::ref(ref),
+                        heuResult[i].second,
+                        boost::ref(heuResult[i].first)
+                        )
+                    );
+
+            //            copy = gameboard;
+            //            Referee refcopy(ref, copy);
+            //
+            //            if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
+            //                heu = min(1, refcopy, _heuristic(copy, _player));
+            //                if (heu >= BestHeu) {
+            //                    BestHeu = heu;
+            //                    bestMove = *it;
+            //                }
+            //            }
+
+            ++i;
             ++it;
         }
 
-        ref.tryPlaceRock(bestMove.x, bestMove.y, this->getPlayerNum());
+        threadGroup.join_all();
+
+        for (unsigned int i = 0; i < heuResult.size(); ++i) {
+            if (heuResult[i].first >= BestHeu) {
+                BestHeu = heuResult[i].first;
+                bestMove = heuResult[i].second;
+            }
+        }
+
+        ref.tryPlaceRock(bestMove.x, bestMove.y, _player);
         return true;
+    }
+
+    void explore(Board& gameBoard, Referee& ref, Coord& pos, HeuristicValue& result) {
+        Board copy = gameBoard;
+        Referee refcopy(ref, copy);
+
+        //std::cout << "### x" << pos.x << " y " << pos.y << std::endl;
+        if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
+            result = min(1, refcopy, _heuristic(copy, _player));
+        } else {
+            result = _heuristic.defeat();
+        }
     }
 
     HeuristicValue min(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
@@ -95,12 +136,18 @@ public:
 
             if (refcopy.tryPlaceRock(it->x, it->y, Referee::opponant(_player)) > -1) {
                 heuResult = max(depth + 1, refcopy, _heuristic(copy, _player));
+                _betaMut.lock();
                 if (heuResult < _beta)
                     _beta = heuResult;
+                _betaMut.unlock();
                 if (heuResult < result)
                     result = heuResult;
+                _alphaMut.lock();
+                _betaMut.lock();
                 if (_beta < _alpha)
                     bad = true;
+                _alphaMut.unlock();
+                _betaMut.unlock();
             }
             ++it;
         }
@@ -136,12 +183,18 @@ public:
 
             if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
                 heuResult = min(depth + 1, refcopy, _heuristic(copy, _player));
+                _alphaMut.lock();
                 if (heuResult > _alpha)
                     _alpha = heuResult;
+                _alphaMut.unlock();
                 if (heuResult > result)
                     result = heuResult;
+                _alphaMut.lock();
+                _betaMut.lock();
                 if (_beta > _alpha)
                     bad = true;
+                _alphaMut.unlock();
+                _betaMut.unlock();
             }
             ++it;
         }
@@ -152,9 +205,11 @@ public:
 private:
     IHeuristic _heuristic;
     ISearchCase _searchCase;
-    unsigned int _maxDepth;
+    const unsigned int _maxDepth;
     HeuristicValue _alpha;
     HeuristicValue _beta;
+    boost::mutex _alphaMut;
+    boost::mutex _betaMut;
 };
 
 #endif // PLAYERAI_HPP

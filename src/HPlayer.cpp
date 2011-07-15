@@ -33,19 +33,15 @@ bool HPlayer::doAction(Board&, Referee& referee, int x, int y)
                 std::cout << "you can't play here x : " << x;
                 std::cout << " y : " << y << std::endl;
             }
-            else
-                addPawnTaken(res);
             std::cout << "RES : " << res << std::endl;
-            std::cout << getNBPawnTaken() << std::endl;
+            std::cout << referee.getScore(getPlayerNum()) << std::endl;
         }
         while (res == -1);
     }
     else
     {
         res = referee.tryPlaceRock(x, y, this->getPlayerNum());
-        if (res != -1)
-                addPawnTaken(res);
-        else
+        if (res == -1)
             return false;
     }
     return true;

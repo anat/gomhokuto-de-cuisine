@@ -9,6 +9,8 @@
 #define	SQUARE_HPP
 
 #include "Types.hpp"
+#include <boost/thread.hpp>
+
 
 #define PLAYER(x)       (0x0000000F & x)
 #define IS_TAKABLE(x)   (0x000000F0 & (x << 4))
@@ -31,6 +33,8 @@
 class Square {
 
 public:
+    mutable boost::mutex _mut;
+
     struct Data{
         unsigned short player : 4;
         unsigned short is_takable : 4;
@@ -52,6 +56,15 @@ public:
     void                setRawData(int32_t mask);
     void                dumpData() const;
 
+    Square& operator=(const Square& orig) {
+        if (this != &orig) {
+            boost::lock_guard<boost::mutex> lock(_mut);
+            boost::lock_guard<boost::mutex> lockorig(orig._mut);
+            _data = orig._data;
+        }
+        return *this;
+    }
+
     inline Data & getData() {
       return (*reinterpret_cast<Square::Data *>(&_data));
     }
@@ -61,86 +74,107 @@ public:
     }
 
     inline void setData(Data & data) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         _data = (int32_t)(*reinterpret_cast<int32_t*>(&data));
     }
 
     inline void setVert(unsigned int lineSize) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().vert = lineSize;
     }
 
     inline void setHorz(unsigned int lineSize) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().horz = lineSize;
     }
 
     inline void setDiagl(unsigned int lineSize) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().diagl = lineSize;
     }
 
     inline void setDiagr(unsigned int lineSize) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().diagr = lineSize;
     }
 
     inline void setIsTackable(bool value) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().is_takable = value;
     }
 
     inline void setPlayer(unsigned int player) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().player = player;
     }
 
     inline void setHorzBlock(unsigned int endBlock) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().horz_block = endBlock;
     }
 
     inline void setVertBlock(unsigned int endBlock) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().vert_block = endBlock;
     }
 
     inline void setDiaglBlock(unsigned int endBlock) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().diagl_block = endBlock;
     }
 
     inline void setDiagrBlock(unsigned int endBlock) {
+        boost::lock_guard<boost::mutex> lock(_mut);
         getData().diagr_block = endBlock;
     }
 
     inline unsigned int getHorz() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return GET_HORZ(_data);
     }
 
     inline unsigned int getVert() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return GET_VERT(_data);
     }
 
     inline unsigned int getDiagl() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return GET_DIAGL(_data);
     }
 
     inline unsigned int getDiagr() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return GET_DIAGR(_data);
     }
 
     inline unsigned int getHorzBlock() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return getData().horz_block;
     }
 
     inline unsigned int getVertBlock() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return getData().vert_block;
     }
 
     inline unsigned int getDiaglBlock() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return getData().diagl_block;
     }
 
     inline unsigned int getPlayer() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return getData().player;
     }
 
     inline unsigned int getDiagrBlock() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return getData().diagr_block;
     }
 
     inline bool getIsTakable() const {
+        boost::lock_guard<boost::mutex> lock(_mut);
         return getData().is_takable;
     }
     
