@@ -50,10 +50,11 @@ int BasicHeuristic::good(Square::Data& square) {
 int BasicHeuristic::bad(Square::Data& square) {
     int result = 0;
 
-    result += square.diagl_block * square.diagl;
-    result += square.diagr_block * square.diagr;
-    result += square.horz_block * square.horz;
-    result += square.vert_block * square.vert;
+    result += square.diagl_block * square.diagl_block * square.diagl;
+    result += square.diagr_block * square.diagr_block * square.diagr;
+    result += square.horz_block * square.horz_block * square.horz;
+    result += square.vert_block * square.vert_block * square.vert;
+
 
     if (square.is_takable) {
         result /= 2;
