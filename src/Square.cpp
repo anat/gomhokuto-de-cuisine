@@ -13,16 +13,20 @@ Square::~Square()
 
 int32_t Square::getRawData() const
 {
+    boost::lock_guard<boost::mutex> lock(_mut);
     return (_data);
 }
 
 void Square::setRawData(int32_t mask)
 {
+    _mut.lock();
     _data = mask;
+    _mut.unlock();
 }
 
 void Square::dumpData() const
 {
+    boost::lock_guard<boost::mutex> lock(_mut);
     const Square::Data & data = this->getData();
     std::cout << "Bit field dump" << std::endl;
     std::cout << "player : " << data.player << std::endl;

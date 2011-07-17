@@ -90,12 +90,10 @@ bool Referee::ispartOfExactAlign(const Square& value, int size) {
 }
 
 void Referee::setRaw(Square& value, unsigned int val) {
-    boost::lock_guard<boost::mutex> lock(_squareMutex);
     value.setRawData(val);
 }
 
 void Referee::setTakable(Square& square, bool value) {
-    boost::lock_guard<boost::mutex> lock(_squareMutex);
     square.setIsTackable(value);
 }
 

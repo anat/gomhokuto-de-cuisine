@@ -61,7 +61,7 @@ public:
             threadGroup.create_thread(
                     boost::bind(
                         &PlayerAi::explore, this,
-                        boost::ref(gameboard),
+                        gameboard,
                         boost::ref(ref),
                         heuResult[i].second,
                         boost::ref(heuResult[i].first)
@@ -97,12 +97,11 @@ public:
     }
 
     void explore(Board& gameBoard, Referee& ref, Coord& pos, HeuristicValue& result) {
-        Board copy = gameBoard;
-        Referee refcopy(ref, copy);
+        Referee refcopy(ref, gameBoard);
 
         //std::cout << "### x" << pos.x << " y " << pos.y << std::endl;
         if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-            result = min(1, refcopy, _heuristic(copy, _player));
+            result = min(1, refcopy, _heuristic(gameBoard, _player));
         } else {
             result = _heuristic.defeat();
         }
