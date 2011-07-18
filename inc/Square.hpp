@@ -31,11 +31,10 @@
 #define GET_DIAGR_BLOCK(x) ((x & 0xC0000000) >> 30)
 
 class Square {
-
 public:
     mutable boost::mutex _mut;
 
-    struct Data{
+    struct Data {
         unsigned short player : 4;
         unsigned short is_takable : 4;
         unsigned short horz : 4;
@@ -47,16 +46,16 @@ public:
         unsigned short diagl_block : 2;
         unsigned short diagr_block : 2;
     };
-    
+
 public:
     Square();
     virtual ~Square();
 
-    int32_t             getRawData() const;
-    void                setRawData(int32_t mask);
-    void                dumpData() const;
+    int32_t getRawData() const;
+    void setRawData(int32_t mask);
+    void dumpData() const;
 
-    Square& operator=(const Square& orig) {
+    Square & operator=(const Square& orig) {
         if (this != &orig) {
             boost::lock_guard<boost::mutex> lock(_mut);
             boost::lock_guard<boost::mutex> lockorig(orig._mut);
@@ -66,16 +65,16 @@ public:
     }
 
     inline Data & getData() {
-      return (*reinterpret_cast<Square::Data *>(&_data));
+        return (*reinterpret_cast<Square::Data *> (&_data));
     }
 
     inline const Data & getData() const {
-      return (*reinterpret_cast<const Square::Data *>(&_data));
+        return (*reinterpret_cast<const Square::Data *> (&_data));
     }
 
     inline void setData(Data & data) {
         boost::lock_guard<boost::mutex> lock(_mut);
-        _data = (int32_t)(*reinterpret_cast<int32_t*>(&data));
+        _data = (int32_t) (*reinterpret_cast<int32_t*> (&data));
     }
 
     inline void setVert(unsigned int lineSize) {
@@ -177,9 +176,9 @@ public:
         boost::lock_guard<boost::mutex> lock(_mut);
         return getData().is_takable;
     }
-    
+
 private:
-     int32_t _data;
+    int32_t _data;
 };
 
 #endif	/* SQUARE_HPP */

@@ -26,8 +26,6 @@
 
 class Referee {
 public:
-    typedef RefereeManager::Vector Vector;
-
     Referee(Board& board);
     Referee(const Referee& orig);
     Referee(const Referee& orig, Board& board);
@@ -57,6 +55,9 @@ public:
     }
 
 private:
+    typedef RefereeManager::Vector Vector;
+    typedef std::list<Coord> WinList;
+
     struct PropagationInfo {
         std::size_t lineSize;
         unsigned int endBlock;
@@ -77,8 +78,6 @@ private:
         unsigned int player;
         unsigned int result;
     };
-
-    typedef std::list<Coord> WinList;
 
     WinList _winLineList;
     Board& _board;
@@ -135,7 +134,7 @@ private:
      */
 
     void fpropagation(unsigned int x, unsigned int y, const unsigned int player);
-    void fpropagation(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
+    void fpropagation_dir(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
     void fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player);
     void fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
     PropagationInfo flineSize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
