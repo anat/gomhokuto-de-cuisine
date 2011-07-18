@@ -48,6 +48,11 @@ struct Coord {
         return (x == value.x && y == value.y);
     }
 
+    std::ostream& dump(std::ostream& stream) {
+        stream << "x " << x << " y " << y << std::endl;
+        return stream;
+    }
+
     int x;
     int y;
 };
