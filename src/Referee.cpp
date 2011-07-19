@@ -153,7 +153,7 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
 
     for (unsigned int i = 1; i < dir.size(); i++) {
         if (checkPrize(x, y, dir[i], player)) {
-            cleanRock(x, y, dir[i], player);
+            cleanRock(x, y, dir[i]);
             result++;
         }
     }
@@ -191,7 +191,7 @@ bool Referee::checkCanTake(unsigned x, unsigned int y, RefereeManager::Vector di
 /**
  * clean les pierre trouver comme prise
  */
-void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
+void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector dir) {
     //std::cout << "cleanRock" << std::endl;
     unsigned int xtmp, ytmp;
 
@@ -389,10 +389,13 @@ void Referee::fpropagation_dir(unsigned int x, unsigned int y, RefereeManager::V
 void Referee::fpropagation_inverse(unsigned int x, unsigned int y) {
     //std::cout << "propagation inverse" << std::endl;
     const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
+    boost::thread_group threadGroup;
 
     for (unsigned int i = 1; i < dir.size(); i++) {
-        fpropag_inverse_to(x, y, dir[i]);
+        threadGroup.create_thread(boost::bind(&Referee::fpropag_inverse_to, this, x, y, dir[i]));
+        //fpropag_inverse_to(x, y, dir[i]);
     }
+    threadGroup.join_all();
 }
 
 void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir) {
