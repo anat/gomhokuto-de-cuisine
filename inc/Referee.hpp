@@ -126,7 +126,7 @@ private:
     unsigned int checkPrize(unsigned int x, unsigned int y, const unsigned int player);
     bool checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
     bool checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player) const;
-    void cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int player);
+    void cleanRock(unsigned int x, unsigned int y, Vector dir);
 
     /*
      * Fonction de propagation
