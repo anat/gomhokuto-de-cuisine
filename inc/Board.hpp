@@ -32,7 +32,7 @@ public:
     Square& operator()(unsigned int x = 0, unsigned int y = 0);
     void setCase(unsigned int x, unsigned int y, const Square& value);
     std::size_t getSize() const;
-    void DumpBoard();
+    void DumpBoard() const;
     void reset();
     inline bool checkSize(unsigned int x, unsigned int y) const {
         return ((x < _tab.size()) && (y < _tab.size()));
