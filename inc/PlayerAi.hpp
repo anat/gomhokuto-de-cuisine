@@ -57,11 +57,16 @@ public:
         std::cout << "depth max " << _maxDepth << std::endl;
         std::cout << "base coord " << heuResult.size() << std::endl;
         boost::thread_group threadGroup;
+        if (heuResult.size() < 40) {
+            _maxDepth = 3;
+        } else {
+            _maxDepth = 8;
+        }
 
         while (it != ite) {
             heuResult[i].second = *it;
 
-            if (heuResult.size() < 50)
+            if (heuResult.size() < 40)
                 threadGroup.create_thread(boost::bind(
                     &PlayerAi::explore, this,
                     gameboard,
@@ -164,7 +169,7 @@ public:
                 _betaMut.lock();
                 if (heuResult >= _beta) {
                     bad = true;
-                    std::cout << "alpha beta stop " << std::endl;
+                    //std::cout << "alpha beta stop " << std::endl;
                 }
                 _alphaMut.unlock();
                 _betaMut.unlock();
@@ -214,7 +219,7 @@ public:
                 _betaMut.lock();
                 if (_alpha >= heuResult) {
                     bad = true;
-                    std::cout << "alpha beta stop " << std::endl;
+                    //std::cout << "alpha beta stop " << std::endl;
                 }
                 _alphaMut.unlock();
                 _betaMut.unlock();
@@ -304,7 +309,7 @@ public:
 private:
     IHeuristic _heuristic;
     ISearchCase _searchCase;
-    const unsigned int _maxDepth;
+    unsigned int _maxDepth;
     HeuristicValue _alpha;
     HeuristicValue _beta;
     boost::mutex _alphaMut;
