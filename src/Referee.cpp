@@ -124,7 +124,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
         if (value) {
             setScore(player, getScore(player) + value * 2);
         }
-        
+
         checkWin(x, y, player);
     }
     return value;
@@ -161,13 +161,6 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
     return result;
 }
 
-void Referee::checkPrizeRun(CheckPrizeInfo& info) {
-    if (checkPrize(info.x, info.y, info.dir, info.player)) {
-        cleanRock(info.x, info.y, info.dir, info.player);
-        info.result++;
-    }
-}
-
 /**
  * cherche si il y a une prise dans une direction
  */
@@ -190,19 +183,9 @@ bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector 
  */
 
 bool Referee::checkCanTake(unsigned x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
-    //std::cout << "checkCanTake" << std::endl;
-#ifdef DEBUG
-    if (goTo(x, y, dir)) {
-        unsigned int playertmp = GET_PLAYER(_board(x, y).getRawData());
-        unsigned int align = getDirAlign(_board(x, y), dir);
-        return (playertmp == opponant(player) && align == 2 && goTo(x, y, dir) && goTo(x, y, dir));
-    }
-    return false;
-#else
-    return (goTo(x, y, dir) &&
-            (_board(x, y).getPlayer() == Referee::opponant(player)) &&
-            (getDirAlign(_board(x, y), dir) == 2) && goTo(x, y, dir) && goTo(x, y, dir));
-#endif
+    return (goTo(x, y, dir) && _board(x, y).getPlayer() == Referee::opponant(player) &&
+            goTo(x, y, dir) && _board(x, y).getPlayer() == Referee::opponant(player) &&
+            goTo(x, y, dir) && _board(x, y).getPlayer() != Referee::opponant(player));
 }
 
 /**
@@ -222,24 +205,23 @@ void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector d
     //std::cout << "## x " << x << " ## y " << y << std::endl;
     setRaw(_board(x, y), 0);
 
-    fpropagation_inverse(xtmp, ytmp, Referee::opponant(player));
-    fpropagation_inverse(x, y, Referee::opponant(player));
+    fpropagation_inverse(xtmp, ytmp);
+    fpropagation_inverse(x, y);
 }
 
-void Referee::checkIsTakable(unsigned int x, unsigned int y, unsigned int player) {
-    setTakable(_board(x, y), false);
+void Referee::checkIsTakable(unsigned int x, unsigned int y) {
+    unsigned int player = _board(x, y).getPlayer();
+    _board(x, y).setIsTackable(false);
     if (ispartOfExactAlign(_board(x, y), 2)) {
-
         const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
         for (unsigned int i = 1; i < dir.size(); ++i) {
             if (checkIsTakable(x, y, dir[i], player)) {
                 unsigned int xtmp = x;
                 unsigned int ytmp = y;
-
-                setTakable(_board(x, y), true);
+                _board(x, y).setIsTackable(true);
                 goTo(xtmp, ytmp, dir[i]);
-                setTakable(_board(xtmp, ytmp), true);
+                _board(xtmp, ytmp).setIsTackable(true);
             }
         }
     }
@@ -250,7 +232,8 @@ bool Referee::checkIsTakable(unsigned int x, unsigned int y, RefereeManager::Vec
     unsigned int yinv = y;
 
     return (getDirAlign(_board(x, y), dir) == 2 && goTo(xinv, yinv, RefereeManager::Instance().invert(dir)) && goTo(x, y, dir) && goTo(x, y, dir) &&
-            ((GET_PLAYER(_board(xinv, yinv).getRawData()) == Referee::opponant(player) || GET_PLAYER(_board(x, y).getRawData()) == Referee::opponant(player)) && !(GET_PLAYER(_board(xinv, yinv).getRawData()) == Referee::opponant(player) && GET_PLAYER(_board(x, y).getRawData()) == Referee::opponant(player))));
+            ((_board(xinv, yinv).getPlayer() == Referee::opponant(player) || _board(x, y).getPlayer() == Referee::opponant(player)) &&
+            !(_board(xinv, yinv).getPlayer() == Referee::opponant(player) && _board(x, y).getPlayer() == Referee::opponant(player))));
 }
 
 /**
@@ -386,9 +369,9 @@ void Referee::fpropagation(unsigned int x, unsigned int y, const unsigned int pl
     threadGroup.create_thread(
             boost::bind(&Referee::fpropagation_dir, this, x, y, RefereeManager::UP_LEFT, player)
             );
-    
+
+    checkIsTakable(x, y);
     threadGroup.join_all();
-    checkIsTakable(x, y, player);
 }
 
 void Referee::fpropagation_dir(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player) {
@@ -403,36 +386,38 @@ void Referee::fpropagation_dir(unsigned int x, unsigned int y, RefereeManager::V
     fsetline(x, y, RefereeManager::Instance().invert(dir), player, info);
 }
 
-void Referee::fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player) {
+void Referee::fpropagation_inverse(unsigned int x, unsigned int y) {
     //std::cout << "propagation inverse" << std::endl;
     const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
     for (unsigned int i = 1; i < dir.size(); i++) {
-        fpropag_inverse_to(x, y, dir[i], player);
+        fpropag_inverse_to(x, y, dir[i]);
     }
 }
 
-void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir, const unsigned int player) {
-    if (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
-        fpropagation(x, y, player);
-        checkIsTakable(x, y, player);
+void Referee::fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir) {
+    if (goTo(x, y, dir)) {
+        unsigned int player = _board(x, y).getPlayer();
+        if (player) {
+            fpropagation(x, y, player);
+        }
     }
 }
 
 Referee::PropagationInfo Referee::flineSize(unsigned int x, unsigned int y, Vector dir, unsigned int player) {
     PropagationInfo info;
 
-    while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player)
+    while (goTo(x, y, dir) && _board(x, y).getPlayer() == player)
         info.lineSize++;
-    if (GET_PLAYER(_board(x, y).getRawData()) != Referee::opponant(player)) {
+    if (_board(x, y).getPlayer() != Referee::opponant(player)) {
         info.endBlock++;
     }
 
-    if (info.lineSize == 0 && GET_PLAYER(_board(x, y).getRawData()) == Referee::opponant(player)) {
+    if (info.lineSize == 0 && _board(x, y).getPlayer() == Referee::opponant(player)) {
         unsigned int opponant_end = getDirEnd(_board(x, y), dir);
         opponant_end--;
         setDirEnd(_board(x, y), dir, opponant_end);
-        while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == Referee::opponant(player))
+        while (goTo(x, y, dir) && _board(x, y).getPlayer() == Referee::opponant(player))
             setDirEnd(_board(x, y), dir, opponant_end);
     }
 
@@ -440,17 +425,10 @@ Referee::PropagationInfo Referee::flineSize(unsigned int x, unsigned int y, Vect
 }
 
 void Referee::fsetline(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, const PropagationInfo& value) {
-    while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
+    while (goTo(x, y, dir) && _board(x, y).getPlayer() == player) {
         setDirAlign(_board(x, y), dir, value.lineSize);
         setDirEnd(_board(x, y), dir, value.endBlock);
-        if (!ispartOfExactAlign(_board(x, y), 2))
-            setTakable(_board(x, y), false);
-    }
-}
-
-void Referee::resetTakable(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player, bool takable) {
-    while (goTo(x, y, dir) && GET_PLAYER(_board(x, y).getRawData()) == player) {
-        setTakable(_board(x, y), takable);
+        checkIsTakable(x, y);
     }
 }
 
