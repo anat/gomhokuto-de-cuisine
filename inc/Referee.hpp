@@ -113,7 +113,7 @@ private:
      */
     void checkWin(unsigned int x, unsigned int y, unsigned int player);
     void checkWinList();
-    void checkIsTakable(unsigned int x, unsigned int y, unsigned int player);
+    void checkIsTakable(unsigned int x, unsigned int y);
     bool checkIsTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
     bool checkIsTakableInvert(unsigned int x, unsigned int y, Vector dir, unsigned int player);
     bool checkfiveWin(unsigned int x, unsigned int y);
@@ -124,7 +124,6 @@ private:
      * Fonction pour la prise de pierre
      */
     unsigned int checkPrize(unsigned int x, unsigned int y, const unsigned int player);
-    void checkPrizeRun(CheckPrizeInfo& info);
     bool checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
     bool checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player) const;
     void cleanRock(unsigned int x, unsigned int y, Vector dir, unsigned int player);
@@ -135,11 +134,10 @@ private:
 
     void fpropagation(unsigned int x, unsigned int y, const unsigned int player);
     void fpropagation_dir(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
-    void fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player);
-    void fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir, const unsigned int player);
+    void fpropagation_inverse(unsigned int x, unsigned int y);
+    void fpropag_inverse_to(unsigned int x, unsigned int y, Vector dir);
     PropagationInfo flineSize(unsigned int x, unsigned int y, Vector dir, unsigned int player);
     void fsetline(unsigned int x, unsigned int y, Vector dir, unsigned int player, const PropagationInfo& value);
-    void resetTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player, bool takable);
 
     /**
      * Fonction de Debug
