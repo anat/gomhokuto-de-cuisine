@@ -44,9 +44,9 @@ public:
 
         typename CoordContainer::iterator it = possibleCase.begin();
         typename CoordContainer::iterator ite = possibleCase.end();
-        
+
         heuResult.resize(possibleCase.size());
-        
+
         Board copy;
         HeuristicValue BestHeu = _heuristic.defeat(0);
         Coord bestMove = Coord();
@@ -55,38 +55,46 @@ public:
         _beta = _heuristic.victory(0);
         unsigned int i = 0;
         std::cout << "depth max " << _maxDepth << std::endl;
-        //std::cout << "thread start" << std::endl;
+        std::cout << "base coord " << heuResult.size() << std::endl;
         boost::thread_group threadGroup;
 
         while (it != ite) {
             heuResult[i].second = *it;
-            //std::cout << "copy " << i << " ok" << std::endl;
 
-            threadGroup.create_thread(boost::bind(
-                        &PlayerAi::explore, this,
-                        gameboard,
-                        ref,
-                        heuResult[i].second,
-                        &heuResult[i].first
-                        ));
-                    
+            if (heuResult.size() < 50)
+                threadGroup.create_thread(boost::bind(
+                    &PlayerAi::explore, this,
+                    gameboard,
+                    ref,
+                    heuResult[i].second,
+                    &heuResult[i].first
+                    ));
+            else
+                threadGroup.create_thread(boost::bind(
+                    &PlayerAi::explore_ab, this,
+                    gameboard,
+                    ref,
+                    heuResult[i].second,
+                    &heuResult[i].first
+                    ));
+
             ++i;
             ++it;
         }
 
         threadGroup.join_all();
 
-        std::cout << "------------" << std::endl;
-        std::cout << "heuResult " << heuResult.size() << std::endl;
+        //std::cout << "------------" << std::endl;
+        //std::cout << "heuResult " << heuResult.size() << std::endl;
         for (unsigned int o = 0; o < heuResult.size(); ++o) {
-            std::cout << "heu " << heuResult[o].first << " pos ";
-            heuResult[o].second.dump(std::cout);
+            //std::cout << "heu " << heuResult[o].first << " pos ";
+            //heuResult[o].second.dump(std::cout);
             if (heuResult[o].first >= BestHeu) {
                 BestHeu = heuResult[o].first;
                 bestMove = heuResult[o].second;
             }
         }
-        std::cout << "-------------" << std::endl;
+        //std::cout << "-------------" << std::endl;
 
         ref.tryPlaceRock(bestMove.x, bestMove.y, _player);
         return true;
@@ -104,6 +112,117 @@ public:
             *result = _heuristic.defeat(1);
         }
         //std::cout << "thread end : " << *result << std::endl;
+    }
+
+    void explore_ab(Board& gameBoard, Referee& ref, Coord& pos, HeuristicValue* result) {
+        Referee refcopy(ref, gameBoard);
+
+        //std::cout << "### x" << pos.x << " y " << pos.y << std::endl;
+        if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
+            *result = min_ab(1, refcopy, _heuristic(gameBoard, _player, 1));
+        } else {
+            std::cout << "defeat " << std::endl;
+            *result = _heuristic.defeat(1);
+        }
+    }
+
+    HeuristicValue min_ab(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
+        if (depth >= _maxDepth || reforigin.checkWin() != 0) {
+            unsigned int winner = reforigin.checkWin();
+            if (winner == _player)
+                return _heuristic.victory(depth);
+            else if (winner)
+                return _heuristic.defeat(depth);
+            return boardHeuristic;
+        }
+
+        CoordContainer possibleCase;
+
+        _searchCase(reforigin.getBoard(), possibleCase);
+
+        typename CoordContainer::const_iterator it = possibleCase.begin();
+        typename CoordContainer::const_iterator ite = possibleCase.end();
+
+        HeuristicValue heuResult;
+        HeuristicValue result = _heuristic.victory(depth);
+        Board copy;
+
+        bool bad = false;
+        while (it != ite && !bad) {
+            copy = reforigin.getBoard();
+            Referee refcopy(reforigin, copy);
+
+            if (refcopy.tryPlaceRock(it->x, it->y, Referee::opponant(_player)) > -1) {
+                heuResult = max_ab(depth + 1, refcopy, _heuristic(copy, _player, depth));
+                _betaMut.lock();
+                if (heuResult < _beta)
+                    _beta = heuResult;
+                _betaMut.unlock();
+                if (heuResult < result)
+                    result = heuResult;
+                _alphaMut.lock();
+                _betaMut.lock();
+                if (heuResult >= _beta) {
+                    bad = true;
+                    std::cout << "alpha beta stop " << std::endl;
+                }
+                _alphaMut.unlock();
+                _betaMut.unlock();
+            }
+            ++it;
+        }
+        //std::cout << "min result " << result << std::endl;
+
+        return result;
+    }
+
+    HeuristicValue max_ab(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
+        if (depth >= _maxDepth || reforigin.checkWin() != 0) {
+            unsigned int winner = reforigin.checkWin();
+            if (winner == this->getPlayerNum())
+                return _heuristic.victory(depth);
+            else if (winner)
+                return _heuristic.defeat(depth);
+            return boardHeuristic;
+        }
+
+        CoordContainer possibleCase;
+
+        _searchCase(reforigin.getBoard(), possibleCase);
+
+        typename CoordContainer::const_iterator it = possibleCase.begin();
+        typename CoordContainer::const_iterator ite = possibleCase.end();
+
+        HeuristicValue heuResult;
+        HeuristicValue result = _heuristic.defeat(depth);
+        Board copy;
+        bool bad = false;
+
+        while (it != ite && !bad) {
+            copy = reforigin.getBoard();
+            Referee refcopy(reforigin, copy);
+
+            if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
+                heuResult = min_ab(depth + 1, refcopy, _heuristic(copy, _player, depth));
+                _alphaMut.lock();
+                if (heuResult > _alpha)
+                    _alpha = heuResult;
+                _alphaMut.unlock();
+                if (heuResult > result)
+                    result = heuResult;
+                _alphaMut.lock();
+                _betaMut.lock();
+                if (_alpha >= heuResult) {
+                    bad = true;
+                    std::cout << "alpha beta stop " << std::endl;
+                }
+                _alphaMut.unlock();
+                _betaMut.unlock();
+            }
+            ++it;
+        }
+
+        return result;
     }
 
     HeuristicValue min(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
@@ -135,18 +254,8 @@ public:
 
             if (refcopy.tryPlaceRock(it->x, it->y, Referee::opponant(_player)) > -1) {
                 heuResult = max(depth + 1, refcopy, _heuristic(copy, _player, depth));
-                _betaMut.lock();
-                if (heuResult < _beta)
-                    _beta = heuResult;
-                _betaMut.unlock();
                 if (heuResult < result)
                     result = heuResult;
-//                _alphaMut.lock();
-//                _betaMut.lock();
-//                if (_beta < _alpha)
-//                    bad = true;
-//                _alphaMut.unlock();
-//                _betaMut.unlock();
             }
             ++it;
         }
@@ -156,7 +265,6 @@ public:
     }
 
     HeuristicValue max(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
-        //std::cout << "max" << std::endl;
         if (depth >= _maxDepth || reforigin.checkWin() != 0) {
             unsigned int winner = reforigin.checkWin();
             if (winner == this->getPlayerNum())
@@ -184,18 +292,8 @@ public:
 
             if (refcopy.tryPlaceRock(it->x, it->y, _player) > -1) {
                 heuResult = min(depth + 1, refcopy, _heuristic(copy, _player, depth));
-                _alphaMut.lock();
-                if (heuResult > _alpha)
-                    _alpha = heuResult;
-                _alphaMut.unlock();
                 if (heuResult > result)
                     result = heuResult;
-//                _alphaMut.lock();
-//                _betaMut.lock();
-//                if (_beta > _alpha)
-//                    bad = true;
-//                _alphaMut.unlock();
-//                _betaMut.unlock();
             }
             ++it;
         }
