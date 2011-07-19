@@ -59,7 +59,7 @@ std::size_t Board::getSize() const {
     return _tab.size();
 }
 
-void Board::DumpBoard()
+void Board::DumpBoard() const
 {
   unsigned int i, j;
   char c;

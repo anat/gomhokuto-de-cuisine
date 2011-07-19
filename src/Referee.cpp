@@ -118,21 +118,14 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
     int value = -1;
 
     if (testPosition(x, y, player)) {
-        std::cout << "test" << std::endl;
         _board(x, y).setPlayer(player);
-        std::cout << "set" << std::endl;
         fpropagation(x, y, player);
-        std::cout << "propag" << std::endl;
         value = checkPrize(x, y, player);
-        std::cout << "check" << std::endl;
         if (value) {
             setScore(player, getScore(player) + value * 2);
-            std::cout << "score" << std::endl;
         }
-        checkIsTakable(x, y, player);
-        std::cout << "check" << std::endl;
+        
         checkWin(x, y, player);
-        std::cout << "win" << std::endl;
     }
     return value;
 }
@@ -143,8 +136,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
 bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) {
     bool value = false;
 
-    if (checkPosition(x, y) && GET_PLAYER(_board(x, y).getRawData()) == 0) { //rajouter les tests de pattern ici
-
+    if (checkPosition(x, y) && _board(x, y).getPlayer() == 0) {
         value = true;
         if (Singleton<RefereeManager>::Instance().doubleThree())
             value = checkDoubleThree(x, y, player);
@@ -180,7 +172,6 @@ void Referee::checkPrizeRun(CheckPrizeInfo& info) {
  * cherche si il y a une prise dans une direction
  */
 bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
-    std::cout << "check Prize" << std::endl;
     if (checkCanTake(x, y, dir, player)) {
         goTo(x, y, dir);
         _board(x, y).setIsTackable(true);
@@ -199,7 +190,7 @@ bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector 
  */
 
 bool Referee::checkCanTake(unsigned x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
-    std::cout << "checkCanTake" << std::endl;
+    //std::cout << "checkCanTake" << std::endl;
 #ifdef DEBUG
     if (goTo(x, y, dir)) {
         unsigned int playertmp = GET_PLAYER(_board(x, y).getRawData());
@@ -218,7 +209,7 @@ bool Referee::checkCanTake(unsigned x, unsigned int y, RefereeManager::Vector di
  * clean les pierre trouver comme prise
  */
 void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
-    std::cout << "cleanRock" << std::endl;
+    //std::cout << "cleanRock" << std::endl;
     unsigned int xtmp, ytmp;
 
     goTo(x, y, dir);
@@ -397,10 +388,7 @@ void Referee::fpropagation(unsigned int x, unsigned int y, const unsigned int pl
             );
     
     threadGroup.join_all();
-    //fpropagation(x, y, RefereeManager::UP, player);
-    //fpropagation(x, y, RefereeManager::LEFT, player);
-    //fpropagation(x, y, RefereeManager::UP_RIGHT, player);
-    //fpropagation(x, y, RefereeManager::UP_LEFT, player);
+    checkIsTakable(x, y, player);
 }
 
 void Referee::fpropagation_dir(unsigned int x, unsigned int y, RefereeManager::Vector dir, const unsigned int player) {
@@ -416,7 +404,7 @@ void Referee::fpropagation_dir(unsigned int x, unsigned int y, RefereeManager::V
 }
 
 void Referee::fpropagation_inverse(unsigned int x, unsigned int y, const unsigned int player) {
-    std::cout << "propagation inverse" << std::endl;
+    //std::cout << "propagation inverse" << std::endl;
     const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
     for (unsigned int i = 1; i < dir.size(); i++) {

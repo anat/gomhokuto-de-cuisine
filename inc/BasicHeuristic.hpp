@@ -9,10 +9,10 @@ class Board;
 class BasicHeuristic : public IHeuristic<int>
 {
 public:
-    HeuristicValue operator()(Board& gameBoard, unsigned int player);
+    HeuristicValue operator()(Board& gameBoard, unsigned int player, unsigned int depth);
 
-    HeuristicValue victory() const;
-    HeuristicValue defeat() const;
+    HeuristicValue victory(unsigned int depth) const;
+    HeuristicValue defeat(unsigned int depth) const;
 private:
     int good(Square::Data& square);
     int bad(Square::Data& square);
