@@ -113,7 +113,6 @@ public:
         if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
             *result = min(1, refcopy, _heuristic(gameBoard, _player, 1));
         } else {
-            std::cout << "defeat " << std::endl;
             *result = _heuristic.defeat(1);
         }
         //std::cout << "thread end : " << *result << std::endl;

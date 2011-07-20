@@ -100,8 +100,7 @@ private:
     bool ispartOfAlign(const Square& value, unsigned int size);
     bool ispartOfExactAlign(const Square& value, int size);
     void setRaw(Square& value, unsigned int val);
-    void setTakable(Square& square, bool value);
-
+    
     /*
      * Fonction de check pour les double alignement de trois
      */
@@ -113,7 +112,7 @@ private:
      */
     void checkWin(unsigned int x, unsigned int y, unsigned int player);
     void checkWinList();
-    void checkIsTakable(unsigned int x, unsigned int y);
+    bool checkIsTakable(unsigned int x, unsigned int y);
     bool checkIsTakable(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
     bool checkIsTakableInvert(unsigned int x, unsigned int y, Vector dir, unsigned int player);
     bool checkfiveWin(unsigned int x, unsigned int y);
