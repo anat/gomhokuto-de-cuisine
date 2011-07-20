@@ -93,10 +93,6 @@ void Referee::setRaw(Square& value, unsigned int val) {
     value.setRawData(val);
 }
 
-void Referee::setTakable(Square& square, bool value) {
-    square.setIsTackable(value);
-}
-
 /**
  * get de l'atribut qui contient le gagnant
  */
@@ -167,9 +163,11 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
 bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
     if (checkCanTake(x, y, dir, player)) {
         goTo(x, y, dir);
+        std::cout << x << ", " << y << " is takable" << std::endl;
         _board(x, y).setIsTackable(true);
 
         goTo(x, y, dir);
+        std::cout << x << ", " << y << " is takable" << std::endl;
         _board(x, y).setIsTackable(true);
 
         if (goTo(x, y, dir) && _board(x, y).getPlayer() == player)
@@ -209,8 +207,9 @@ void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector d
     fpropagation_inverse(x, y);
 }
 
-void Referee::checkIsTakable(unsigned int x, unsigned int y) {
+bool Referee::checkIsTakable(unsigned int x, unsigned int y) {
     unsigned int player = _board(x, y).getPlayer();
+    std::cout << x << ", " << y << " is not takable" << std::endl;
     _board(x, y).setIsTackable(false);
     if (ispartOfExactAlign(_board(x, y), 2)) {
         const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
@@ -219,12 +218,15 @@ void Referee::checkIsTakable(unsigned int x, unsigned int y) {
             if (checkIsTakable(x, y, dir[i], player)) {
                 unsigned int xtmp = x;
                 unsigned int ytmp = y;
+                std::cout << x << ", " << y << " is takable" << std::endl;
                 _board(x, y).setIsTackable(true);
                 goTo(xtmp, ytmp, dir[i]);
+                std::cout << xtmp << ", " << ytmp << " is takable" << std::endl;
                 _board(xtmp, ytmp).setIsTackable(true);
             }
         }
     }
+    return _board(x, y).getIsTakable();
 }
 
 bool Referee::checkIsTakable(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
@@ -239,6 +241,7 @@ bool Referee::checkIsTakable(unsigned int x, unsigned int y, RefereeManager::Vec
 /**
  * Determine si le coup est gagnant
  */
+
 void Referee::checkWin(unsigned int x, unsigned int y, unsigned int player) {
     if (getScore(player) >= 10)
         _winner = player;
@@ -277,48 +280,49 @@ void Referee::checkWinList() {
  */
 bool Referee::checkFivePrize(unsigned int x, unsigned int y) {
     unsigned int player = _board(x, y).getPlayer();
+    bool result = false;
 
     if (player) {
         if (_board(x, y).getDiagl() > 4) {
             unsigned int size = checkFivePrize(x, y, RefereeManager::UP_LEFT, player);
             size += checkFivePrize(x, y, RefereeManager::DOWN_RIGHT, player);
             size++;
-            if (size > 4)
-                return true;
+            if (size >= 5)
+                result = true;
         }
 
-        if (_board(x, y).getDiagr() > 4) {
+        if (_board(x, y).getDiagr() > 4 && !result) {
             unsigned int size = checkFivePrize(x, y, RefereeManager::UP_RIGHT, player);
             size += checkFivePrize(x, y, RefereeManager::DOWN_LEFT, player);
             size++;
-            if (size > 4)
-                return true;
+            if (size >= 5)
+                result = true;
         }
 
-        if (_board(x, y).getHorz() > 4) {
+        if (_board(x, y).getHorz() > 4 && !result) {
             unsigned int size = checkFivePrize(x, y, RefereeManager::RIGHT, player);
             size += checkFivePrize(x, y, RefereeManager::LEFT, player);
             size++;
-            if (size > 4)
-                return true;
+            if (size >= 5)
+                result = true;
         }
 
-        if (_board(x, y).getVert() > 4) {
+        if (_board(x, y).getVert() > 4 && !result) {
             unsigned int size = checkFivePrize(x, y, RefereeManager::UP, player);
             size += checkFivePrize(x, y, RefereeManager::DOWN, player);
             size++;
-            if (size > 4)
-                return true;
+            if (size >= 5)
+                result = true;
         }
     }
 
-    return false;
+    return result;
 }
 
 unsigned int Referee::checkFivePrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) {
     int cleanRock = 0;
 
-    while (goTo(x, y, dir) && (_board(x, y).getPlayer() == player) && (_board(x, y).getIsTakable() == false)) {
+    while (goTo(x, y, dir) && _board(x, y).getPlayer() == player && !checkIsTakable(x, y)) {
         cleanRock++;
     }
     return cleanRock;

@@ -35,20 +35,10 @@ void Square::dumpData() const
     std::cout << "diagr : " << data.diagr << std::endl;
     std::cout << "horz : " << data.horz << std::endl;
     std::cout << "vert : " << data.vert << std::endl;
-    std::cout << "value : " << this->getRawData()<< std::endl;
-    std::cout << "value hex : 0x" << std::hex;
-    std::cout << this->getRawData() << std::endl;
-    std::cout << "[.....]" << std::endl;
-    std::cout << "Raw Data Bit Mask dump" << std::endl;
-    std::cout << "player : " << GET_PLAYER(_data) << std::endl;
-    std::cout << "is takable : " <<  GET_TAKABLE(_data) << std::endl;
-    std::cout << "diagl : " << GET_DIAGL(_data) << std::endl;
-    std::cout << "diagr : " << GET_DIAGR(_data) << std::endl;
-    std::cout << "horz : " << GET_HORZ(_data) << std::endl;
-    std::cout << "vert : " << GET_VERT(_data) << std::endl;
-    std::cout << "value : " << std::dec << this->getRawData()<< std::endl;
-    std::cout << "value hex : 0x" << std::hex;
-    std::cout << this->getRawData() << std::endl;
+    std::cout << "diagl_block : " << data.diagl_block << std::endl;
+    std::cout << "diagr_block : " << data.diagr_block << std::endl;
+    std::cout << "horz_block : " << data.horz_block << std::endl;
+    std::cout << "vert_block : " << data.vert_block << std::endl;
 }
 
 

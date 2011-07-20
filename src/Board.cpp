@@ -86,6 +86,16 @@ void Board::DumpBoard() const
       std::cout << std::endl;
   }
   std::cout.flush();
+
+  for (unsigned int y = 0; y < _tab.size(); ++y) {
+      for (unsigned int x = 0; x < _tab.size(); ++x) {
+          if (_tab[y][x].getPlayer()) {
+              std::cout << "x " << x << " y " << y << std::endl;
+              _tab[y][x].dumpData();
+          }
+      }
+  }
+  std::cout.flush();
 }
   
 void Board::reset()

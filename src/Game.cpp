@@ -52,6 +52,7 @@ bool Game::doGameGui(int x, int y) {
     }
     emit clear();
     if (mWinner) {
+        _gameboard.DumpBoard();
         emit winner(_playerTurn);
     }
     if (doActionIsOk)
