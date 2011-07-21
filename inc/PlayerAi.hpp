@@ -15,7 +15,7 @@ public:
     typedef typename IHeuristic::HeuristicValue HeuristicValue;
     typedef typename ISearchCase::CoordContainer CoordContainer;
 
-    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _searchCase(), _maxDepth(3), _alpha(), _beta() {
+    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _searchCase(), _maxDepth(3), _sizeCoord(8), _alpha(), _beta() {
     }
 
     PlayerAi(const PlayerAi& orig) : APlayer(orig) {
@@ -40,7 +40,12 @@ public:
         CoordContainer possibleCase;
         std::vector< std::pair< HeuristicValue, Coord > > heuResult;
 
+        possibleCase.reserve(_sizeCoord);
+
         _searchCase(gameboard, possibleCase);
+
+        if (_sizeCoord < possibleCase.size())
+            _sizeCoord = possibleCase.size();
 
         typename CoordContainer::iterator it = possibleCase.begin();
         typename CoordContainer::iterator ite = possibleCase.end();
@@ -57,10 +62,10 @@ public:
         std::cout << "depth max " << _maxDepth << std::endl;
         std::cout << "base coord " << heuResult.size() << std::endl;
         boost::thread_group threadGroup;
-        if (heuResult.size() < 40) {
+        if (heuResult.size() < 45) {
             _maxDepth = 3;
         } else {
-            _maxDepth = 8;
+            _maxDepth = 10;
         }
 
         while (it != ite) {
@@ -89,17 +94,17 @@ public:
 
         threadGroup.join_all();
 
-        //std::cout << "------------" << std::endl;
-        //std::cout << "heuResult " << heuResult.size() << std::endl;
+        std::cout << "------------" << std::endl;
+        std::cout << "heuResult " << heuResult.size() << std::endl;
         for (unsigned int o = 0; o < heuResult.size(); ++o) {
-            //std::cout << "heu " << heuResult[o].first << " pos ";
-            //heuResult[o].second.dump(std::cout);
+            std::cout << "heu " << heuResult[o].first << " pos ";
+            heuResult[o].second.dump(std::cout);
             if (heuResult[o].first >= BestHeu) {
                 BestHeu = heuResult[o].first;
                 bestMove = heuResult[o].second;
             }
         }
-        //std::cout << "-------------" << std::endl;
+        std::cout << "-------------" << std::endl;
 
         ref.tryPlaceRock(bestMove.x, bestMove.y, _player);
         return true;
@@ -142,6 +147,7 @@ public:
 
         CoordContainer possibleCase;
 
+        possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         typename CoordContainer::const_iterator it = possibleCase.begin();
@@ -151,8 +157,8 @@ public:
         HeuristicValue result = _heuristic.victory(depth);
         Board copy;
 
-        bool bad = false;
-        while (it != ite && !bad) {
+        unsigned int bad = 0;
+        while (it != ite && bad > 4) {
             copy = reforigin.getBoard();
             Referee refcopy(reforigin, copy);
 
@@ -167,7 +173,7 @@ public:
                 _alphaMut.lock();
                 _betaMut.lock();
                 if (heuResult >= _beta) {
-                    bad = true;
+                    ++bad;
                     //std::cout << "alpha beta stop " << std::endl;
                 }
                 _alphaMut.unlock();
@@ -192,6 +198,7 @@ public:
 
         CoordContainer possibleCase;
 
+        possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         typename CoordContainer::const_iterator it = possibleCase.begin();
@@ -200,9 +207,10 @@ public:
         HeuristicValue heuResult;
         HeuristicValue result = _heuristic.defeat(depth);
         Board copy;
-        bool bad = false;
 
-        while (it != ite && !bad) {
+        unsigned int bad = 0;
+
+        while (it != ite && bad > 4) {
             copy = reforigin.getBoard();
             Referee refcopy(reforigin, copy);
 
@@ -217,7 +225,7 @@ public:
                 _alphaMut.lock();
                 _betaMut.lock();
                 if (_alpha >= heuResult) {
-                    bad = true;
+                    ++bad;
                     //std::cout << "alpha beta stop " << std::endl;
                 }
                 _alphaMut.unlock();
@@ -242,6 +250,7 @@ public:
 
         CoordContainer possibleCase;
 
+        possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         typename CoordContainer::const_iterator it = possibleCase.begin();
@@ -280,6 +289,7 @@ public:
 
         CoordContainer possibleCase;
 
+        possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         typename CoordContainer::const_iterator it = possibleCase.begin();
@@ -309,6 +319,7 @@ private:
     IHeuristic _heuristic;
     ISearchCase _searchCase;
     unsigned int _maxDepth;
+    unsigned int _sizeCoord;
     HeuristicValue _alpha;
     HeuristicValue _beta;
     boost::mutex _alphaMut;
