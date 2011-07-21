@@ -175,7 +175,7 @@ void MainWindow::DrawBoard()
         for (int x = 0; x < this->_sizeboard; x++)
             for (int y = 0; y < this->_sizeboard; y++)
             {
-                switch (this->_nGame->getGame()->getGameBoard().getCase(x, y).getData().player)
+                switch (this->_nGame->getGame()->getGameBoard().getCase(x, y).getPlayer())
                 {
                 case PLAYER1:
                 {
