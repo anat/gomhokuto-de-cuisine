@@ -163,11 +163,11 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
 bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
     if (checkCanTake(x, y, dir, player)) {
         goTo(x, y, dir);
-        std::cout << x << ", " << y << " is takable" << std::endl;
+        //std::cout << x << ", " << y << " is takable" << std::endl;
         _board(x, y).setIsTackable(true);
 
         goTo(x, y, dir);
-        std::cout << x << ", " << y << " is takable" << std::endl;
+        //std::cout << x << ", " << y << " is takable" << std::endl;
         _board(x, y).setIsTackable(true);
 
         if (goTo(x, y, dir) && _board(x, y).getPlayer() == player)
@@ -209,7 +209,7 @@ void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector d
 
 bool Referee::checkIsTakable(unsigned int x, unsigned int y) {
     unsigned int player = _board(x, y).getPlayer();
-    std::cout << x << ", " << y << " is not takable" << std::endl;
+    //std::cout << x << ", " << y << " is not takable" << std::endl;
     _board(x, y).setIsTackable(false);
     if (ispartOfExactAlign(_board(x, y), 2)) {
         const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
@@ -218,10 +218,10 @@ bool Referee::checkIsTakable(unsigned int x, unsigned int y) {
             if (checkIsTakable(x, y, dir[i], player)) {
                 unsigned int xtmp = x;
                 unsigned int ytmp = y;
-                std::cout << x << ", " << y << " is takable" << std::endl;
+                //std::cout << x << ", " << y << " is takable" << std::endl;
                 _board(x, y).setIsTackable(true);
                 goTo(xtmp, ytmp, dir[i]);
-                std::cout << xtmp << ", " << ytmp << " is takable" << std::endl;
+                //std::cout << xtmp << ", " << ytmp << " is takable" << std::endl;
                 _board(xtmp, ytmp).setIsTackable(true);
             }
         }
