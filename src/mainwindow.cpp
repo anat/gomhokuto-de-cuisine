@@ -9,12 +9,9 @@
 #define MENU_SIZE       (21)
 #endif
 
-
-
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    _ui(new Ui::MainWindow)
-{
+QMainWindow(parent),
+_ui(new Ui::MainWindow) {
     _param = new Parameters(this);
     _nGame = new NewGame(this);
     _finalState = new FinalState(this);
@@ -23,13 +20,14 @@ MainWindow::MainWindow(QWidget *parent) :
     _sizeboard = 19;
     _border = 25;
 
-    QPalette PalP1(_ui->Player1box->palette());
-    QPalette PalP2(_ui->Player1box->palette());
+    QPalette Pal(_ui->Player1box->palette());
 
-    PalP1.setColor(QPalette::Background, Qt::green);
-    PalP2.setColor(QPalette::Background, Qt::green);
-    _ui->Player1box->setPalette(PalP1);
-    _ui->Player2box->setPalette(PalP2);
+    Pal.setColor(QPalette::Background, Qt::black);
+    Pal.setColor(QPalette::Text, Qt::white);
+    Pal.setColor(QPalette::WindowText, Qt::white);
+
+    _ui->Player1box->setPalette(Pal);
+    _ui->Player2box->setPalette(Pal);
 
     QObject::connect(_ui->actionParameters, SIGNAL(triggered()), this, SLOT(ShowParameter()));
     QObject::connect(_ui->actionNew, SIGNAL(triggered()), this, SLOT(ShowNewGame()));
@@ -39,8 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(this, SIGNAL(SignalNewGame()), this, SLOT(ShowNewGame()));
     QObject::connect(this, SIGNAL(ReadyToDraw()), this, SLOT(DrawAll()));
-    QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(trytopose(int,int)));
-    QObject::connect(this, SIGNAL(SignalPosMouse(int,int)), this, SLOT(print_status(int,int)));
+    QObject::connect(this, SIGNAL(SignalPosMouse(int, int)), this, SLOT(trytopose(int, int)));
+    QObject::connect(this, SIGNAL(SignalPosMouse(int, int)), this, SLOT(print_status(int, int)));
     QObject::connect(this, SIGNAL(SignalError(QString*)), this, SLOT(ShowError(QString*)));
 
     QObject::connect(this->_nGame, SIGNAL(SignalWinner(int)), this, SLOT(TheWinnerIs(int)));
@@ -57,8 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, SIGNAL(SignalWhoPlay(int)), this, SLOT(SetWhoPlay(int)));
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete _ui;
     delete _scene;
     delete _param;
@@ -66,12 +63,11 @@ MainWindow::~MainWindow()
     delete _finalState;
 }
 
-void MainWindow::InfoDraw()
-{
+void MainWindow::InfoDraw() {
     float size = (float) _sizeboard;
 
-    _height = (float)_ui->WGameBoard->height();
-    _width = (float)_ui->WGameBoard->width();
+    _height = (float) _ui->WGameBoard->height();
+    _width = (float) _ui->WGameBoard->width();
     _heightWB = _height - 2 * _border;
     _widthWB = _width - 2 * _border;
     _refh = _heightWB / (size - 1);
@@ -88,31 +84,28 @@ void MainWindow::InfoDraw()
 
     std::cout << "DoubleThree= " << this->_nGame->getGame()->getDoubleThree() << std::endl <<
                  "FivePrize= " << this->_nGame->getGame()->getFivePrize() << std::endl;
-    */
+     */
 }
 
-void MainWindow::DrawScene()
-{
+void MainWindow::DrawScene() {
     if (_scene != NULL)
         delete _scene;
     _scene = new QGraphicsScene(0, 0,
-                                _width,
-                                _height);
+            _width,
+            _height);
     _ui->GameBoard->setScene(_scene);
 }
 
-void MainWindow::DrawShelf(QColor &color)
-{ 
+void MainWindow::DrawShelf(QColor &color) {
     QImage *image = new QImage(_param->GetBackground());
     QBrush *brush = new QBrush(*image);
     _ui->GameBoard->scene()->setBackgroundBrush(*brush);
     QPen pen(color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    for (int i = 0; i < _sizeboard; i++)
-    {
+    for (int i = 0; i < _sizeboard; i++) {
         QLine v_line(_border + i * _refw, _border,
-                     _border + i * _refw, _heightWB + _border);
+                _border + i * _refw, _heightWB + _border);
         QLine h_line(_border, _border + i * _refh,
-                     _widthWB + _border, _border + i * _refh);
+                _widthWB + _border, _border + i * _refh);
         _ui->GameBoard->scene()->addLine(h_line, pen);
         _ui->GameBoard->scene()->addLine(v_line, pen);
     }
@@ -127,17 +120,15 @@ void MainWindow::DrawShelf(QColor &color)
     DrawMark(color, _border + 15 * _refw, _border + 15 * _refh);
 }
 
-void MainWindow::DrawMark(QColor &color, int x, int y)
-{
+void MainWindow::DrawMark(QColor &color, int x, int y) {
 
     QPen pen(color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    QAbstractGraphicsShapeItem* i = _ui->GameBoard->scene()->addEllipse(QRectF(0,0,8,8), pen);
+    QAbstractGraphicsShapeItem* i = _ui->GameBoard->scene()->addEllipse(QRectF(0, 0, 8, 8), pen);
     i->setBrush(color);
     i->setPos(x - 4, y - 4);
 }
 
-void MainWindow::DrawPiece(QColor &color, int x, int y)
-{
+void MainWindow::DrawPiece(QColor &color, int x, int y) {
     //std::cout << "DrawPiece enter" << std::endl;
     QAbstractGraphicsShapeItem* i = _ui->GameBoard->scene()->addEllipse(QRectF(0, 0, 28, 28));
     //i->setFlag(QGraphicsItem::ItemIsMovable);
@@ -146,8 +137,7 @@ void MainWindow::DrawPiece(QColor &color, int x, int y)
     i->setPos(x - 14, y - 14);
 }
 
-void MainWindow::DrawPiece(QString *)
-{
+void MainWindow::DrawPiece(QString *) {
     /*if ( butterfly_fn.isEmpty() )
         return;
     if ( !butterflyimg ) {
@@ -165,44 +155,39 @@ void MainWindow::DrawPiece(QString *)
     i->setPos(qrand()%int(canvas.width()-butterflyimg->width()),
             qrand()%int(canvas.height()-butterflyimg->height()));
     i->setZValue(qrand()%256+250);
-    */
+     */
 }
 
-void MainWindow::DrawBoard()
-{
-    if (this->_nGame->getGame() != NULL)
-    {
+void MainWindow::DrawBoard() {
+    if (this->_nGame->getGame() != NULL) {
         for (int x = 0; x < this->_sizeboard; x++)
-            for (int y = 0; y < this->_sizeboard; y++)
-            {
-                switch (this->_nGame->getGame()->getGameBoard().getCase(x, y).getPlayer())
-                {
-                case PLAYER1:
-                {
-                    QColor color1(Qt::black);
-                    this->DrawPiece(color1, _border + x * _refw,
-                                    _border + y * _refh);
-                    break;
-                }
-                case PLAYER2:
-                {                QColor color2(Qt::white);
-                    this->DrawPiece(color2, _border + x * _refw,
-                                    _border + y * _refh);
-                    break;
-                }
-                default:
-                    break;
+            for (int y = 0; y < this->_sizeboard; y++) {
+                switch (this->_nGame->getGame()->getGameBoard().getCase(x, y).getPlayer()) {
+                    case PLAYER1:
+                    {
+                        QColor color1(Qt::black);
+                        this->DrawPiece(color1, _border + x * _refw,
+                                _border + y * _refh);
+                        break;
+                    }
+                    case PLAYER2:
+                    {
+                        QColor color2(Qt::white);
+                        this->DrawPiece(color2, _border + x * _refw,
+                                _border + y * _refh);
+                        break;
+                    }
+                    default:
+                        break;
                 }
             }
         SetTakens();
         emit SignalWhoPlay(this->_nGame->getGame()->getCurrentPlayer()->getPlayerNum());
-    }
-    else
+    } else
         emit SignalNewGame();
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event)
-{
+void MainWindow::resizeEvent(QResizeEvent *event) {
     event = event;
     //std::cout << "signal emit: SignalResize()" << std::endl;
     this->InfoDraw();
@@ -211,24 +196,19 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     emit this->ReadyToDraw();
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
+void MainWindow::mousePressEvent(QMouseEvent *event) {
 
     int x, y, nx = -1, ny = -1;
-    for (x = 0; x < _sizeboard; x++)
-    {
-        if ((event->pos().x() > (float)x * _refw + _border - _refw / 2) &&
-                (event->pos().x() < (float)x * _refw + _border + _refw / 2))
-        {
+    for (x = 0; x < _sizeboard; x++) {
+        if ((event->pos().x() > (float) x * _refw + _border - _refw / 2) &&
+                (event->pos().x() < (float) x * _refw + _border + _refw / 2)) {
             nx = x;
             break;
         }
     }
-    for (y = 0; y < _sizeboard; y++)
-    {
-        if ((event->pos().y() - MENU_SIZE > (float)y * _refh + _border - _refh / 2) &&
-                (event->pos().y() - MENU_SIZE < (float)y * _refh + _border + _refh / 2))
-        {
+    for (y = 0; y < _sizeboard; y++) {
+        if ((event->pos().y() - MENU_SIZE > (float) y * _refh + _border - _refh / 2) &&
+                (event->pos().y() - MENU_SIZE < (float) y * _refh + _border + _refh / 2)) {
             ny = y;
             break;
         }
@@ -245,84 +225,69 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
                  "y = " << event->pos().y() << std::endl <<
                  "my new x= " << nx << std::endl <<
                  "my new y= " << ny << std::endl;
-    */
+     */
     if (ny != -1 && nx != -1)
         emit SignalPosMouse(nx, ny);
 }
 
-void MainWindow::print_status(QString text)
-{
+void MainWindow::print_status(QString text) {
     _ui->statusBar->showMessage(text);
 }
 
-void MainWindow::print_status(int x, int y)
-{
+void MainWindow::print_status(int x, int y) {
     QString res;
     res = "Pose piece on (" + QString::number(x) +
-            ", " + QString::number(y) + ")" ;
+            ", " + QString::number(y) + ")";
     _ui->statusBar->showMessage(res, 3000);
 }
 
-void MainWindow::print_circle()
-{
+void MainWindow::print_circle() {
 }
 
-void MainWindow::DrawAll()
-{
+void MainWindow::DrawAll() {
     QColor color(Qt::black);
     _ui->GameBoard->scene()->clear();
     this->DrawShelf(color);
     this->DrawBoard();
 }
 
-void MainWindow::DrawAllAndModif()
-{
+void MainWindow::DrawAllAndModif() {
     DrawAll();
     _ui->TakeP1->display(0);
     _ui->TakeP2->display(0);
 }
 
-void MainWindow::trytopose(int x, int y)
-{
+void MainWindow::trytopose(int x, int y) {
     // inserer dans le tableau, une piece a la position x,y
-    if (this->_nGame->getGame() != NULL)
-    {
+    if (this->_nGame->getGame() != NULL) {
         _nGame->getGame()->doGameGui(x, y);
         emit ReadyToDraw();
-    }
-    else
-    {
+    } else {
         QString *text = new QString("You need to create a new game");
         emit SignalError(text);
     }
 }
 
-void MainWindow::ShowParameter()
-{
+void MainWindow::ShowParameter() {
     _param->show();
 }
 
-void MainWindow::ShowNewGame()
-{
+void MainWindow::ShowNewGame() {
     _nGame->show();
 }
 
-void MainWindow::ShowError(QString * message)
-{
+void MainWindow::ShowError(QString * message) {
     QMessageBox::critical(0, "Critical", *message);
     delete message;
 }
 
-void MainWindow::TheWinnerIs(int player)
-{
+void MainWindow::TheWinnerIs(int player) {
     _finalState->State(player);
     _finalState->show();
 }
 
-void MainWindow::checkDoubleThree(int val)
-{
-    if (this->_nGame->getGame() != NULL)
-    {
+void MainWindow::checkDoubleThree(int val) {
+    if (this->_nGame->getGame() != NULL) {
         if (val == 0)
             this->_nGame->getGame()->setDoubleThree(false);
         else
@@ -330,10 +295,8 @@ void MainWindow::checkDoubleThree(int val)
     }
 }
 
-void MainWindow::checkFivePrize(int val)
-{
-    if (this->_nGame->getGame() != NULL)
-    {
+void MainWindow::checkFivePrize(int val) {
+    if (this->_nGame->getGame() != NULL) {
         if (val == 0)
             this->_nGame->getGame()->setFivePrize(false);
         else
@@ -341,29 +304,26 @@ void MainWindow::checkFivePrize(int val)
     }
 }
 
-void MainWindow::SetTakens()
-{
-    _ui->TakeP1->display(static_cast<int>(_nGame->getGame()->getReferee().getScore(1)));
-    _ui->TakeP2->display(static_cast<int>(_nGame->getGame()->getReferee().getScore(2)));
+void MainWindow::SetTakens() {
+    _ui->TakeP1->display(static_cast<int> (_nGame->getGame()->getReferee().getScore(1)));
+    _ui->TakeP2->display(static_cast<int> (_nGame->getGame()->getReferee().getScore(2)));
 }
 
-void MainWindow::SetWhoPlay(int player)
-{
-    switch (player)
-    {
-    case 1:
-    {
-        _ui->Player1box->setAutoFillBackground(true);
-        _ui->Player2box->setAutoFillBackground(false);
-        break;
-    }
-    case 2:
-    {
-        _ui->Player2box->setAutoFillBackground(true);
-        _ui->Player1box->setAutoFillBackground(false);
-        break;
-    }
-    default:
-        break;
+void MainWindow::SetWhoPlay(int player) {
+    switch (player) {
+        case 1:
+        {
+            _ui->Player1box->setAutoFillBackground(true);
+            _ui->Player2box->setAutoFillBackground(false);
+            break;
+        }
+        case 2:
+        {
+            _ui->Player2box->setAutoFillBackground(true);
+            _ui->Player1box->setAutoFillBackground(false);
+            break;
+        }
+        default:
+            break;
     }
 }
