@@ -11,6 +11,7 @@
 #include <boost/bind.hpp>
 #include <boost/thread/mutex.hpp>
 
+#include "Board.hpp"
 #include "Referee.hpp"
 #include "Game.hpp"
 
@@ -132,7 +133,7 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
 bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) {
     bool value = false;
 
-    if (checkPosition(x, y) && _board(x, y).getPlayer() == 0) {
+    if (_board.checkSize(x, y) && _board(x, y).getPlayer() == 0) {
         value = true;
         if (Singleton<RefereeManager>::Instance().doubleThree())
             value = checkDoubleThree(x, y, player);

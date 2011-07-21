@@ -55,10 +55,9 @@ public:
         typename CoordContainer::iterator ite = possibleCase.end();
 
         heuResult.resize(possibleCase.size());
-
-        Board copy;
+        
         HeuristicValue BestHeu = _heuristic.defeat(0);
-        Coord bestMove = Coord();
+        Coord bestMove;
 
         _alpha = _heuristic.defeat(0);
         _beta = _heuristic.victory(0);
@@ -128,6 +127,8 @@ public:
     HeuristicValue min_ab(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
         if (depth >= _maxDepth || reforigin.checkWin() != 0) {
             unsigned int winner = reforigin.checkWin();
+            if (winner)
+                reforigin.getBoard().DumpBoard();
             if (winner == _player)
                 return _heuristic.victory(depth);
             else if (winner)
