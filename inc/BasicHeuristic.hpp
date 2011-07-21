@@ -9,13 +9,14 @@ class Board;
 class BasicHeuristic : public IHeuristic<int>
 {
 public:
-    HeuristicValue operator()(Board& gameBoard, unsigned int player, unsigned int depth);
+    HeuristicValue operator()(const Board& gameBoard, unsigned int player, unsigned int depth);
 
     HeuristicValue victory(unsigned int depth) const;
     HeuristicValue defeat(unsigned int depth) const;
+
 private:
-    int good(Square::Data& square);
-    int bad(Square::Data& square);
+    int good(const Square::Data& square);
+    int bad(const Square::Data& square);
 };
 
 #endif // BASICHEURISTIC_HPP

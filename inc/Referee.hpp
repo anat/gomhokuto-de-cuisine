@@ -15,10 +15,11 @@
 
 #include <boost/thread.hpp>
 
-#include "Board.hpp"
 #include "Coord.hpp"
 #include "RefereeManager.hpp"
 #include "ThreeAlignChecker.hpp"
+
+class Board;
 
 /**
  * L'arbitre
@@ -85,10 +86,6 @@ private:
     Array< unsigned int, 2 > _score;
     unsigned int _winner;
     mutable boost::mutex _squareMutex;
-
-    inline bool checkPosition(unsigned int x, unsigned int y) const {
-        return (x < _board.getSize() && y < _board.getSize());
-    }
 
     void setScore(unsigned int player, unsigned int value);
 

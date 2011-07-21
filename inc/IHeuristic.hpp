@@ -11,7 +11,7 @@ public:
 
     virtual ~IHeuristic() {}
 
-    virtual HeuristicValue operator()(Board& gameBoard, unsigned int player, unsigned int depth) = 0;
+    virtual HeuristicValue operator()(const Board& gameBoard, unsigned int player, unsigned int depth) = 0;
     virtual HeuristicValue victory(unsigned int depth) const = 0;
     virtual HeuristicValue defeat(unsigned int depth) const = 0;
 };

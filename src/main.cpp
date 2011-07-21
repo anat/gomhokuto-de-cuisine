@@ -7,8 +7,6 @@
 #include <QtGui/QApplication>
 #include <iostream>
 
-#include "Board.hpp"
-#include "Referee.hpp"
 #include "Game.hpp"
 #include "mainwindow.hpp"
 

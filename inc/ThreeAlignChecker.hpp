@@ -1,8 +1,8 @@
 #ifndef THREEALIGNCHECKER_HPP
 #define THREEALIGNCHECKER_HPP
 
-class Board;
 
+#include "Board.hpp"
 #include "RefereeManager.hpp"
 #include "Array.hpp"
 
