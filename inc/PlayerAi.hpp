@@ -15,7 +15,11 @@ public:
     typedef typename IHeuristic::HeuristicValue HeuristicValue;
     typedef typename ISearchCase::CoordContainer CoordContainer;
 
-    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _searchCase(), _maxDepth(3), _sizeCoord(8), _alpha(), _beta() {
+    enum {
+        DEPTH = 2
+    };
+
+    PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _searchCase(), _maxDepth(2), _sizeCoord(8), _alpha(), _beta() {
     }
 
     PlayerAi(const PlayerAi& orig) : APlayer(orig) {
@@ -62,26 +66,12 @@ public:
         std::cout << "depth max " << _maxDepth << std::endl;
         std::cout << "base coord " << heuResult.size() << std::endl;
         boost::thread_group threadGroup;
-        if (heuResult.size() < 45) {
-            _maxDepth = 3;
-        } else {
-            _maxDepth = 10;
-        }
-
+        
         while (it != ite) {
             heuResult[i].second = *it;
 
-            if (heuResult.size() < 40)
-                threadGroup.create_thread(boost::bind(
+            threadGroup.create_thread(boost::bind(
                     &PlayerAi::explore, this,
-                    gameboard,
-                    ref,
-                    heuResult[i].second,
-                    &heuResult[i].first
-                    ));
-            else
-                threadGroup.create_thread(boost::bind(
-                    &PlayerAi::explore_ab, this,
                     gameboard,
                     ref,
                     heuResult[i].second,

@@ -35,16 +35,16 @@ public:
     mutable boost::mutex _mut;
 
     struct Data {
-        unsigned short player : 4;
-        unsigned short is_takable : 4;
-        unsigned short horz : 4;
-        unsigned short vert : 4;
+        unsigned short player : 4; // 0, 1 ou 2 .
+        unsigned short is_takable : 4; // true ou false = est menace d'etre pris par un pion adverse
+        unsigned short horz : 4; // taille de l'alignement 
+        unsigned short vert : 4;  // dont fait partie la case.
         unsigned short diagl : 4;
         unsigned short diagr : 4;
-        unsigned short horz_block : 2;
-        unsigned short vert_block : 2;
-        unsigned short diagl_block : 2;
-        unsigned short diagr_block : 2;
+        unsigned short horz_block : 2; // valeur pour les extremite des alignement
+        unsigned short vert_block : 2; // 0 = pas libre
+        unsigned short diagl_block : 2; // 1 = libre en un bout
+        unsigned short diagr_block : 2; // 2 = libre aux deux bout
     };
 
 public:
