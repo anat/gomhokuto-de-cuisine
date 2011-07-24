@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 TARGET = Gomoku
 TEMPLATE = app
@@ -28,7 +28,8 @@ SOURCES += \
     src/BasicHeuristic.cpp \
     src/RefereeManager.cpp \
     src/BasicSearchCase.cpp \
-    src/ThreeAlignChecker.cpp
+    src/ThreeAlignChecker.cpp \
+    src/remoteplayer.cpp
 
 HEADERS  += \
     inc/mainwindow.hpp \
@@ -53,7 +54,8 @@ HEADERS  += \
     inc/Array.hpp \
     inc/ISearchCase.hpp \
     inc/BasicSearchCase.hpp \
-    inc/ThreeAlignChecker.hpp
+    inc/ThreeAlignChecker.hpp \
+    src/remoteplayer.h
 
 FORMS    += \
     forms/mainwindow.ui \
