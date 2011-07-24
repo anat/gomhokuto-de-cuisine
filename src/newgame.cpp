@@ -57,9 +57,12 @@ void NewGame::CreateNewGame()
     if (_isNetworkGame)
     {
         static_cast<MainWindow*>(this->parent())->getChatLine()->setEnabled(true);
-        static_cast<MainWindow*>(this->parent())->print_status("Waiting for player ...");
+
         if (_createOrJoin == 1)
+        {
+            static_cast<MainWindow*>(this->parent())->print_status("Waiting for player ...");
             _game = new Game(false, _createOrJoin, NULL, static_cast<QWidget*>(this->parent()));
+        }
         else
         {
             QString* ip = NULL;
