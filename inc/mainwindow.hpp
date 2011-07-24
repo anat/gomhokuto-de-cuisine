@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtGui>
 
+#include "Singleton.hpp"
 #include "Game.hpp"
 #include "parameters.hpp"
 #include "newgame.hpp"
@@ -16,6 +17,7 @@ namespace Ui {
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    SINGLETON_CLASS(MainWindow);
 
     Ui::MainWindow * _ui;
     Parameters     * _param;
@@ -47,7 +49,8 @@ public:
     ~MainWindow();
 
     Game& GetGame();
-
+    QLineEdit* getChatLine();
+    QTextEdit* getChatContent();
 protected:
     void resizeEvent(QResizeEvent *event);
     void mousePressEvent(QMouseEvent *event);

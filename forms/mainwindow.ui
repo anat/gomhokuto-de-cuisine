@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>810</width>
-    <height>643</height>
+    <height>645</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -180,17 +180,21 @@
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+        <widget class="QTextEdit" name="chatContent">
+         <property name="enabled">
+          <bool>false</bool>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>160</height>
-          </size>
+         <property name="acceptRichText">
+          <bool>false</bool>
          </property>
-        </spacer>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="chatLine">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -203,7 +207,7 @@
      <x>0</x>
      <y>0</y>
      <width>810</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="defaultUp">

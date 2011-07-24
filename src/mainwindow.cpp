@@ -1,6 +1,5 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
-
 #include <iostream>
 
 #ifdef __APPLE__
@@ -259,10 +258,23 @@ void MainWindow::DrawAllAndModif() {
 
 void MainWindow::trytopose(int x, int y) {
     // inserer dans le tableau, une piece a la position x,y
-    if (this->_nGame->getGame() != NULL) {
-        _nGame->getGame()->doGameGui(x, y);
-        emit ReadyToDraw();
-    } else {
+    if (this->_nGame->getGame() != NULL)
+    {
+
+        if (this->_nGame->isNetworkGame() && this->_nGame->getGame()->getPlayerTurn() == PLAYER2)
+        {
+            QString *text = new QString("This is not you turn !");
+            emit SignalError(text);
+        }
+        else
+        {
+
+            _nGame->getGame()->doGameGui(x, y);
+            emit ReadyToDraw();
+        }
+    }
+    else
+    {
         QString *text = new QString("You need to create a new game");
         emit SignalError(text);
     }
@@ -277,6 +289,7 @@ void MainWindow::ShowNewGame() {
 }
 
 void MainWindow::ShowError(QString * message) {
+    std::cout << "m" << message->toStdString().c_str() << std::endl;
     QMessageBox::critical(0, "Critical", *message);
     delete message;
 }
@@ -326,4 +339,13 @@ void MainWindow::SetWhoPlay(int player) {
         default:
             break;
     }
+}
+QLineEdit* MainWindow::getChatLine()
+{
+    return _ui->chatLine;
+}
+
+QTextEdit* MainWindow::getChatContent()
+{
+    return _ui->chatContent;
 }
