@@ -289,7 +289,6 @@ void MainWindow::ShowNewGame() {
 }
 
 void MainWindow::ShowError(QString * message) {
-    std::cout << "m" << message->toStdString().c_str() << std::endl;
     QMessageBox::critical(0, "Critical", *message);
     delete message;
 }
