@@ -13,7 +13,7 @@
 #include "ISearchCase.hpp"
 #include "Coord.hpp"
 
-class BasicSearchCase : public ISearchCase< std::vector<Coord> >
+class BasicSearchCase : public ISearchCase< std::list<Coord> >
 {
 public:
     void operator()(const Board& game, CoordContainer& possibleCase);
