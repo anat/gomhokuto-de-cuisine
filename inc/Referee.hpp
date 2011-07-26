@@ -95,7 +95,7 @@ private:
     unsigned int getDirEnd(const Square& square, Vector dir) const;
     void setDirEnd(Square& square, Vector dir, unsigned int endValue);
     bool ispartOfAlign(const Square& value, unsigned int size);
-    bool ispartOfExactAlign(const Square& value, int size);
+    bool ispartOfExactAlign(const Square& value, unsigned int size);
     void setRaw(Square& value, unsigned int val);
     
     /*

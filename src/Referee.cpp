@@ -81,13 +81,11 @@ bool Referee::ispartOfAlign(const Square& value, unsigned int size) {
 /*
  * Teste si la case fait partie d'au moins un alignement de 'size'
  */
-bool Referee::ispartOfExactAlign(const Square& value, int size) {
-    return (
-            GET_DIAGL(value.getRawData()) == size ||
-            GET_DIAGR(value.getRawData()) == size ||
-            GET_HORZ(value.getRawData()) == size ||
-            GET_VERT(value.getRawData()) == size
-            );
+bool Referee::ispartOfExactAlign(const Square& value, unsigned int size) {
+    return (value.getDiagl() == size ||
+            value.getDiagr() == size ||
+            value.getHorz() == size ||
+            value.getVert() == size);
 }
 
 void Referee::setRaw(Square& value, unsigned int val) {
