@@ -15,6 +15,7 @@ class PlayerAi : public APlayer {
 public:
     typedef typename IHeuristic::HeuristicValue HeuristicValue;
     typedef typename ISearchCase::CoordContainer CoordContainer;
+    typedef std::pair< HeuristicValue, Coord > ResultPair;
 
     enum {
         DEPTH = 2,
@@ -40,10 +41,14 @@ public:
     }
 
     bool doAction(Board& gameboard, Referee& ref, int, int) {
-        CoordContainer possibleCase;
-        std::vector< std::pair< HeuristicValue, Coord > > heuResult;
+        timeval start;
+        timeval end;
+        gettimeofday(&start, NULL);
 
-        possibleCase.reserve(_sizeCoord);
+        CoordContainer possibleCase;
+        std::vector< ResultPair > heuResult;
+
+//        possibleCase.reserve(_sizeCoord);
 
         _searchCase(gameboard, possibleCase);
 
@@ -82,21 +87,27 @@ public:
             threadGroup.join_all();
         }
 
-        std::cout << "------------" << std::endl;
-        std::cout << "heuResult " << heuResult.size() << std::endl;
+        //std::cout << "------------" << std::endl;
+        //std::cout << "heuResult " << heuResult.size() << std::endl;
 
-        for (unsigned int o = 0; o < heuResult.size(); ++o) {
-            std::cout << "heu " << heuResult[o].first << " pos ";
-            heuResult[o].second.dump(std::cout);
-            if (heuResult[o].first >= BestHeu) {
-                BestHeu = heuResult[o].first;
-                bestMove = heuResult[o].second;
+        BOOST_FOREACH(ResultPair& value, heuResult) {
+            //std::cout << "heu " << heuResult[o].first << " pos ";
+            //heuResult[o].second.dump(std::cout);
+            if (value.first >= BestHeu) {
+                BestHeu = value.first;
+                bestMove = value.second;
             }
         }
 
-        std::cout << "-------------" << std::endl;
+        //std::cout << "-------------" << std::endl;
 
         ref.tryPlaceRock(bestMove.x, bestMove.y, _player);
+
+        gettimeofday(&end, NULL);
+        timeval diff;
+        diff.tv_sec = end.tv_sec - start.tv_sec;
+        diff.tv_usec = end.tv_usec - start.tv_usec;
+        std::cout << "perf " << diff.tv_sec << " " << diff.tv_usec << std::endl;
         return true;
     }
 
@@ -132,7 +143,7 @@ public:
 
         CoordContainer possibleCase;
 
-        possibleCase.reserve(_sizeCoord);
+  //      possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         HeuristicValue heuResult;
@@ -168,7 +179,7 @@ public:
 
         CoordContainer possibleCase;
 
-        possibleCase.reserve(_sizeCoord);
+    //    possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         HeuristicValue heuResult;
@@ -204,7 +215,7 @@ public:
 
         CoordContainer possibleCase;
 
-        possibleCase.reserve(_sizeCoord);
+      //  possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         HeuristicValue heuResult;
@@ -237,7 +248,7 @@ public:
 
         CoordContainer possibleCase;
 
-        possibleCase.reserve(_sizeCoord);
+        //possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         HeuristicValue heuResult;
