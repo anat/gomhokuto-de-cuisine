@@ -17,8 +17,8 @@ public:
     typedef typename ISearchCase::CoordContainer CoordContainer;
 
     enum {
-        DEPTH = 3,
-        SIMUL_THREAD = 4
+        DEPTH = 2,
+        SIMUL_THREAD = 16
     };
 
     PlayerAi(unsigned int id) : APlayer(id), _heuristic(), _searchCase(), _sizeCoord(8) {
@@ -101,31 +101,27 @@ public:
     }
 
     void explore(Board& gameBoard, Referee& ref, Coord& pos, HeuristicValue* result) {
-        //std::cout << "thread launch" << std::endl;
         Referee refcopy(ref, gameBoard);
 
-        //std::cout << "### x" << pos.x << " y " << pos.y << std::endl;
         if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-            *result = min(1, refcopy, _heuristic(gameBoard, _player, 1));
+            *result = min(DEPTH, refcopy, _heuristic(gameBoard, _player, 1));
         } else {
             *result = _heuristic.defeat(0);
         }
-        //std::cout << "thread end : " << *result << std::endl;
     }
 
     void explore_ab(Board& gameBoard, Referee& ref, Coord& pos, HeuristicValue* result) {
         Referee refcopy(ref, gameBoard);
 
-        std::cout << "### x" << pos.x << " y " << pos.y << std::endl;
         if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-            *result = min_ab(1, refcopy, _heuristic(gameBoard, _player, 1), _heuristic.defeat(0), _heuristic.victory(0));
+            *result = min_ab(DEPTH, refcopy, _heuristic(gameBoard, _player, 1), _heuristic.defeat(0), _heuristic.victory(0));
         } else {
             *result = _heuristic.defeat(0);
         }
     }
 
     HeuristicValue min_ab(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic, HeuristicValue alpha, HeuristicValue beta) {
-        if (depth >= DEPTH || reforigin.checkWin() != 0) {
+        if (!depth || reforigin.checkWin()) {
             unsigned int winner = reforigin.checkWin();
             if (winner == _player)
                 return _heuristic.victory(depth);
@@ -147,7 +143,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(pos.x, pos.y, Referee::opponant(_player)) > -1) {
-                heuResult = max_ab(depth + 1, refcopy, _heuristic(copy, _player, depth), alpha, beta);
+                heuResult = max_ab(depth - 1, refcopy, _heuristic(copy, _player, depth), alpha, beta);
                 if (heuResult <= alpha) {
                     return alpha;
                 }
@@ -161,7 +157,7 @@ public:
     }
 
     HeuristicValue max_ab(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic, HeuristicValue alpha, HeuristicValue beta) {
-        if (depth >= DEPTH || reforigin.checkWin() != 0) {
+        if (!depth || reforigin.checkWin()) {
             unsigned int winner = reforigin.checkWin();
             if (winner == this->getPlayerNum())
                 return _heuristic.victory(depth);
@@ -183,7 +179,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-                heuResult = min_ab(depth + 1, refcopy, _heuristic(copy, _player, depth), alpha, beta);
+                heuResult = min_ab(depth - 1, refcopy, _heuristic(copy, _player, depth), alpha, beta);
                 if (heuResult >= beta) {
                     return beta;
                 }
@@ -197,7 +193,7 @@ public:
     }
 
     HeuristicValue min(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
-        if (depth >= DEPTH || reforigin.checkWin() != 0) {
+        if (!depth || reforigin.checkWin()) {
             unsigned int winner = reforigin.checkWin();
             if (winner == _player)
                 return _heuristic.victory(depth);
@@ -220,7 +216,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(pos.x, pos.y, Referee::opponant(_player)) > -1) {
-                heuResult = max(depth + 1, refcopy, _heuristic(copy, _player, depth));
+                heuResult = max(depth - 1, refcopy, _heuristic(copy, _player, depth));
                 if (heuResult < result)
                     result = heuResult;
             }
@@ -230,7 +226,7 @@ public:
     }
 
     HeuristicValue max(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
-        if (depth >= DEPTH || reforigin.checkWin() != 0) {
+        if (!depth || reforigin.checkWin()) {
             unsigned int winner = reforigin.checkWin();
             if (winner == this->getPlayerNum())
                 return _heuristic.victory(depth);
@@ -253,7 +249,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-                heuResult = min(depth + 1, refcopy, _heuristic(copy, _player, depth));
+                heuResult = min(depth - 1, refcopy, _heuristic(copy, _player, depth));
                 if (heuResult > result)
                     result = heuResult;
             }

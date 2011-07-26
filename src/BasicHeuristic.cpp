@@ -25,7 +25,7 @@ BasicHeuristic::HeuristicValue BasicHeuristic::operator()(const Board& gameBoard
     result += playerPiece * 2;
     result -= opponantPiece * 2;
 
-    return result - depth;
+    return result;
 }
 
 int BasicHeuristic::good(const Square::Data& square) {
@@ -48,9 +48,9 @@ int BasicHeuristic::bad(const Square::Data& square) {
 }
 
 BasicHeuristic::HeuristicValue BasicHeuristic::victory(unsigned int depth) const {
-    return 400000 - depth;
+    return 400000 + depth;
 }
 
 BasicHeuristic::HeuristicValue BasicHeuristic::defeat(unsigned int depth) const {
-    return -400000 + depth;
+    return -400000 - depth;
 }
