@@ -47,9 +47,7 @@ public:
 
         CoordContainer possibleCase;
         std::vector< ResultPair > heuResult;
-
-//        possibleCase.reserve(_sizeCoord);
-
+        
         _searchCase(gameboard, possibleCase);
 
         if (_sizeCoord < possibleCase.size())
@@ -87,19 +85,12 @@ public:
             threadGroup.join_all();
         }
 
-        //std::cout << "------------" << std::endl;
-        //std::cout << "heuResult " << heuResult.size() << std::endl;
-
         BOOST_FOREACH(ResultPair& value, heuResult) {
-            //std::cout << "heu " << heuResult[o].first << " pos ";
-            //heuResult[o].second.dump(std::cout);
             if (value.first >= BestHeu) {
                 BestHeu = value.first;
                 bestMove = value.second;
             }
         }
-
-        //std::cout << "-------------" << std::endl;
 
         ref.tryPlaceRock(bestMove.x, bestMove.y, _player);
 
@@ -115,7 +106,7 @@ public:
         Referee refcopy(ref, gameBoard);
 
         if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-            *result = min(DEPTH, refcopy, _heuristic(gameBoard, _player, 1));
+            *result = min(DEPTH, refcopy);
         } else {
             *result = _heuristic.defeat(0);
         }
@@ -125,25 +116,24 @@ public:
         Referee refcopy(ref, gameBoard);
 
         if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-            *result = min_ab(DEPTH, refcopy, _heuristic(gameBoard, _player, 1), _heuristic.defeat(0), _heuristic.victory(0));
+            *result = min_ab(DEPTH, refcopy, _heuristic.defeat(0), _heuristic.victory(0));
         } else {
             *result = _heuristic.defeat(0);
         }
     }
 
-    HeuristicValue min_ab(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic, HeuristicValue alpha, HeuristicValue beta) {
+    HeuristicValue min_ab(unsigned int depth, Referee& reforigin, HeuristicValue alpha, HeuristicValue beta) {
         if (!depth || reforigin.checkWin()) {
             unsigned int winner = reforigin.checkWin();
             if (winner == _player)
                 return _heuristic.victory(depth);
             else if (winner)
                 return _heuristic.defeat(depth);
-            return boardHeuristic;
+            return _heuristic(reforigin.getBoard(), _player, depth);
         }
 
         CoordContainer possibleCase;
 
-  //      possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         HeuristicValue heuResult;
@@ -154,7 +144,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(pos.x, pos.y, Referee::opponant(_player)) > -1) {
-                heuResult = max_ab(depth - 1, refcopy, _heuristic(copy, _player, depth), alpha, beta);
+                heuResult = max_ab(depth - 1, refcopy, alpha, beta);
                 if (heuResult <= alpha) {
                     return alpha;
                 }
@@ -167,19 +157,18 @@ public:
         return beta;
     }
 
-    HeuristicValue max_ab(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic, HeuristicValue alpha, HeuristicValue beta) {
+    HeuristicValue max_ab(unsigned int depth, Referee& reforigin,  HeuristicValue alpha, HeuristicValue beta) {
         if (!depth || reforigin.checkWin()) {
             unsigned int winner = reforigin.checkWin();
-            if (winner == this->getPlayerNum())
+            if (winner == _player)
                 return _heuristic.victory(depth);
             else if (winner)
                 return _heuristic.defeat(depth);
-            return boardHeuristic;
+            return _heuristic(reforigin.getBoard(), _player, depth);
         }
 
         CoordContainer possibleCase;
 
-    //    possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         HeuristicValue heuResult;
@@ -190,7 +179,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-                heuResult = min_ab(depth - 1, refcopy, _heuristic(copy, _player, depth), alpha, beta);
+                heuResult = min_ab(depth - 1, refcopy, alpha, beta);
                 if (heuResult >= beta) {
                     return beta;
                 }
@@ -203,19 +192,18 @@ public:
         return alpha;
     }
 
-    HeuristicValue min(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
+    HeuristicValue min(unsigned int depth, Referee& reforigin) {
         if (!depth || reforigin.checkWin()) {
             unsigned int winner = reforigin.checkWin();
             if (winner == _player)
                 return _heuristic.victory(depth);
             else if (winner)
                 return _heuristic.defeat(depth);
-            return boardHeuristic;
+            return _heuristic(reforigin.getBoard(), _player, depth);
         }
 
         CoordContainer possibleCase;
 
-      //  possibleCase.reserve(_sizeCoord);
         _searchCase(reforigin.getBoard(), possibleCase);
 
         HeuristicValue heuResult;
@@ -227,7 +215,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(pos.x, pos.y, Referee::opponant(_player)) > -1) {
-                heuResult = max(depth - 1, refcopy, _heuristic(copy, _player, depth));
+                heuResult = max(depth - 1, refcopy);
                 if (heuResult < result)
                     result = heuResult;
             }
@@ -236,14 +224,14 @@ public:
         return result;
     }
 
-    HeuristicValue max(unsigned int depth, Referee& reforigin, HeuristicValue boardHeuristic) {
+    HeuristicValue max(unsigned int depth, Referee& reforigin) {
         if (!depth || reforigin.checkWin()) {
             unsigned int winner = reforigin.checkWin();
             if (winner == this->getPlayerNum())
                 return _heuristic.victory(depth);
             else if (winner)
                 return _heuristic.defeat(depth);
-            return boardHeuristic;
+            return _heuristic(reforigin.getBoard(), _player, depth);
         }
 
         CoordContainer possibleCase;
@@ -260,7 +248,7 @@ public:
             Referee refcopy(reforigin, copy);
 
             if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-                heuResult = min(depth - 1, refcopy, _heuristic(copy, _player, depth));
+                heuResult = min(depth - 1, refcopy);
                 if (heuResult > result)
                     result = heuResult;
             }
