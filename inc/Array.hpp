@@ -29,6 +29,12 @@ public:
     Array()
     {}
 
+    Array(const T& value) {
+        for (unsigned int i = 0; i < SIZE; ++i) {
+            _array[i] = value;
+        }
+    }
+
     Array(const Array& value) {
         this->operator =(value);
     }

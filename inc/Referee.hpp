@@ -12,6 +12,7 @@
 #include <list>
 #include <map>
 #include <iostream>
+#include <stack>
 
 #include <boost/thread.hpp>
 
@@ -27,6 +28,38 @@ class Board;
 
 class Referee {
 public:
+
+    enum ActionType {
+        PLACED = 0,
+        TAKEN = 1
+    };
+
+    struct RockPlayed {
+
+        RockPlayed() : _act(PLACED), _playerId(0), _pos()
+        {
+        }
+
+        RockPlayed(const ActionType& actionType, const unsigned int player, const Coord & position)
+        : _act(actionType), _playerId(player), _pos(position)
+        {
+        }
+        
+        ActionType _act;
+        unsigned int _playerId;
+        Coord _pos;
+    };
+
+    typedef std::vector< RockPlayed > ActionArray;
+
+    struct UniqueAction : ActionArray
+    {
+        UniqueAction() : _score(0), _winner(0) {
+        }
+        Array< unsigned int, 2 > _score;
+        unsigned int _winner;
+    };
+
     Referee(Board& board);
     Referee(const Referee& orig);
     Referee(const Referee& orig, Board& board);
@@ -41,6 +74,12 @@ public:
     bool fivePrize(bool value);
     void reset();
     unsigned int getScore(unsigned int player) const;
+    bool DoAction(const UniqueAction& action);
+    bool UndoAction(const UniqueAction& action);
+    bool UndoLastAction();
+    bool TakeRock(const Coord& value);
+    bool PlaceRock(const Coord& value, const unsigned int player);
+    void dumpScore() const;
 
     static inline unsigned int opponant(const unsigned int pla) {
         unsigned int result = 0;
@@ -63,29 +102,22 @@ private:
         std::size_t lineSize;
         unsigned int endBlock;
 
-        PropagationInfo() : lineSize(0), endBlock(0) {}
+        PropagationInfo() : lineSize(0), endBlock(0) {
+        }
 
-        PropagationInfo& operator+(const PropagationInfo& buddy) {
+        PropagationInfo & operator+(const PropagationInfo & buddy) {
             lineSize += buddy.lineSize;
             endBlock += buddy.endBlock;
             return *this;
         }
     };
 
-    struct CheckPrizeInfo {
-        unsigned int x;
-        unsigned int y;
-        Vector dir;
-        unsigned int player;
-        unsigned int result;
-    };
-
+    std::stack< UniqueAction > _actionStack;
     WinList _winLineList;
     Board& _board;
     ThreeAlignChecker _threeChecker;
     Array< unsigned int, 2 > _score;
     unsigned int _winner;
-    mutable boost::mutex _squareMutex;
 
     void setScore(unsigned int player, unsigned int value);
 
@@ -97,7 +129,7 @@ private:
     bool ispartOfAlign(const Square& value, unsigned int size);
     bool ispartOfExactAlign(const Square& value, unsigned int size);
     void setRaw(Square& value, unsigned int val);
-    
+
     /*
      * Fonction de check pour les double alignement de trois
      */
@@ -119,10 +151,10 @@ private:
     /*
      * Fonction pour la prise de pierre
      */
-    unsigned int checkPrize(unsigned int x, unsigned int y, const unsigned int player);
-    bool checkPrize(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
+    unsigned int checkPrize(unsigned int x, unsigned int y, const unsigned int player, ActionArray& action);
+    bool checkPrize_dir(unsigned int x, unsigned int y, Vector dir, unsigned int player) const;
     bool checkCanTake(unsigned x, unsigned int y, Vector dir, unsigned int player) const;
-    void cleanRock(unsigned int x, unsigned int y, Vector dir);
+    void cleanRock(unsigned int x, unsigned int y, Vector dir, ActionArray& action);
 
     /*
      * Fonction de propagation

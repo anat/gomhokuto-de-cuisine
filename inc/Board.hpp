@@ -10,6 +10,7 @@
 
 #include "Array.hpp"
 #include "Square.hpp"
+#include "Coord.hpp"
 
 class BoardException : public std::exception {
     const char* what() const throw (){
@@ -30,6 +31,9 @@ public:
     Square& getCase(unsigned int x = 0, unsigned int y = 0);
     const Square& operator()(unsigned int x = 0, unsigned int y = 0) const;
     Square& operator()(unsigned int x = 0, unsigned int y = 0);
+    const Square& operator()(const Coord& pos) const;
+    Square& operator()(const Coord& pos);
+
     void setCase(unsigned int x, unsigned int y, const Square& value);
     std::size_t getSize() const;
     void DumpBoard() const;
