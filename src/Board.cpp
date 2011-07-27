@@ -50,6 +50,18 @@ Square& Board::operator()(unsigned int x, unsigned int y) {
     throw BoardException();
 }
 
+const Square& Board::operator()(const Coord& pos) const {
+    if (checkSize(pos.x, pos.y))
+        return _tab[pos.y][pos.x];
+    throw BoardException();
+}
+
+Square& Board::operator()(const Coord& pos) {
+    if (checkSize(pos.x, pos.y))
+        return _tab[pos.y][pos.x];
+    throw BoardException();
+}
+
 void Board::setCase(unsigned int x, unsigned int y, const Square& value) {
     if (checkSize(x, y))
         _tab[y][x] = value;

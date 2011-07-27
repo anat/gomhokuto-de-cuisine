@@ -10,22 +10,22 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/foreach.hpp>
 
 #include "Board.hpp"
 #include "Referee.hpp"
 #include "Game.hpp"
 
 Referee::Referee(Board& board)
-: _winLineList(), _board(board), _threeChecker(_board), _score(), _winner(0) {
-    _score[0] = _score[1] = 0;
+: _actionStack(), _winLineList(), _board(board), _threeChecker(_board), _score(0), _winner(0) {
 }
 
 Referee::Referee(const Referee& orig)
-: _winLineList(orig._winLineList), _board(orig._board), _threeChecker(_board), _score(orig._score), _winner(orig._winner) {
+: _actionStack(orig._actionStack), _winLineList(orig._winLineList), _board(orig._board), _threeChecker(_board), _score(orig._score), _winner(orig._winner) {
 }
 
 Referee::Referee(const Referee& orig, Board& board)
-: _winLineList(orig._winLineList), _board(board), _threeChecker(_board), _score(orig._score), _winner(orig._winner) {
+: _actionStack(orig._actionStack), _winLineList(orig._winLineList), _board(board), _threeChecker(_board), _score(orig._score), _winner(orig._winner) {
 }
 
 Referee::~Referee() {
@@ -37,6 +37,77 @@ void Referee::setScore(unsigned int player, unsigned int value) {
 
 unsigned int Referee::getScore(unsigned int player) const {
     return _score[player & 1];
+}
+
+bool Referee::DoAction(const UniqueAction& action) {
+    bool result = true;
+
+    BOOST_FOREACH(const RockPlayed& item, action) {
+        if (item._act == PLACED) {
+            result = result && PlaceRock(item._pos, item._playerId);
+        } else if (item._act == TAKEN) {
+            result = result && TakeRock(item._pos);
+        }
+    }
+
+    for (unsigned int i = 0; i < _score.size(); i++) {
+        _score[i] += action._score[i];
+    }
+    return result;
+}
+
+bool Referee::UndoAction(const UniqueAction& action) {
+    bool result = true;
+
+    BOOST_FOREACH(const RockPlayed& item, action) {
+        if (item._act == PLACED) {
+            result = result && TakeRock(item._pos);
+        } else if (item._act == TAKEN) {
+            result = result && PlaceRock(item._pos, item._playerId);
+        }
+    }
+    for (unsigned int i = 0; i < _score.size(); i++) {
+//        std::cout << "score " << _score[i] << " action " << action._score[i] << std::endl;
+        _score[i] -= action._score[i];
+    }
+    _winner = 0;
+    return result;
+}
+
+bool Referee::UndoLastAction() {
+    bool result = false;
+    if (_actionStack.size()) {
+        if (UndoAction(_actionStack.top())) {
+            _actionStack.pop();
+            result = true;
+        }
+    }
+    return result;
+}
+
+bool Referee::TakeRock(const Coord& pos) {
+    bool result = false;
+    if (_board(pos).getPlayer()) {
+        _board(pos).setRawData(0);
+        fpropagation_inverse(pos.x, pos.y);
+        result = true;
+    }
+    return result;
+}
+
+bool Referee::PlaceRock(const Coord& pos, const unsigned int player) {
+    bool result = false;
+    if (testPosition(pos.x, pos.y, player)) {
+        _board(pos).setPlayer(player);
+        fpropagation(pos.x, pos.y, player);
+        result = true;
+    }
+    return result;
+}
+
+void Referee::dumpScore() const {
+    std::cout << "player " << 1 << " " << getScore(1) << std::endl;
+    std::cout << "player " << 2 << " " << getScore(2) << std::endl;
 }
 
 /**
@@ -113,14 +184,18 @@ int Referee::tryPlaceRock(unsigned int x, unsigned int y, unsigned int player) {
     int value = -1;
 
     if (testPosition(x, y, player)) {
+        UniqueAction action;
         _board(x, y).setPlayer(player);
+        action.push_back(RockPlayed(PLACED, player, Coord(x, y)));
         fpropagation(x, y, player);
-        value = checkPrize(x, y, player);
+        value = checkPrize(x, y, player, action);
         if (value) {
             setScore(player, getScore(player) + value * 2);
+            action._score[player & 1] = value * 2;
         }
 
         checkWin(x, y, player);
+        _actionStack.push(action);
     }
     return value;
 }
@@ -142,13 +217,13 @@ bool Referee::testPosition(unsigned int x, unsigned int y, unsigned int player) 
 /**
  * cherche dans toute les directions si il a des pierre a prendre
  */
-unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int player) {
+unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int player, ActionArray& action) {
     unsigned int result = 0;
     const RefereeManager::VectorArray& dir = RefereeManager::Instance().getVectorArray();
 
     for (unsigned int i = 1; i < dir.size(); i++) {
-        if (checkPrize(x, y, dir[i], player)) {
-            cleanRock(x, y, dir[i]);
+        if (checkPrize_dir(x, y, dir[i], player)) {
+            cleanRock(x, y, dir[i], action);
             result++;
         }
     }
@@ -159,7 +234,7 @@ unsigned int Referee::checkPrize(unsigned int x, unsigned int y, unsigned int pl
 /**
  * cherche si il y a une prise dans une direction
  */
-bool Referee::checkPrize(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
+bool Referee::checkPrize_dir(unsigned int x, unsigned int y, RefereeManager::Vector dir, unsigned int player) const {
     if (checkCanTake(x, y, dir, player)) {
         goTo(x, y, dir);
         //std::cout << x << ", " << y << " is takable" << std::endl;
@@ -188,18 +263,19 @@ bool Referee::checkCanTake(unsigned x, unsigned int y, RefereeManager::Vector di
 /**
  * clean les pierre trouver comme prise
  */
-void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector dir) {
+void Referee::cleanRock(unsigned int x, unsigned int y, RefereeManager::Vector dir, ActionArray& action) {
     //std::cout << "cleanRock" << std::endl;
     unsigned int xtmp, ytmp;
 
     goTo(x, y, dir);
-    //std::cout << "## x " << x << " ## y " << y << std::endl;
+    action.push_back(RockPlayed(TAKEN, _board(x, y).getPlayer(), Coord(x, y)));
     setRaw(_board(x, y), 0);
+
     xtmp = x;
     ytmp = y;
 
     goTo(x, y, dir);
-    //std::cout << "## x " << x << " ## y " << y << std::endl;
+    action.push_back(RockPlayed(TAKEN, _board(x, y).getPlayer(), Coord(x, y)));
     setRaw(_board(x, y), 0);
 
     fpropagation_inverse(xtmp, ytmp);
