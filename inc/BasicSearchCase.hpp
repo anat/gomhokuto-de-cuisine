@@ -9,11 +9,12 @@
 #define	BASICSEARCHCASE_HPP
 
 #include <vector>
+#include <deque>
 
 #include "ISearchCase.hpp"
 #include "Coord.hpp"
 
-class BasicSearchCase : public ISearchCase< std::list<Coord> >
+class BasicSearchCase : public ISearchCase< std::deque<Coord> >
 {
 public:
     void operator()(const Board& game, CoordContainer& possibleCase);
