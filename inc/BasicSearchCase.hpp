@@ -20,7 +20,8 @@ public:
     void operator()(const Board& game, CoordContainer& possibleCase);
     void Dump(const CoordContainer&) const;
 private:
-    bool hasPlayerAround(const Board& game, unsigned int x, unsigned int y);
+    bool hasPlayerAround_simple(const Board& game, unsigned int x, unsigned int y);
+    bool hasPlayerAround_double(const Board& game, unsigned int x, unsigned int y);
 };
 
 #endif	/* BASICSEARCHCASE_HPP */
