@@ -72,13 +72,9 @@ public:
             for (unsigned int u = 0; u < SIMUL_THREAD && it != ite; ++u) {
                 heuResult[i].second = *it;
 
-                threadGroup.create_thread(boost::bind(
-                        &PlayerAi::explore_ab, this,
-                        gameboard,
-                        boost::ref(referee),
-                        heuResult[i].second,
-                        &heuResult[i].first
-                        ));
+                threadGroup.create_thread(
+                boost::bind(&PlayerAi::explore_ab, this, boost::ref(gameboard), boost::ref(referee), boost::ref(heuResult[i].second), &heuResult[i].first)
+                        );
 
                 ++i;
                 ++it;
@@ -119,13 +115,13 @@ public:
     }
 
     void explore_ab(Board& gameBoard, Referee& ref, Coord& pos, HeuristicValue* result) {
-//        Referee refcopy(ref, gameBoard);
-//
-//        if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
-//            *result = min_ab(DEPTH, refcopy, _heuristic.defeat(0), _heuristic.victory(0));
-//        } else {
-//            *result = _heuristic.defeat(0);
-//        }
+        //        Referee refcopy(ref, gameBoard);
+        //
+        //        if (refcopy.tryPlaceRock(pos.x, pos.y, _player) > -1) {
+        //            *result = min_ab(DEPTH, refcopy, _heuristic.defeat(0), _heuristic.victory(0));
+        //        } else {
+        //            *result = _heuristic.defeat(0);
+        //        }
         MinMax< IHeuristic, ISearchCase, DEPTH> func(_player, gameBoard, ref, pos, result);
         func.run();
     }
