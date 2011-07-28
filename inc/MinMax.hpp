@@ -19,15 +19,20 @@ struct MinMax {
     typedef typename IHeuristic::HeuristicValue HeuristicValue;
     typedef typename ISearchCase::CoordContainer CoordContainer;
 
-    unsigned int _player;
     IHeuristic _heuristic;
     ISearchCase _searchCase;
+    unsigned int _player;
+    Board _gameBoard;
     Referee refcopy;
     Coord& _pos;
     HeuristicValue* _result;
 
     MinMax(unsigned int player, Board& gameBoard, Referee& ref, Coord& pos, HeuristicValue * result)
-    : _player(player), refcopy(ref, gameBoard), _pos(pos), _result(result) {
+    : _heuristic(), _searchCase(), _player(player), _gameBoard(gameBoard), refcopy(ref, _gameBoard), _pos(pos), _result(result) {
+    }
+
+    void operator()() {
+        run();
     }
 
     void run() {
